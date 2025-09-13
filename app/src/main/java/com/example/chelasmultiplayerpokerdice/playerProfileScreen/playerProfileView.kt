@@ -99,7 +99,7 @@ fun PlayerProfileView(
 @Composable
 fun PlayerProfileView() {
     PlayerProfileView(
-        playerUsername = "renata123",
+        playerUsername = "renata1234",
         playerName = "Renata Castanheira",
         playerAge = 19,
         goBackTitleScreenFunction = { }
