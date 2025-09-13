@@ -11,8 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.chelasmultiplayerpokerdice.aboutScreen.AboutScreenView
 import com.example.chelasmultiplayerpokerdice.ui.theme.ChelasMultiPlayerPokerDiceTheme
+import com.example.chimp.home.TitleScreenView
 
+
+/*
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,3 +53,8 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
+ */
+
+
+
