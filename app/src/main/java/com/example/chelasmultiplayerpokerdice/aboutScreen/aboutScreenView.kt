@@ -4,6 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,18 +18,27 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.chimp.home.TITLESCREEN_ABOUT_BUTTON
+import com.example.chimp.home.TITLESCREEN_PROFILE_BUTTON
+import com.example.chimp.home.TITLESCREEN_STARTMATCH_BUTTON
 import com.example.chimp.home.TitleScreenView
 
 const val ABOUTSCREEN_VIEW_TAG = "About View"
 const val ABOUTSCREEN_EMAIL_BUTTON = "Email button on About screen"
 const val ABOUTSCREEN_WEB_LINK = "Web link on About screen"
 
+const val TITLESCREEN_BUTTON = "Button to return to Title Screen"
+
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreenView(
     members: List<Pair<String, String>>, // nome e número
     emailList: List<String>,
-    gameplayUrl: String
+    gameplayUrl: String,
+    titleScreenFunction: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -32,10 +46,20 @@ fun AboutScreenView(
         modifier = Modifier
             .fillMaxSize()
             .testTag(ABOUTSCREEN_VIEW_TAG),
+
         topBar = {
             TopAppBar(
-                title = { Text("About Us/Game") }
-            )
+                title = { Text("About Us/Game") },
+
+            actions = {
+                IconButton(
+                    onClick = titleScreenFunction,
+                    modifier = Modifier.testTag(TITLESCREEN_ABOUT_BUTTON)
+                ) {
+                    Icon(Icons.Default.Home, contentDescription = "Home")
+                }
+            }
+                )
         }
     ) { padding ->
         Column(
@@ -114,7 +138,7 @@ fun AboutScreenViews() {
             Pair("Humberto Carvalho", "xxxxx"),
             ),
         emailList = listOf("dioarnauth@gmail.com", "renataCatanheira@gmail.com", "humbertoCarvalho@gmail.com"),
-        gameplayUrl = "https://en.wikipedia.org/wiki/Poker_dice"
-
+        gameplayUrl = "https://en.wikipedia.org/wiki/Poker_dice",
+        titleScreenFunction = {}
     )
 }
