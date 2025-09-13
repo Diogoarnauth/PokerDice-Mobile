@@ -48,7 +48,24 @@ fun AboutScreenView(
         ) {
 
             // Descrição geral
-            Text("Poker Dice é um jogo multijogador competitivo com base em dados e lógica de poker.")
+            Text(
+                text = "Poker Dice é um jogo multijogador competitivo que combina elementos de jogos de dados com a lógica clássica do poker. Cada jogador lança um conjunto de dados com o objetivo de formar a melhor combinação possível, tal como no poker tradicional (pares, trincas, full house, etc.).",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = "🎲 Características do Jogo\n",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = "🎮 Número mínimo de jogadores: 2\n\n" +
+                        "🧑‍🤝‍🧑 Número máximo de jogadores: 4\n\n" +
+                        "⏱️ Duração média de cada partida: 5 a 10 minutos\n\n" +
+                        "🧠 Objetivo: Obter a melhor jogada de poker com cinco dados lançados em cada ronda.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
             Text(
                 text = "Ver descrição completa",
                 modifier = Modifier
@@ -97,7 +114,7 @@ fun AboutScreenViews() {
             Pair("Humberto Carvalho", "xxxxx"),
             ),
         emailList = listOf("dioarnauth@gmail.com", "renataCatanheira@gmail.com", "humbertoCarvalho@gmail.com"),
-        gameplayUrl = "linkzinho"
+        gameplayUrl = "https://en.wikipedia.org/wiki/Poker_dice"
 
     )
 }
