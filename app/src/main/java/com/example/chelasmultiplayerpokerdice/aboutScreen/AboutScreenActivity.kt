@@ -13,8 +13,9 @@ import com.example.chimp.home.AboutServiceImpl
 class AboutScreenActivity : ComponentActivity() {
 
     private val aboutScreenService: AboutService = AboutServiceImpl()
-    private val aboutNavigation: AboutNavigation = NavigationIntentImpl
-
+    private val aboutNavigation: AboutNavigation by lazy {
+        NavigationIntentImpl(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

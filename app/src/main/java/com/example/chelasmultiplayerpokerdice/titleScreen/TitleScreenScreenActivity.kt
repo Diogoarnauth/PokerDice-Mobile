@@ -16,7 +16,9 @@ import com.example.chimp.home.TitleScreenServiceImpl
 class TitleScreenActivity : ComponentActivity() {
 
     private val titleScreenService: TitleScreenService = TitleScreenServiceImpl()
-    private val aboutNavigation: TitleNavigation = NavigationIntentImpl
+    private val aboutNavigation: TitleNavigation by lazy {
+        NavigationIntentImpl(this)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
