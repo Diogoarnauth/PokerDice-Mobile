@@ -143,7 +143,7 @@ fun AboutScreenViewPreview() {
         members = listOf(
             "Diogo Arnauth" to "51634",
             "Renata Castanheira" to "51830",
-            "Humberto Carvalho" to "xxxxx"
+            "Humberto Carvalho" to "50500"
         ),
         emailList = listOf(
             "dioarnauth@gmail.com",
