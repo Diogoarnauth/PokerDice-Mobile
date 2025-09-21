@@ -16,7 +16,7 @@ import com.example.chimp.home.TitleScreenServiceImpl
 class TitleScreenActivity : ComponentActivity() {
 
     private val titleScreenService: TitleScreenService = TitleScreenServiceImpl()
-    private val aboutNavigation: TitleNavigation by lazy {
+    private val titleNavigation: TitleNavigation by lazy {
         NavigationIntentImpl(this)
     }
 
@@ -28,7 +28,7 @@ class TitleScreenActivity : ComponentActivity() {
         setContent {
             TitleScreen(
                 service = titleScreenService,
-                navigator = aboutNavigation
+                navigator = titleNavigation
             )
         }
 
