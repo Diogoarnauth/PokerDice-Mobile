@@ -1,33 +1,20 @@
 package com.example.chimp.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-
 const val PLAYERPROFILE_BACK_TITLESCREEN = "Player Profile back to title screen"
+const val PLAYERPROFILE_VIEW_TAG = "Player Profile View"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,10 +27,15 @@ fun PlayerProfileView(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(TITLESCREEN_VIEW_TAG),
+            .testTag(PLAYERPROFILE_VIEW_TAG),
         topBar = {
             TopAppBar(
-                title = { Text("Chelas Multi-player Poker Dice") },
+                title = {
+                    Text(
+                        text = "👤 Perfil do Jogador",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
                 actions = {
                     IconButton(
                         onClick = goBackTitleScreenFunction,
@@ -53,50 +45,49 @@ fun PlayerProfileView(
                     }
                 }
             )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(24.dp), // margem geral
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start // canto esquerdo
-        ) {
-            Text(
-                text = "Perfil do Jogador",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
+        },
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Informações do Jogador",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center
+                )
 
-            Spacer(modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "Username: $playerUsername",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = "Nome: $playerName",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = "Idade: $playerAge",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+                Text(
+                    text = "🆔 Username: $playerUsername",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "👤 Nome: $playerName",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "🎂 Idade: $playerAge",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
-    }
+    )
 }
-
-
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PlayerProfileView() {
+fun PlayerProfileViewPreview() {
     PlayerProfileView(
         playerUsername = "renata1234",
         playerName = "Renata Castanheira",
