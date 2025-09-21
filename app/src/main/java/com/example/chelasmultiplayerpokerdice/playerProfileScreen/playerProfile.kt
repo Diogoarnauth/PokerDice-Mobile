@@ -5,7 +5,7 @@ import com.example.chimp.home.PlayerProfileView
 import com.example.chimp.home.ProfileService
 
 @Composable
-fun ProfileScreen(service: ProfileService, navigator: ProfileNavigation) {
+fun playerProfile(service: ProfileService, navigator: ProfileNavigation) {
     PlayerProfileView(
         playerUsername = service.getPlayerUsername(),
         playerName = service.getPlayerName(),
