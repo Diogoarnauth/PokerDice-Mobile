@@ -60,7 +60,7 @@ fun TitleScreenView(
                         Icon(Icons.Default.Person, contentDescription = "Profile")
                     }
                     IconButton(
-                        onClick = aboutFunction,
+                         onClick = { aboutFunction() },
                         modifier = Modifier.testTag(TITLESCREEN_ABOUT_BUTTON)
                     ) {
                         Icon(Icons.Default.Info, contentDescription = "About")

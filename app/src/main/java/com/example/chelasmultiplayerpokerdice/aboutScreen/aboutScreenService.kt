@@ -4,7 +4,6 @@ interface AboutService {
     fun getMembers(): List<Pair<String, String>>
     fun getEmails(): List<String>
     fun getGamePlayUrl(): String
-    fun getTitleScreen(): () -> Unit
 }
 
 class AboutServiceImpl : AboutService {
@@ -29,5 +28,5 @@ class AboutServiceImpl : AboutService {
         return "https://en.wikipedia.org/wiki/Poker_dice"
     }
 
-    override fun getTitleScreen()= {}
+
 }

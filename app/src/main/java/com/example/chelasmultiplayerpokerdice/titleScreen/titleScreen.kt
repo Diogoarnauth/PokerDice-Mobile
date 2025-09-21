@@ -8,9 +8,9 @@ import com.example.chimp.home.TitleScreenView
 @Composable
 fun TitleScreen(service: TitleScreenService, navigator: TitleNavigation) {
     TitleScreenView(
-       creators = service.getCreators(),
-        startMatchFunction = service.getStartMatch(),
-        profileFunction = service.getProfile(),
-        aboutFunction = service.getAboutFunction()
+        creators = service.getCreators(),
+        startMatchFunction = { /* TODO: lógica para iniciar jogo */ },
+        profileFunction = { navigator.goToPlayerProfileScreen() },
+        aboutFunction = { navigator.goToAboutScreen() }
     )
 }

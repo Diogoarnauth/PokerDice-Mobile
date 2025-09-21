@@ -27,13 +27,11 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ChelasMultiPlayerPokerDice"/>
-
         <activity
             android:name=".playerProfileScreen.PlayerProfileActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ChelasMultiPlayerPokerDice"/>
-
     </application>
 
 </manifest>
