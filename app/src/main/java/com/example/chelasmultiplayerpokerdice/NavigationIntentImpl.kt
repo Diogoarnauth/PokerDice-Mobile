@@ -8,6 +8,7 @@ import com.example.chelasmultiplayerpokerdice.aboutScreen.AboutScreenActivity
 import com.example.chelasmultiplayerpokerdice.aboutScreen.ProfileNavigation
 import com.example.chelasmultiplayerpokerdice.playerProfileScreen.PlayerProfileActivity
 import com.example.chelasmultiplayerpokerdice.titleScreen.TitleNavigation
+import com.example.chelasmultiplayerpokerdice.titleScreen.TitleScreenActivity
 
 @SuppressLint("RestrictedApi")
 class NavigationIntentImpl(private val context: Context) : TitleNavigation, AboutNavigation, ProfileNavigation {

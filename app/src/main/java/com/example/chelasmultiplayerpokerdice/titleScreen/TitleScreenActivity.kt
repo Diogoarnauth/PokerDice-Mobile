@@ -1,14 +1,13 @@
 
-
 // AboutScreen.kt
-//package com.example.chelasmultiplayerpokerdice.aboutScreen
+package com.example.chelasmultiplayerpokerdice.titleScreen
 
+import TitleScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.chelasmultiplayerpokerdice.NavigationIntentImpl
-import com.example.chelasmultiplayerpokerdice.titleScreen.TitleNavigation
 import com.example.chimp.home.TitleScreenService
 import com.example.chimp.home.TitleScreenServiceImpl
 

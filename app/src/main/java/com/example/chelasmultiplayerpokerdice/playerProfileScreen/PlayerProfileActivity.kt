@@ -1,17 +1,13 @@
 package com.example.chelasmultiplayerpokerdice.playerProfileScreen
 
-import TitleScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.chelasmultiplayerpokerdice.NavigationIntentImpl
 import com.example.chelasmultiplayerpokerdice.aboutScreen.ProfileNavigation
-import com.example.chelasmultiplayerpokerdice.titleScreen.TitleNavigation
 import com.example.chimp.home.ProfileService
 import com.example.chimp.home.ProfileServiceImpl
-import com.example.chimp.home.TitleScreenService
-import com.example.chimp.home.TitleScreenServiceImpl
 import playerProfile
 
 
