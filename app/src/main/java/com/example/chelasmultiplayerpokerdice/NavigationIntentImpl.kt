@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.example.chelasmultiplayerpokerdice.aboutScreen.AboutNavigation
 import com.example.chelasmultiplayerpokerdice.aboutScreen.AboutScreenActivity
-import com.example.chelasmultiplayerpokerdice.aboutScreen.ProfileNavigation
+import com.example.chelasmultiplayerpokerdice.playerProfileScreen.ProfileNavigation
 import com.example.chelasmultiplayerpokerdice.playerProfileScreen.PlayerProfileActivity
 import com.example.chelasmultiplayerpokerdice.titleScreen.TitleNavigation
 import com.example.chelasmultiplayerpokerdice.titleScreen.TitleScreenActivity

@@ -119,9 +119,10 @@ fun GenericTopAppBar(title: String, actions: @Composable () -> Unit) {
 }
 
 
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun TitleScreenView() {
+fun TitleScreenViewPreview() {
     TitleScreenView(
         creators = listOf(
             "Diogo Arnauth",

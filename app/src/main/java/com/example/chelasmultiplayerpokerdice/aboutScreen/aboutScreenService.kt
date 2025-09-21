@@ -1,26 +1,16 @@
-package com.example.chimp.home
+package com.example.chelasmultiplayerpokerdice.aboutScreen
 
 interface AboutService {
-    fun getMembers(): List<Pair<String, String>>
-    fun getEmails(): List<String>
+    fun getMembers(): List<Author>
     fun getGamePlayUrl(): String
 }
 
 class AboutServiceImpl : AboutService {
-    override fun getMembers(): List<Pair<String, String>> {
-            return listOf(
-                "Diogo Arnauth" to "51634",
-                "Renata Castanheira" to "51830",
-                "Humberto Carvalho" to "50500"
-            )
-
-    }
-
-    override fun getEmails(): List<String>{
+    override fun getMembers(): List<Author> {
         return listOf(
-            "dioarnauth@gmail.com",
-            "renataCastanheira@gmail.com",
-            "humbertoCarvalho@gmail.com"
+            Author("Diogo Arnauth", 51634, "dioarnauth@gmail.com"),
+            Author("Renata Castanheira", 51830, "renataCatanheira@gmail.com"), // catanheira ou caStanheira?
+            Author("Humberto Carvalho", 50500, "betocp@sapo.pt")
         )
     }
 

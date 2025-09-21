@@ -1,4 +1,4 @@
-package com.example.chelasmultiplayerpokerdice.aboutScreen
+package com.example.chelasmultiplayerpokerdice.playerProfileScreen
 
 interface ProfileNavigation {
     fun goToTitleScreen()

@@ -1,4 +1,4 @@
-package com.example.chimp.home
+package com.example.chelasmultiplayerpokerdice.playerProfileScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,12 +16,16 @@ import androidx.compose.ui.unit.dp
 const val PLAYERPROFILE_BACK_TITLESCREEN = "Player Profile back to title screen"
 const val PLAYERPROFILE_VIEW_TAG = "Player Profile View"
 
+class PlayerProfileData(
+    val playerUsername: String,
+    val playerName: String,
+    val playerAge: Int
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerProfileView(
-    playerUsername: String,
-    playerName: String,
-    playerAge: Int,
+    playerData: List<PlayerProfileData>,
     goBackTitleScreenFunction: () -> Unit
 ) {
     Scaffold(
@@ -65,21 +69,25 @@ fun PlayerProfileView(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(
-                    text = "🆔 Username: $playerUsername",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "👤 Nome: $playerName",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "🎂 Idade: $playerAge",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
+                playerData.forEach { player ->
+                    Text(
+                        text = "Username: ${player.playerUsername}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Nome: ${player.playerName}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Idade: ${player.playerAge}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.padding(16.dp))
+
+                }
             }
         }
     )
@@ -89,9 +97,11 @@ fun PlayerProfileView(
 @Composable
 fun PlayerProfileViewPreview() {
     PlayerProfileView(
-        playerUsername = "renata1234",
-        playerName = "Renata Castanheira",
-        playerAge = 19,
-        goBackTitleScreenFunction = { }
-    )
+        playerData =
+            listOf(
+                PlayerProfileData("renata1234", "Renata Castanheira", 19),
+                PlayerProfileData("diogoDaMota", "Diogo Arnauth", 20),
+                PlayerProfileData("alpaca", "Humberto Carvalho", 21)
+            ),
+        goBackTitleScreenFunction = {})
 }

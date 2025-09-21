@@ -23,11 +23,12 @@ const val ABOUTSCREEN_EMAIL_BUTTON = "Email button on About screen"
 const val ABOUTSCREEN_WEB_LINK = "Web link on About screen"
 const val TITLESCREEN_BUTTON = "Button to return to Title Screen"
 
+data class Author(val name: String, val number: Int, val email: String)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreenView(
-    members: List<Pair<String, String>>,
-    emailList: List<String>,
+    members: List<Author>,
     gameplayUrl: String,
     titleScreenFunction: () -> Unit,
 ) {
@@ -119,8 +120,9 @@ fun AboutScreenView(
 
                     Button(
                         onClick = {
+                            val emails = members.joinToString(",") { it.email }
                             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                                data = Uri.parse("mailto:" + emailList.joinToString(","))
+                                data = Uri.parse("mailto:$emails")
                             }
                             context.startActivity(emailIntent)
                         },
@@ -141,14 +143,9 @@ fun AboutScreenView(
 fun AboutScreenViewPreview() {
     AboutScreenView(
         members = listOf(
-            "Diogo Arnauth" to "51634",
-            "Renata Castanheira" to "51830",
-            "Humberto Carvalho" to "50500"
-        ),
-        emailList = listOf(
-            "dioarnauth@gmail.com",
-            "renataCatanheira@gmail.com",
-            "humbertoCarvalho@gmail.com"
+            Author("Diogo Arnauth", 51634, "dioarnauth@gmail.com"),
+            Author("Renata Castanheira", 51830, "renataCatanheira@gmail.com"), // catanheira ou caStanheira?
+            Author("Humberto Carvalho", 50500, "betocp@sapo.pt")
         ),
         gameplayUrl = "https://en.wikipedia.org/wiki/Poker_dice",
         titleScreenFunction = {}

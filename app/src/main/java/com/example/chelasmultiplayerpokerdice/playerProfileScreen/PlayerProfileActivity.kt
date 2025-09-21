@@ -5,10 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.chelasmultiplayerpokerdice.NavigationIntentImpl
-import com.example.chelasmultiplayerpokerdice.aboutScreen.ProfileNavigation
-import com.example.chimp.home.ProfileService
-import com.example.chimp.home.ProfileServiceImpl
-import playerProfile
 
 
 class PlayerProfileActivity : ComponentActivity() {
@@ -24,7 +20,7 @@ class PlayerProfileActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            playerProfile(
+            PlayerProfile(
                 service = playerProfileService,
                 navigator = playerNavigation
             )
