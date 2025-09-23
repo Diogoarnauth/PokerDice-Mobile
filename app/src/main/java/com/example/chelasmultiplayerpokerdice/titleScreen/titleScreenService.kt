@@ -1,4 +1,4 @@
-package com.example.chimp.home
+package com.example.chelasmultiplayerpokerdice.titleScreen
 
 interface TitleScreenService {
     fun getCreators(): List<String>

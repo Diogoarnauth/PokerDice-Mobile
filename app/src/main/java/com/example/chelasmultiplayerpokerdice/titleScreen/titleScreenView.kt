@@ -1,4 +1,4 @@
-package com.example.chimp.home
+package com.example.chelasmultiplayerpokerdice.titleScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
