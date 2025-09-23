@@ -1,21 +1,8 @@
 package com.example.chelasmultiplayerpokerdice.lobbyCreationScreen
 
-import kotlinx.coroutines.delay
-
-data class Lobby(
-    val id: Int,
-    val name: String,
-    val owner: String,
-    val description: String,
-    val rounds: Int,
-    val isPrivate: Boolean,
-    val password: String?,
-    val playersCount: Int,
-    val maxPlayers: Int
-)
 data class Player(val id: Int, val name: String)
 
-interface CreateLobbyService {
+interface LobbyCreationService {
     suspend fun createLobby(
         id: Int,
         name: String,
@@ -30,7 +17,7 @@ interface CreateLobbyService {
     )
 }
 
-class CreateLobbyServiceImpl : CreateLobbyService {
+class LobbyCreationServiceImpl : LobbyCreationService {
 
     override suspend fun createLobby(
         id: Int,

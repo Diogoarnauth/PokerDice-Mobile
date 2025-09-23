@@ -5,7 +5,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun LobbyCreation(service: CreateLobbyService, navigator: CreateLobbyNavigation) {
+fun LobbyCreation(service: LobbyCreationService, navigator: LobbyCreationNavigation) {
     val coroutineScope = rememberCoroutineScope()
     InitialLobbyCreationView(
         onCreateLobby = { lobbyName: String, description: String, maxPlayers: Int, rounds: Int ->

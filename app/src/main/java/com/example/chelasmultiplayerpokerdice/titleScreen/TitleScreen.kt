@@ -2,10 +2,10 @@ package com.example.chelasmultiplayerpokerdice.titleScreen
 import androidx.compose.runtime.Composable
 
 @Composable
-fun TitleScreen(service: TitleScreenService, navigator: TitleNavigation) {
+fun TitleScreen(service: TitleScreenService, navigator: TitleScreenNavigation) {
     TitleScreenView(
         creators = service.getCreators(),
-        startMatchFunction = { /* TODO: lógica para iniciar jogo */ },
+        startMatchFunction = { navigator.goToLobbiesScreen() },
         profileFunction = { navigator.goToPlayerProfileScreen() },
         aboutFunction = { navigator.goToAboutScreen() }
     )

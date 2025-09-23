@@ -1,6 +1,8 @@
 package com.example.chelasmultiplayerpokerdice.titleScreen
 
-interface TitleNavigation {
+interface TitleScreenNavigation {
     fun goToPlayerProfileScreen()
     fun goToAboutScreen()
+    fun goToLobbiesScreen()
+
 }

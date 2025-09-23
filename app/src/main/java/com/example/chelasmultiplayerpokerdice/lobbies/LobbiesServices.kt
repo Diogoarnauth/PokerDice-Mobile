@@ -1,6 +1,4 @@
-package com.example.chelasmultiplayerpokerdice.Lobbies
-
-import com.example.chelasmultiplayerpokerdice.aboutScreen.Author
+package com.example.chelasmultiplayerpokerdice.lobbies
 
 //está apenas por ter, porque nao precisamos de nada implementado aqui, depois se precisarmos metemos
 interface LobbiesService {

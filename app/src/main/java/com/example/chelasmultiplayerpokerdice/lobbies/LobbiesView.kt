@@ -1,4 +1,4 @@
-package com.example.chelasmultiplayerpokerdice.Lobbies
+package com.example.chelasmultiplayerpokerdice.lobbies
 
 import androidx.compose.ui.tooling.preview.Preview
 

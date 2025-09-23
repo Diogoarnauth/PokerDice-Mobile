@@ -18,7 +18,6 @@
             android:theme="@style/Theme.ChelasMultiPlayerPokerDice">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -29,6 +28,21 @@
             android:theme="@style/Theme.ChelasMultiPlayerPokerDice"/>
         <activity
             android:name=".playerProfileScreen.PlayerProfileActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.ChelasMultiPlayerPokerDice"/>
+        <activity
+            android:name=".lobbyCreationScreen.LobbyCreationActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.ChelasMultiPlayerPokerDice"/>
+        <activity
+            android:name=".lobbyScreen.LobbyScreenActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.ChelasMultiPlayerPokerDice"/>
+        <activity
+            android:name=".lobbies.LobbiesActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ChelasMultiPlayerPokerDice"/>

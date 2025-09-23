@@ -1,6 +1,6 @@
 package com.example.chelasmultiplayerpokerdice.lobbyScreen
 
-interface LobbyNavigation {
+interface LobbyScreenNavigation {
     fun goToGameScreen()
     fun goToLobbiesScreen()
 }

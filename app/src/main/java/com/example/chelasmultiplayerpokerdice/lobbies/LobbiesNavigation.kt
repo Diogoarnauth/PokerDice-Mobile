@@ -1,4 +1,4 @@
-package com.example.chelasmultiplayerpokerdice.Lobbies
+package com.example.chelasmultiplayerpokerdice.lobbies
 
 interface LobbiesNavigation {
 

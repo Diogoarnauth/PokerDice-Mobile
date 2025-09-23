@@ -1,8 +1,5 @@
-package com.example.chelasmultiplayerpokerdice.playerProfileScreen
+package com.example.chelasmultiplayerpokerdice.lobbies
 import androidx.compose.runtime.Composable
-import com.example.chelasmultiplayerpokerdice.Lobbies.LobbiesNavigation
-import com.example.chelasmultiplayerpokerdice.Lobbies.LobbiesService
-import com.example.chelasmultiplayerpokerdice.Lobbies.LobbiesView
 
 @Composable
 fun Lobbies(service: LobbiesService, navigator: LobbiesNavigation) {

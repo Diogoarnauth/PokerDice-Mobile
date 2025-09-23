@@ -1,15 +1,15 @@
-package com.example.chelasmultiplayerpokerdice.titleScreen
-// AboutScreen.kt
+package com.example.chelasmultiplayerpokerdice.lobbyCreationScreen
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.chelasmultiplayerpokerdice.NavigationIntentImpl
 
-class TitleScreenActivity : ComponentActivity() {
+class LobbyCreationActivity : ComponentActivity() {
 
-    private val titleScreenService: TitleScreenService = TitleScreenServiceImpl()
-    private val titleNavigation: TitleScreenNavigation by lazy {
+    private val lobbyCreationService: LobbyCreationService = LobbyCreationServiceImpl()
+    private val lobbyCreationNavigation: LobbyCreationNavigation by lazy {
         NavigationIntentImpl(this)
     }
 
@@ -19,14 +19,13 @@ class TitleScreenActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TitleScreen(
-                service = titleScreenService,
-                navigator = titleNavigation
+            LobbyCreation(
+                service = lobbyCreationService,
+                navigator = lobbyCreationNavigation
             )
         }
 
 
     }
-
 
 }
