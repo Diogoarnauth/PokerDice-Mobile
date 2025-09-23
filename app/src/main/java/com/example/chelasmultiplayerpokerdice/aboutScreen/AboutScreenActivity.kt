@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.chelasmultiplayerpokerdice.NavigationIntentImpl
+import com.example.chelasmultiplayerpokerdice.lobbyScreen.AboutScreen
 
 
 class AboutScreenActivity : ComponentActivity() {
