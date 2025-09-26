@@ -2,34 +2,30 @@ package com.example.chelasmultiplayerpokerdice.playerProfileScreen
 
 interface ProfileService {
 
-    fun getPlayerProfileData(): List<PlayerProfileData>
-    fun getPlayerName(): List<String>
+    fun getPlayerProfileData(): PlayerProfileData
+    fun getPlayerName(): String
 
-    fun getPlayerUsername(): List<String>
+    fun getPlayerUsername(): String
 
-    fun getPlayerAge(): List<Int>
+    fun getPlayerAge(): Int
 
 }
 
 class ProfileServiceImpl : ProfileService {
 
-    override fun getPlayerName(): List<String> {
-        return getPlayerProfileData().map { it.playerName }
+    override fun getPlayerName(): String {
+        return getPlayerProfileData().playerName
     }
 
-    override fun getPlayerUsername(): List<String> {
-        return getPlayerProfileData().map { it.playerUsername }
+    override fun getPlayerUsername(): String {
+        return getPlayerProfileData().playerUsername
     }
 
-    override fun getPlayerAge(): List<Int> {
-        return getPlayerProfileData().map { it.playerAge }
+    override fun getPlayerAge(): Int {
+        return getPlayerProfileData().playerAge
     }
-    override fun getPlayerProfileData(): List<PlayerProfileData> {
-        return listOf(
-            PlayerProfileData("renata1234", "Renata Castanheira", 19),
-            PlayerProfileData("diogoDaMota", "Diogo Arnauth", 20),
-            PlayerProfileData("alpaca", "Humberto Carvalho", 21)
-        )
+    override fun getPlayerProfileData(): PlayerProfileData {
+        return PlayerProfileData("renata1234", "Renata Castanheira", 19)
     }
 
 

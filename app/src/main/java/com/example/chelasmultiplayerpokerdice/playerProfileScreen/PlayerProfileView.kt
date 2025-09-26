@@ -25,7 +25,7 @@ class PlayerProfileData(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerProfileView(
-    playerData: List<PlayerProfileData>,
+    playerData: PlayerProfileData,
     goBackTitleScreenFunction: () -> Unit
 ) {
     Scaffold(
@@ -69,25 +69,25 @@ fun PlayerProfileView(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                playerData.forEach { player ->
-                    Text(
-                        text = "Username: ${player.playerUsername}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = "Nome: ${player.playerName}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = "Idade: ${player.playerAge}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Spacer(modifier = Modifier.padding(16.dp))
 
-                }
+                Text(
+                    text = "Username: ${playerData.playerUsername}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Nome: ${playerData.playerName}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Idade: ${playerData.playerAge}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.padding(16.dp))
+
+
             }
         }
     )
@@ -97,11 +97,7 @@ fun PlayerProfileView(
 @Composable
 fun PlayerProfileViewPreview() {
     PlayerProfileView(
-        playerData =
-            listOf(
-                PlayerProfileData("renata1234", "Renata Castanheira", 19),
-                PlayerProfileData("diogoDaMota", "Diogo Arnauth", 20),
-                PlayerProfileData("alpaca", "Humberto Carvalho", 21)
-            ),
+        playerData = PlayerProfileData("renata1234", "Renata Castanheira", 19),
+
         goBackTitleScreenFunction = {})
 }
