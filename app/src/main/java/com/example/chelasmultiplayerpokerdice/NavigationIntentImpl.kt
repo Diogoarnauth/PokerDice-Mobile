@@ -10,14 +10,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.example.chelasmultiplayerpokerdice.lobbyCreationScreen.LobbyCreationActivity
 import com.example.chelasmultiplayerpokerdice.lobbyCreationScreen.LobbyCreationNavigation
+import com.example.chelasmultiplayerpokerdice.lobbyScreen.LobbyScreenActivity
 import com.example.chelasmultiplayerpokerdice.lobbyScreen.LobbyScreenNavigation
+import com.example.chelasmultiplayerpokerdice.lobbyScreen.LobbyScreenView
 import com.example.chelasmultiplayerpokerdice.titleScreen.TitleScreenNavigation
 import com.example.chelasmultiplayerpokerdice.titleScreen.TitleScreenActivity
 
     @SuppressLint("RestrictedApi")
     class NavigationIntentImpl(private val context: Context) : TitleScreenNavigation, AboutNavigation, ProfileNavigation, LobbiesNavigation, LobbyScreenNavigation, LobbyCreationNavigation {
         override fun goToLobbyDetailsScreen(lobbyId: Int) {
-            TODO("Not yet implemented")
+            val intent = Intent(context, LobbyScreenActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+            context.startActivity(intent)
         }
 
         override fun goToLobbyCreationScreen() {
