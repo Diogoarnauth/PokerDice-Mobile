@@ -1,12 +1,12 @@
 package com.example.chelasmultiplayerpokerdice.lobbies
 
 //está apenas por ter, porque nao precisamos de nada implementado aqui, depois se precisarmos metemos
-interface LobbiesService {
+interface LobbiesService {//meter suspend fun
     fun getLobbies(): List<Lobby>
     fun getGamePlayUrl(): String
 }
 
-class LobbiesServiceImpl : LobbiesService {
+class LobbiesFakeServiceImpl : LobbiesService {
     override fun getLobbies(): List<Lobby> {
         return listOf(
             Lobby(0,"Poker Stars", "Renata", "jogo para aprender", 5,false, null,9,  emptyList<Player>()),

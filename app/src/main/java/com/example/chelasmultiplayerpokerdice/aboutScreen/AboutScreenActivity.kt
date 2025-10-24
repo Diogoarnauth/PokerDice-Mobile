@@ -9,24 +9,24 @@ import com.example.chelasmultiplayerpokerdice.NavigationIntentImpl
 
 class AboutScreenActivity : ComponentActivity() {
 
-    private val aboutScreenService: AboutService = AboutServiceImpl()
-    private val aboutNavigation: AboutNavigation by lazy {
-        NavigationIntentImpl(this)
+private val aboutScreenService: AboutService = AboutServiceImpl()
+private val aboutNavigation: AboutNavigation by lazy {
+    NavigationIntentImpl(this)
+}
+
+override fun onCreate(savedInstanceState: Bundle?) {
+
+     super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+        AboutScreen(
+            service = aboutScreenService,
+            navigator = aboutNavigation
+        )
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
 
-         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            AboutScreen(
-                service = aboutScreenService,
-                navigator = aboutNavigation
-            )
-        }
-
-
-    }
+}
 
 
 }
