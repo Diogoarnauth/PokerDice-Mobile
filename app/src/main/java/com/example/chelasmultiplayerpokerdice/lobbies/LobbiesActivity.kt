@@ -10,7 +10,7 @@ import com.example.chelasmultiplayerpokerdice.NavigationIntentImpl
 
 class LobbiesActivity : ComponentActivity() {
 
-    private val lobbiesScreenService: LobbiesService = LobbiesServiceImpl()
+    private val lobbiesScreenService: LobbiesService = LobbiesFakeServiceImpl()
     private val lobbiesNavigation: LobbiesNavigation by lazy {
         NavigationIntentImpl(this)
     }
