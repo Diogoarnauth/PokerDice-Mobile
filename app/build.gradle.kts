@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.ui.test.junit4)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -57,4 +58,11 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+}
+configurations.all {
+    resolutionStrategy {
+        force("androidx.test.espresso:espresso-core:3.5.1")
+        force("androidx.test:runner:1.5.2")
+        force("androidx.test:rules:1.5.0")
+    }
 }
