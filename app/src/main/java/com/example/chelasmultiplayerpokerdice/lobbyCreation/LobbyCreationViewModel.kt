@@ -39,17 +39,14 @@ class LobbyCreationViewModel(private val service: LobbyCreationService) : ViewMo
             state = LobbyCreationState.Loading
             try {
                 val newLobbyId = service.createLobby(
-                    id,
                     name,
-                    hostId,
                     description,
+                    hostId,
                     rounds,
                     minUsers,
                     maxUsers,
                     minCreditToParticipate,
-                    playersCount,
-                    players
-                )
+                    )
                 state = LobbyCreationState.Success(newLobbyId)
             } catch (e: Throwable) {
                 state = LobbyCreationState.Error("Erro ao criar lobby: ${e.message}")

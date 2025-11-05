@@ -10,7 +10,7 @@ fun LobbyScreen(viewModel: LobbyScreenViewModel, navigator: LobbyNavigation) {
 
         is LobbyScreenState.Success -> LobbyScreenView(
             lobby = currentState.lobby,
-            onAbandon = { navigator.goToLobbiesScreen() },
+            onAbandon = { navigator.goToTitleScreen() },
             onStartGame = { navigator.goToGameScreen() }
         )
 
