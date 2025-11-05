@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 
 const val MAX_LOBBY_NAME_LENGTH = 15
@@ -26,14 +27,15 @@ fun LoadingLobbyCreationView() {
         topBar = { TopAppBar(title = { Text("Create Lobby") }) }
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InitialLobbyCreationView(
@@ -50,12 +52,25 @@ fun InitialLobbyCreationView(
         topBar = {
             TopAppBar(
                 title = { Text("Create Lobby") },
-                navigationIcon = { IconButton(onClick = goBackFunction) { Icon(Icons.Default.Edit, null) } }
+                navigationIcon = {
+                    IconButton(
+                        onClick = goBackFunction,
+                        modifier = Modifier.testTag("BackButton")
+                    )
+                    {
+                        Icon(
+                            Icons.Default.Edit,
+                            null
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -72,38 +87,50 @@ fun InitialLobbyCreationView(
                     onValueChange = { if (it.length <= MAX_LOBBY_NAME_LENGTH) lobbyName = it },
                     label = { Text("Lobby Name") },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 )
                 OutlinedTextField(
                     value = description,
                     onValueChange = { if (it.length <= MAX_DESCRIPTION_LENGTH) description = it },
                     label = { Text("Short Description") },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Players:", modifier = Modifier.weight(1f))
+                    // AQUI: Passas o modifier com o testTag
                     DropdownMenuBox(
                         value = numPlayers,
                         range = 2..6,
                         onValueChange = {
                             numPlayers = it
                             if (numRounds % it != 0 || numRounds > 60) numRounds = it
-                        }
+                        },
+                        modifier = Modifier.testTag("PlayersDropdownButton")
                     )
                 }
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Rounds:", modifier = Modifier.weight(1f))
+                    // AQUI: Passas o outro modifier com o outro testTag
                     DropdownMenuBox(
                         value = numRounds,
                         range = (numPlayers..60 step numPlayers).toList(),
-                        onValueChange = { numRounds = it }
+                        onValueChange = { numRounds = it },
+                        modifier = Modifier.testTag("RoundsDropdownButton")
                     )
                 }
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -117,7 +144,10 @@ fun InitialLobbyCreationView(
                         }
                     },
                     shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                        .testTag("CreateLobbyButton")
                 ) {
                     Text("Start Match")
                 }
@@ -126,11 +156,20 @@ fun InitialLobbyCreationView(
     }
 }
 
+// AQUI: A função agora aceita um modifier
 @Composable
-fun DropdownMenuBox(value: Int, range: Iterable<Int>, onValueChange: (Int) -> Unit) {
+fun DropdownMenuBox(
+    value: Int,
+    range: Iterable<Int>,
+    onValueChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by remember { mutableStateOf(false) }
     Box {
-        Button(onClick = { expanded = true }) { Text(value.toString()) }
+        Button(
+            onClick = { expanded = true },
+            modifier = modifier
+        ) { Text(value.toString()) }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             for (item in range) {
                 DropdownMenuItem(
@@ -158,5 +197,5 @@ fun InitialLobbyCreationViewPreview() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoadingLobbyCreationViewPreview() {
-        LoadingLobbyCreationView()
+    LoadingLobbyCreationView()
 }
