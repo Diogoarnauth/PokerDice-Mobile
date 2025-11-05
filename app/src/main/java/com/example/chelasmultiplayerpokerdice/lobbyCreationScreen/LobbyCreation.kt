@@ -1,30 +1,34 @@
 package com.example.chelasmultiplayerpokerdice.lobbyCreationScreen
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
-fun LobbyCreation(service: LobbyCreationService, navigator: LobbyCreationNavigation) {
-    val coroutineScope = rememberCoroutineScope()
-    InitialLobbyCreationView(
-        onCreateLobby = { lobbyName: String, description: String, maxPlayers: Int, rounds: Int ->
-            coroutineScope.launch {
-                val newLobbyId = service.createLobby(
-                    id = 0,
-                    name = lobbyName,
-                    owner = "ownerName", // Replace with actual owner
-                    description = description,
-                    rounds = rounds,
-                    isPrivate = false,
-                    password = null,
-                    playersCount = 1,
-                    maxPlayers = maxPlayers,
-                    players = emptyList()
-                )
-                navigator.goToLobbyDetailsScreen(1) // Replace with newLobbyId when backend is ready
-            }
-        },
-        goBackFunction = { navigator.goToLobbiesScreen() }
-    )
+fun LobbyCreation(viewModel: LobbyCreationViewModel, navigator: LobbyCreationNavigation) {
+    when (val currentState = viewModel.state) {
+        is LobbyCreationState.Idle -> {
+            InitialLobbyCreationView(
+                goBackFunction = { navigator.goToLobbiesScreen() },
+                onCreateLobby = { name, description, maxPlayers, rounds ->
+                    viewModel.createLobby(
+                        id = 0,
+                        name = name,
+                        owner = "Owner",
+                        description = description,
+                        rounds = rounds,
+                        isPrivate = false,
+                        password = null,
+                        playersCount = 1,
+                        maxPlayers = maxPlayers,
+                        players = emptyList()
+                    )
+                }
+            )
+        }
+
+        is LobbyCreationState.Loading -> LoadingLobbyCreationView()
+
+        is LobbyCreationState.Success -> navigator.goToLobbyDetailsScreen(currentState.newLobbyId)
+
+        is LobbyCreationState.Error -> androidx.compose.material3.Text(text = currentState.message)
+    }
 }

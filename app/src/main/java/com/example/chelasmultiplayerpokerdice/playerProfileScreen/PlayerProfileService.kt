@@ -1,6 +1,6 @@
 package com.example.chelasmultiplayerpokerdice.playerProfileScreen
 
-interface ProfileService {
+/*interface ProfileService {
 
     fun getPlayerProfileData(): PlayerProfileData
     fun getPlayerName(): String
@@ -29,4 +29,26 @@ class ProfileServiceImpl : ProfileService {
     }
 
 
+}*/
+import kotlinx.coroutines.delay
+
+// ---------- Interface ----------
+interface PlayerProfileService {
+    suspend fun getPlayerProfileData(username: String): PlayerProfileData
+}
+
+// ---------- Fake Implementation ----------
+class ProfileFakeServiceImpl : PlayerProfileService {
+
+    override suspend fun getPlayerProfileData(username: String): PlayerProfileData {
+        delay(1000) // Simula tempo de rede
+
+        // Devolve perfis diferentes conforme o username
+        return when (username.lowercase()) {
+            "renata1234" -> PlayerProfileData("renata1999234", "Renata Castanheira", 19)
+            "diogo99" -> PlayerProfileData("diogo99", "Diogo Arnauth", 22)
+            "humberto" -> PlayerProfileData("humberto", "Humberto Carvalho", 25)
+            else -> PlayerProfileData(username, "Jogador Desconhecido", 0)
+        }
+    }
 }

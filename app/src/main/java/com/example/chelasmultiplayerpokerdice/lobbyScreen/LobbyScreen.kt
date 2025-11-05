@@ -1,12 +1,19 @@
 package com.example.chelasmultiplayerpokerdice.lobbyScreen
-import androidx.compose.runtime.Composable
 
+import androidx.compose.runtime.Composable
+import androidx.compose.material3.Text
 
 @Composable
-fun LobbyScreen(service: LobbyScreenService, navigator: LobbyScreenNavigation) {
-    LobbyScreenView(
-        lobby= service.getLobby(),
-        onAbandon= {navigator.goToLobbiesScreen()} ,
-        onStartGame= {navigator.goToGameScreen()}
-    )
+fun LobbyScreen(viewModel: LobbyScreenViewModel, navigator: LobbyScreenNavigation) {
+    when (val currentState = viewModel.state) {
+        is LobbyScreenState.Loading -> Text("A carregar informações do lobby...")
+
+        is LobbyScreenState.Success -> LobbyScreenView(
+            lobby = currentState.lobby,
+            onAbandon = { navigator.goToLobbiesScreen() },
+            onStartGame = { navigator.goToGameScreen() }
+        )
+
+        is LobbyScreenState.Error -> Text("Erro: ${currentState.message}")
+    }
 }

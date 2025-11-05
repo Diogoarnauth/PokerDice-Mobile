@@ -1,13 +1,16 @@
 package com.example.chelasmultiplayerpokerdice.lobbyScreen
 
-interface LobbyScreenService {
-    fun getLobby(): Lobby
+import kotlinx.coroutines.delay
 
+interface LobbyScreenService {
+    suspend fun getLobby(): Lobby
 }
 
-class LobbyScreenServiceImpl : LobbyScreenService {
+class LobbyScreenFakeServiceImpl : LobbyScreenService {
 
-    override fun getLobby(): Lobby {
+    override suspend fun getLobby(): Lobby {
+        delay(1000) // Simula atraso de rede
+
         return Lobby(
             id = 1,
             name = "Poker Masters",
@@ -24,12 +27,5 @@ class LobbyScreenServiceImpl : LobbyScreenService {
                 Player(3, "Humberto")
             )
         )
-
     }
-
-
-
-
-
-
 }
