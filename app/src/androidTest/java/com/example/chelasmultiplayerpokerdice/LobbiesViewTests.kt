@@ -6,8 +6,7 @@ import com.example.chelasmultiplayerpokerdice.lobbies.LOBBIES_BACK_TITLESCREEN
 import com.example.chelasmultiplayerpokerdice.lobbies.LOBBIES_CREATE_BUTTON
 import com.example.chelasmultiplayerpokerdice.lobbies.LOBBY_CARD_TAG
 import com.example.chelasmultiplayerpokerdice.lobbies.LobbiesView
-import com.example.chelasmultiplayerpokerdice.lobbies.Lobby
-import com.example.chelasmultiplayerpokerdice.lobbies.Player
+import com.example.chelasmultiplayerpokerdice.domain.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.Assert.assertTrue
@@ -20,20 +19,42 @@ class LobbiesViewTest {
 
     private val sampleLobbies = listOf(
         Lobby(
-            0,
-            "Poker Stars",
-            "Renata",
-            "jogo para aprender",
-            5,
-            false,
-            null,
-            9,
-            emptyList<Player>()
+            id = 0,
+            name = "Poker Stars",
+            description = "Renata a jogar",
+            hostId = 1,
+            minUsers = 2,
+            maxUsers = 10,
+            rounds = 5,
+            minCreditToParticipate = 0,
+            playersCount = 9,
+            players = emptyList()
         ),
-        Lobby(1,"Lucky Dice", "Diogo", "jogo para intermedios", 6,true, "passSecreta",4, emptyList<Player>()),
-        Lobby(2,"Chelas Crew", "Humberto", "jogo para pros",7, false, null,1, emptyList<Player>())
+        Lobby(
+            id = 1,
+            name = "Lucky Dice",
+            description = "jogo para intermedios",
+            hostId = 2,
+            minUsers = 2,
+            maxUsers = 10,
+            rounds = 6,
+            minCreditToParticipate = 0,
+            playersCount = 4,
+            players = emptyList()
+        ),
+        Lobby(
+            id = 2,
+            name = "Chelas Crew",
+            description = "jogo para pros",
+            hostId = 3,
+            minUsers = 2,
+            maxUsers = 10,
+            rounds = 7,
+            minCreditToParticipate = 0,
+            playersCount = 1,
+            players = emptyList()
+        )
     )
-
     // --- TESTE 1 ---
     @Test
     fun showsListOfLobbiesCorrectly() {

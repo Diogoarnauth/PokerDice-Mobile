@@ -6,13 +6,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.example.chelasmultiplayerpokerdice.lobbyScreen.LOBBYSCREEN_ABANDON_BUTTON
-import com.example.chelasmultiplayerpokerdice.lobbyScreen.LOBBYSCREEN_LOBBY_INFO
-import com.example.chelasmultiplayerpokerdice.lobbyScreen.LOBBYSCREEN_PLAYERS_LIST
-import com.example.chelasmultiplayerpokerdice.lobbyScreen.LOBBYSCREEN_STARTGAME_BUTTON
-import com.example.chelasmultiplayerpokerdice.lobbyScreen.Lobby
-import com.example.chelasmultiplayerpokerdice.lobbyScreen.LobbyScreenView
-import com.example.chelasmultiplayerpokerdice.lobbyScreen.Player
+import com.example.chelasmultiplayerpokerdice.lobby.LOBBYSCREEN_ABANDON_BUTTON
+import com.example.chelasmultiplayerpokerdice.lobby.LOBBYSCREEN_LOBBY_INFO
+import com.example.chelasmultiplayerpokerdice.lobby.LOBBYSCREEN_PLAYERS_LIST
+import com.example.chelasmultiplayerpokerdice.lobby.LOBBYSCREEN_STARTGAME_BUTTON
+import com.example.chelasmultiplayerpokerdice.domain.*
+import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreenView
 import org.junit.Rule
 import org.junit.Test
 
@@ -24,13 +23,13 @@ class LobbyScreenTest {
     private val fakeLobby = Lobby(
         id = 1,
         name = "Poker Masters",
-        owner = "Renata",
         description = "Lobby para testar a sorte 🎲",
+        hostId = 1,
+        minUsers = 2,
+        maxUsers = 4,
         rounds = 12,
-        isPrivate = false,
-        password = null,
+        minCreditToParticipate = 0,
         playersCount = 3,
-        maxPlayers = 4,
         players = listOf(
             Player(1, "Renata"),
             Player(2, "Diogo"),
@@ -57,7 +56,6 @@ class LobbyScreenTest {
         composeTestRule.onNodeWithText("👑 Dono: Renata").assertIsDisplayed()
         composeTestRule.onNodeWithText("Jogadores: 3/4").assertIsDisplayed()
         composeTestRule.onNodeWithText("Número de rondas: 12").assertIsDisplayed()
-        composeTestRule.onNodeWithText("🌍 Público").assertIsDisplayed()
     }
 
     @Test

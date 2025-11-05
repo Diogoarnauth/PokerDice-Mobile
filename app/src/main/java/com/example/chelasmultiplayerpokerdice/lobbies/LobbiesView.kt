@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.chelasmultiplayerpokerdice.domain.*
 
 // ---------- Constantes de Testes ----------
 const val LOBBIES_VIEW_TAG = "Lobbies View"
@@ -24,19 +25,6 @@ const val LOBBIES_CREATE_BUTTON = "Create Lobby Button"
 const val LOBBY_CARD_TAG = "Lobby Card"
 
 // ---------- Modelo ----------
-
-data class Player(val id: Int, val name: String)
-data class Lobby(
-    val id:Int,
-    val name: String,
-    val owner: String,
-    val description : String,
-    val rounds: Int,
-    val isPrivate: Boolean,
-    val password: String?,
-    val maxPlayers: Int,
-    val players: List<Player>
-)
 
 
 // ---------- UI ----------
@@ -122,15 +110,12 @@ fun LobbiesView(
                                     color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    text = "👑 Dono: ${lobby.owner}",
+                                    text = "👑 Dono: ${lobby.hostId}",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
+
                                 Text(
-                                    text = if (lobby.isPrivate) "🔒 Privado" else "🌍 Público",
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                                Text(
-                                    text = "Jogadores: ${lobby.players.size} / ${lobby.maxPlayers}",
+                                    text = "Jogadores: ${lobby.players.size} / ${lobby.maxUsers}",
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
@@ -147,9 +132,42 @@ fun LobbiesView(
 @Composable
 fun LobbiesViewPreview() {
     val sampleLobbies = listOf(
-        Lobby(0,"Poker Stars", "Renata", "jogo para aprender", 5,false, null,9,  emptyList<Player>()),
-        Lobby(1,"Lucky Dice", "Diogo", "jogo para intermedios", 6,true, "passSecreta",4, emptyList<Player>()),
-        Lobby(2,"Chelas Crew", "Humberto", "jogo para pros",7, false, null,1,  emptyList<Player>()),
+        Lobby(
+            id = 0,
+            name = "Poker Stars",
+            description = "jogo para aprender",
+            hostId = 1,
+            minUsers = 2,
+            maxUsers = 10,
+            rounds = 5,
+            minCreditToParticipate = 0,
+            playersCount = 9,
+            players = emptyList()
+        ),
+        Lobby(
+            id = 1,
+            name = "Lucky Dice",
+            description = "jogo para intermedios",
+            hostId = 2,
+            minUsers = 2,
+            maxUsers = 10,
+            rounds = 6,
+            minCreditToParticipate = 0,
+            playersCount = 4,
+            players = emptyList()
+        ),
+        Lobby(
+            id = 2,
+            name = "Chelas Crew",
+            description = "jogo para pros",
+            hostId = 3,
+            minUsers = 2,
+            maxUsers = 10,
+            rounds = 7,
+            minCreditToParticipate = 0,
+            playersCount = 1,
+            players = emptyList()
+        )
     )
 
     LobbiesView(

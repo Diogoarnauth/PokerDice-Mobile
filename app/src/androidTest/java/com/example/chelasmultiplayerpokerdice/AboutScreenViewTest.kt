@@ -3,11 +3,11 @@ package com.example.chelasmultiplayerpokerdice
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import com.example.chelasmultiplayerpokerdice.aboutScreen.ABOUTSCREEN_EMAIL_BUTTON
-import com.example.chelasmultiplayerpokerdice.aboutScreen.ABOUTSCREEN_WEB_LINK
-import com.example.chelasmultiplayerpokerdice.aboutScreen.AboutScreenView
-import com.example.chelasmultiplayerpokerdice.aboutScreen.Author
-import com.example.chelasmultiplayerpokerdice.aboutScreen.TITLESCREEN_BUTTON
+import com.example.chelasmultiplayerpokerdice.about.ABOUTSCREEN_EMAIL_BUTTON
+import com.example.chelasmultiplayerpokerdice.about.ABOUTSCREEN_WEB_LINK
+import com.example.chelasmultiplayerpokerdice.about.AboutScreenView
+import com.example.chelasmultiplayerpokerdice.about.Author
+import com.example.chelasmultiplayerpokerdice.about.TITLESCREEN_BUTTON
 import org.junit.Rule
 import org.junit.Test
 import org.junit.Assert.assertTrue

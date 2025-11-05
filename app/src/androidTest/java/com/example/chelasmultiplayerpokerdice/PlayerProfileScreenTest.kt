@@ -5,10 +5,10 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.example.chelasmultiplayerpokerdice.playerProfileScreen.PLAYERPROFILE_BACK_TITLESCREEN
-import com.example.chelasmultiplayerpokerdice.playerProfileScreen.PLAYERPROFILE_VIEW_TAG
-import com.example.chelasmultiplayerpokerdice.playerProfileScreen.PlayerProfileData
-import com.example.chelasmultiplayerpokerdice.playerProfileScreen.PlayerProfileView
+import com.example.chelasmultiplayerpokerdice.playerProfile.PLAYERPROFILE_BACK_TITLESCREEN
+import com.example.chelasmultiplayerpokerdice.playerProfile.PLAYERPROFILE_VIEW_TAG
+import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileData
+import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileView
 import org.junit.Rule
 import org.junit.Test
 

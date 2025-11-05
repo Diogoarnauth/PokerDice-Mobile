@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chelasmultiplayerpokerdice.domain.Lobby
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

@@ -7,7 +7,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.example.chelasmultiplayerpokerdice.lobbyCreationScreen.InitialLobbyCreationView
+import com.example.chelasmultiplayerpokerdice.lobbyCreation.InitialLobbyCreationView
 import org.junit.Rule
 import org.junit.Test
 
