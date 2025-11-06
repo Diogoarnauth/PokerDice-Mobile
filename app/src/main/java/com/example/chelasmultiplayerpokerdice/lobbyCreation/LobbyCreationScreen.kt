@@ -9,18 +9,13 @@ fun LobbyCreation(viewModel: LobbyCreationViewModel, navigator: LobbyCreationNav
         is LobbyCreationState.Idle -> {
             InitialLobbyCreationView(
                 goBackFunction = { navigator.goToLobbiesScreen() },
+                // Chama a nova função simplificada
                 onCreateLobby = { name, description, maxPlayers, rounds ->
                     viewModel.createLobby(
-                        id = 0,
                         name = name,
-                        hostId = 0, // placeholder host id — set appropriately from user/session
                         description = description,
-                        rounds = rounds,
-                        minUsers = 2,
-                        maxUsers = maxPlayers,
-                        minCreditToParticipate = 0,
-                        playersCount = 1,
-                        players = emptyList<Player>()
+                        maxUsers = maxPlayers, // Passa só o que a View sabe
+                        rounds = rounds
                     )
                 }
             )

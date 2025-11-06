@@ -9,39 +9,31 @@ import androidx.lifecycle.viewModelScope
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
-// ----------- ESTADO DA UI -----------
 interface LobbiesScreenState {
     data object Loading : LobbiesScreenState
     data class Success(val lobbies: List<Lobby>) : LobbiesScreenState
     data class Error(val error: Throwable) : LobbiesScreenState
 }
 
-// ----------- VIEWMODEL -----------
 class LobbiesViewModel(private val service: LobbiesService) : ViewModel() {
 
-    var state by mutableStateOf<LobbiesScreenState>(LobbiesScreenState.Loading)
-        private set
+    val state: StateFlow<LobbiesScreenState> = service.getLobbies()
+        .map { lobbies -> LobbiesScreenState.Success(lobbies) as LobbiesScreenState }
+        .catch { error -> emit(LobbiesScreenState.Error(error)) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = LobbiesScreenState.Loading
+        )
 
-    init {
-        loadLobbies()
-    }
-
-    fun loadLobbies() {
-        viewModelScope.launch {
-            try {
-                // Simular atraso de rede
-                delay(500)
-                val lobbies = service.getLobbies()
-                state = LobbiesScreenState.Success(lobbies)
-            } catch (e: Throwable) {
-                state = LobbiesScreenState.Error(e)
-            }
-        }
-    }
 }
 
-// ----------- FACTORY PARA CRIAR O VIEWMODEL -----------
 @Suppress("UNCHECKED_CAST")
 class LobbiesViewModelFactory(private val service: LobbiesService) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -15,6 +15,9 @@ import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreenView
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreenViewModel
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreenViewModelFactory
 
+
+const val LOBBY_ID_EXTRA = "LOBBY_ID"
+
 class LobbyActivity : ComponentActivity() {
 
     private val app by lazy { application as DependenciesContainer }
@@ -25,11 +28,16 @@ class LobbyActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val lobbyId = intent.getIntExtra(LOBBY_ID_EXTRA, -1)
+        if (lobbyId == -1) {
+            // ID inválido, não devíamos estar aqui. Volta.
+            finish()
+            return
+        }
         enableEdgeToEdge()
         setContent {
             val viewModel: LobbyScreenViewModel =
-                viewModel(factory = LobbyScreenViewModelFactory(app.lobbyService))
-
+                viewModel(factory = LobbyScreenViewModelFactory(app.lobbyService, lobbyId))
             LobbyScreen(
                 viewModel = viewModel,
                 navigator = lobbyNavigation

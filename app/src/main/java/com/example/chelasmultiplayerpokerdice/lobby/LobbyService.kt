@@ -2,31 +2,28 @@ package com.example.chelasmultiplayerpokerdice.lobby
 
 import com.example.chelasmultiplayerpokerdice.domain.*
 import kotlinx.coroutines.delay
+import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 
 interface LobbyService {
-    suspend fun getLobby(): Lobby
+    fun getLobby(lobbyId: Int): Flow<Lobby>
+    fun abandonLobby(lobbyId: Int)
+
 }
 
 class LobbyFakeServiceImpl : LobbyService {
 
-    override suspend fun getLobby(): Lobby {
-        delay(1000) // Simula atraso de rede
+    private val db = FakeDatabase
 
-        return Lobby(
-            id = 1,
-            name = "Poker Masters",
-            description = "Lobby para testar a sorte 🎲",
-            hostId = 1,
-            minUsers = 2,
-            maxUsers = 4,
-            rounds = 12,
-            minCreditToParticipate = 0,
-            playersCount = 3,
-            players = listOf(
-                Player(1, "Renata"),
-                Player(2, "Diogo"),
-                Player(3, "Humberto")
-            )
-        )
+    override fun getLobby(lobbyId: Int): Flow<Lobby> {
+        return db.lobbies.map { listaDeLobbies ->
+            listaDeLobbies.find { it.id == lobbyId }
+        }
+            .filterNotNull()
     }
+
+    override fun abandonLobby(lobbyId: Int) = db.abandonLobby(lobbyId)
+
 }

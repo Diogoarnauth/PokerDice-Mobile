@@ -1,49 +1,51 @@
 package com.example.chelasmultiplayerpokerdice.lobby
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-// ----------- ESTADOS DA UI -----------
+
 interface LobbyScreenState {
     data object Loading : LobbyScreenState
     data class Success(val lobby: Lobby) : LobbyScreenState
     data class Error(val message: String) : LobbyScreenState
 }
 
-// ----------- VIEWMODEL -----------
-class LobbyScreenViewModel(private val service: LobbyService) : ViewModel() {
+class LobbyScreenViewModel(val service: LobbyService,val  lobbyId: Int) : ViewModel() {
+    var state: StateFlow<LobbyScreenState> = service.getLobby(lobbyId)
+        .map { lobby -> LobbyScreenState.Success(lobby) as LobbyScreenState }
+        .catch { error -> emit(LobbyScreenState.Error("Erro ao carregar lobby: ${error.message}")) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = LobbyScreenState.Loading
+        )
 
-    var state by mutableStateOf<LobbyScreenState>(LobbyScreenState.Loading)
-        private set
-
-    init {
-        loadLobby()
-    }
-
-    fun loadLobby() {
+    fun onAbandon() {
         viewModelScope.launch {
-            state = LobbyScreenState.Loading
             try {
-                val lobby = service.getLobby()
-                state = LobbyScreenState.Success(lobby)
+                service.abandonLobby(lobbyId)
+                // TODO("FALTA APAGAR O LOBBY CASO ELE SEJA O ULTIMO JOGADOR")
             } catch (e: Throwable) {
-                state = LobbyScreenState.Error("Erro ao carregar lobby: ${e.message}")
+                TODO("IMPLEMENTAR ERROR HANDLING AQUI")
             }
         }
     }
 }
 
+
 // ----------- FACTORY -----------
 @Suppress("UNCHECKED_CAST")
-class LobbyScreenViewModelFactory(private val service: LobbyService) :
+class LobbyScreenViewModelFactory(private val service: LobbyService, private val lobbyId: Int) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LobbyScreenViewModel(service) as T
+        return LobbyScreenViewModel(service, lobbyId) as T
     }
 }

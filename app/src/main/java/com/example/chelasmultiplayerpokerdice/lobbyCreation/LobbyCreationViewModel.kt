@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chelasmultiplayerpokerdice.domain.Player
 import kotlinx.coroutines.launch
+import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
 
-// ---------- ESTADOS ----------
 interface LobbyCreationState {
     data object Idle : LobbyCreationState
     data object Loading : LobbyCreationState
@@ -17,45 +17,44 @@ interface LobbyCreationState {
     data class Error(val message: String) : LobbyCreationState
 }
 
-// ---------- VIEWMODEL ----------
 class LobbyCreationViewModel(private val service: LobbyCreationService) : ViewModel() {
 
     var state by mutableStateOf<LobbyCreationState>(LobbyCreationState.Idle)
         private set
 
     fun createLobby(
-        id: Int,
         name: String,
-        hostId: Int,
         description: String,
-        rounds: Int,
-        minUsers: Int,
         maxUsers: Int,
-        minCreditToParticipate: Int,
-        playersCount: Int,
-        players: List<Player>
+        rounds: Int
     ) {
         viewModelScope.launch {
             state = LobbyCreationState.Loading
             try {
+                // Preenche os dados em falta
+                val hostId = FakeDatabase.myUser.id // Pega o ID do "host" logado
+                val minUsers = 2 // Requisito do enunciado [cite: 91]
+                val minCredit = 1 // Requisito do enunciado (ante) [cite: 14]
+
                 val newLobbyId = service.createLobby(
-                    name,
-                    description,
-                    hostId,
-                    rounds,
-                    minUsers,
-                    maxUsers,
-                    minCreditToParticipate,
-                    )
+                    name = name,
+                    description = description,
+                    hostId = hostId,
+                    minUsers = minUsers,
+                    maxUsers = maxUsers,
+                    rounds = rounds,
+                    minCreditToParticipate = minCredit
+                )
                 state = LobbyCreationState.Success(newLobbyId)
             } catch (e: Throwable) {
                 state = LobbyCreationState.Error("Erro ao criar lobby: ${e.message}")
             }
         }
+
     }
 }
 
-// ---------- FACTORY ----------
+
 @Suppress("UNCHECKED_CAST")
 class LobbyCreationViewModelFactory(private val service: LobbyCreationService) :
     ViewModelProvider.Factory {

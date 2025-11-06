@@ -1,6 +1,7 @@
 package com.example.chelasmultiplayerpokerdice.lobbyCreation
 
 import kotlinx.coroutines.delay
+import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
 
 interface LobbyCreationService {
     suspend fun createLobby(
@@ -16,6 +17,8 @@ interface LobbyCreationService {
 
 class LobbyCreationFakeServiceImpl() : LobbyCreationService {
 
+    private val db = FakeDatabase
+
     override suspend fun createLobby(
         name: String,
         description: String,
@@ -27,10 +30,14 @@ class LobbyCreationFakeServiceImpl() : LobbyCreationService {
     ): Int {
         delay(1000)
 
+        val newLobby = db.createLobby(
+            name, description, hostId, minUsers, maxUsers, rounds, minCreditToParticipate
+        )
+
         println("FAKE SERVICE: Lobby '$name' criado com sucesso!")
         println("Descrição: $description | Jogadores min: $minUsers | Rounds: $rounds")
 
         // devolve um ID aleatório só para simular criação
-        return (1..9999).random()
+        return newLobby.id
     }
 }
