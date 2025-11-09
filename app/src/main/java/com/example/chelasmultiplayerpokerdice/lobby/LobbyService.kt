@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 interface LobbyService {
     fun getLobby(lobbyId: Int): Flow<Lobby>
     fun abandonLobby(lobbyId: Int, token: String?)
+     fun joinLobby(lobbyId: Int, token: String?)
 
 }
 
@@ -33,6 +34,14 @@ class LobbyFakeServiceImpl : LobbyService {
             db.abandonLobby(lobbyId, userId)
         } else {
             TODO()
+        }
+    }
+
+    override fun joinLobby(lobbyId: Int, token: String?) {
+        val userToken = tokens.find { it.tokenValidation == token }
+        if (userToken != null) {
+            val userId = userToken.userId
+            db.joinLobby(lobbyId, userId)
         }
     }
 }

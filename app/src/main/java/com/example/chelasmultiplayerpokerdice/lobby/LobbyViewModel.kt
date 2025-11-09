@@ -28,17 +28,24 @@ class LobbyScreenViewModel(
     val state: StateFlow<LobbyScreenState> = _state.asStateFlow()
 
 
-    fun loadLobby(lobbyId: Int) {
-        if (_state.value !is LobbyScreenState.Loading) return
+    fun loadLobby(lobbyId: Int, token: String?) {
+        if (_state.value is LobbyScreenState.Success) return
 
         viewModelScope.launch {
-            service.getLobby(lobbyId)
-                .catch { error ->
-                    _state.value = LobbyScreenState.Error("Erro ao carregar lobby: ${error.message}")
-                }
-                .collect { lobby ->
-                    _state.value = LobbyScreenState.Success(lobby)
-                }
+            try {
+                service.joinLobby(lobbyId, token)
+
+                service.getLobby(lobbyId)
+                    .catch { error ->
+                        _state.value = LobbyScreenState.Error("Erro: ${error.message}")
+                    }
+                    .collect { lobby ->
+                        _state.value = LobbyScreenState.Success(lobby)
+                    }
+
+            } catch (e: Throwable) {
+                _state.value = LobbyScreenState.Error("Erro ao entrar no lobby: ${e.message}")
+            }
         }
     }
 

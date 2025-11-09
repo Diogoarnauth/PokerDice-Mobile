@@ -31,6 +31,16 @@ object FakeDatabase {
             credit = 100,
             winCounter = 0,
             lobbyId = 1
+        ),
+        User(
+            id = 3,
+            username = "beto",
+            passwordValidation = "1234",
+            name = "Humberto Carvalho",
+            age = 21,
+            credit = 100,
+            winCounter = 0,
+            lobbyId = null
         )
     )
     var nextUserId = 3
@@ -116,6 +126,33 @@ object FakeDatabase {
         )
         users.add(newUser)
         return login(username, password)
+    }
+
+    fun joinLobby(lobbyId: Int, userId: Int) {
+        val userToJoin = users.find { it.id == userId } ?: return
+
+        _lobbies.update { currentList ->
+            currentList.map { lobby ->
+                if (lobby.id == lobbyId) {
+
+                    if (lobby.users.size >= lobby.maxUsers) {
+                        lobby
+                    }
+                    else if (lobby.users.any { it.id == userId }) {
+                        lobby
+                    }
+                    else {
+                        val updatedPlayers = lobby.users + userToJoin
+                        lobby.copy(
+                            users = updatedPlayers,
+                            playersCount = updatedPlayers.size
+                        )
+                    }
+                } else {
+                    lobby
+                }
+            }
+        }
     }
 
     fun abandonLobby(lobbyId: Int, userId: Int) {

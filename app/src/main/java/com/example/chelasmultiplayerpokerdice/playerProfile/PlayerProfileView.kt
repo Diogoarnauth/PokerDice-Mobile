@@ -12,20 +12,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.chelasmultiplayerpokerdice.domain.User
 
 const val PLAYERPROFILE_BACK_TITLESCREEN = "User Profile back to title screen"
 const val PLAYERPROFILE_VIEW_TAG = "User Profile View"
 
-class PlayerProfileData(
-    val playerUsername: String,
-    val playerName: String,
-    val playerAge: Int
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerProfileView(
-    playerData: PlayerProfileData,
+    playerData: User,
     goBackTitleScreenFunction: () -> Unit
 ) {
     Scaffold(
@@ -69,25 +64,32 @@ fun PlayerProfileView(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-
                 Text(
-                    text = "Username: ${playerData.playerUsername}",
+                    text = "Username: ${playerData.username}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "Nome: ${playerData.playerName}",
+                    text = "Nome: ${playerData.name}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "Idade: ${playerData.playerAge}",
+                    text = "Idade: ${playerData.age}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Crédito: ${playerData.credit} moedas",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Vitórias: ${playerData.winCounter}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.padding(16.dp))
-
-
             }
         }
     )
@@ -97,7 +99,15 @@ fun PlayerProfileView(
 @Composable
 fun PlayerProfileViewPreview() {
     PlayerProfileView(
-        playerData = PlayerProfileData("renata1234", "Renata Castanheira", 19),
-
+        playerData = User(
+            id = 1,
+            username = "renata1234",
+            name = "Renata Castanheira",
+            age = 19,
+            credit = 100,
+            winCounter = 5,
+            lobbyId = null,
+            passwordValidation = ""
+        ),
         goBackTitleScreenFunction = {})
 }

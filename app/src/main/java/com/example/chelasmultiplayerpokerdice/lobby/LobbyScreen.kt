@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
+import com.example.chelasmultiplayerpokerdice.ui.theme.common.LoadingView
 
 @Composable
 fun LobbyScreen(
@@ -15,16 +16,14 @@ fun LobbyScreen(
     lobbyId: Int
 ) {
 
-    LaunchedEffect(lobbyId) {
-        viewModel.loadLobby(lobbyId)
+    LaunchedEffect(lobbyId, user.token) {
+        viewModel.loadLobby(lobbyId, user.token)
     }
 
     val currentState by viewModel.state.collectAsState()
 
-
-
     when (currentState) {
-        is LobbyScreenState.Loading -> Text("A carregar informações do lobby...")
+        is LobbyScreenState.Loading -> LoadingView("A carregar informações do lobby...")
 
         is LobbyScreenState.Success -> LobbyScreenView(
             lobby = (currentState as LobbyScreenState.Success).lobby,

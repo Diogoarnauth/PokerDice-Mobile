@@ -16,7 +16,7 @@ interface LobbiesScreenState {
     data class Error(val error: Throwable) : LobbiesScreenState
 }
 
-class LobbiesViewModel(private val service: LobbiesService) : ViewModel() {
+class LobbiesViewModel(service: LobbiesService) : ViewModel() {
 
     val state: StateFlow<LobbiesScreenState> = service.getLobbies()
         .map { lobbies -> LobbiesScreenState.Success(lobbies) as LobbiesScreenState }

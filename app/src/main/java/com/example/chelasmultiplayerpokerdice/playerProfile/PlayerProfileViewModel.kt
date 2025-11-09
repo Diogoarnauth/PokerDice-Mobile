@@ -1,35 +1,34 @@
 package com.example.chelasmultiplayerpokerdice.playerProfile
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chelasmultiplayerpokerdice.domain.User
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 interface PlayerProfileScreenState {
     data object Loading : PlayerProfileScreenState
-    data class Success(val data: PlayerProfileData) : PlayerProfileScreenState
+    data class Success(val data: User) : PlayerProfileScreenState
     data class Error(val message: String) : PlayerProfileScreenState
 }
 
 class PlayerProfileViewModel(private val service: PlayerProfileService) : ViewModel() {
 
-    var state by mutableStateOf<PlayerProfileScreenState>(PlayerProfileScreenState.Loading)
-        private set
+    private val _state = MutableStateFlow<PlayerProfileScreenState>(PlayerProfileScreenState.Loading)
+    val state: StateFlow<PlayerProfileScreenState> = _state.asStateFlow()
 
-    init {
-        loadProfile("Renata")
-    }
 
-    fun loadProfile(username: String) {
+    fun loadProfile(token: String?) {
         viewModelScope.launch {
+            _state.value = PlayerProfileScreenState.Loading
             try {
-                val data = service.getPlayerProfileData(username)
-                state = PlayerProfileScreenState.Success(data)
+                val data = service.getPlayerProfileData(token)
+                _state.value = PlayerProfileScreenState.Success(data)
             } catch (e: Throwable) {
-                state = PlayerProfileScreenState.Error("Erro ao carregar perfil: ${e.message}")
+                _state.value = PlayerProfileScreenState.Error("Erro ao carregar perfil: ${e.message}")
             }
         }
     }
