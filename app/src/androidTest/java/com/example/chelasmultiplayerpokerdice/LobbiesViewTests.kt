@@ -28,7 +28,7 @@ class LobbiesViewTest {
             rounds = 5,
             minCreditToParticipate = 0,
             playersCount = 9,
-            players = emptyList()
+            users = emptyList()
         ),
         Lobby(
             id = 1,
@@ -40,7 +40,7 @@ class LobbiesViewTest {
             rounds = 6,
             minCreditToParticipate = 0,
             playersCount = 4,
-            players = emptyList()
+            users = emptyList()
         ),
         Lobby(
             id = 2,
@@ -52,7 +52,7 @@ class LobbiesViewTest {
             rounds = 7,
             minCreditToParticipate = 0,
             playersCount = 1,
-            players = emptyList()
+            users = emptyList()
         )
     )
     // --- TESTE 1 ---

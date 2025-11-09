@@ -18,16 +18,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.chelasmultiplayerpokerdice.domain.*
 
-// ---------- Constantes de Testes ----------
 const val LOBBIES_VIEW_TAG = "Lobbies View"
 const val LOBBIES_BACK_TITLESCREEN = "Back to Title Screen"
 const val LOBBIES_CREATE_BUTTON = "Create Lobby Button"
 const val LOBBY_CARD_TAG = "Lobby Card"
 
-// ---------- Modelo ----------
 
 
-// ---------- UI ----------
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LobbiesView(
@@ -68,7 +65,6 @@ fun LobbiesView(
         },
         content = { padding ->
             if (lobbies.isEmpty()) {
-                // Caso não haja lobbies
                 Box(
                     modifier = Modifier
                         .padding(padding)
@@ -84,7 +80,6 @@ fun LobbiesView(
                     )
                 }
             } else {
-                // Lista de lobbies
                 LazyColumn(
                     modifier = Modifier
                         .padding(padding)
@@ -115,7 +110,7 @@ fun LobbiesView(
                                 )
 
                                 Text(
-                                    text = "Jogadores: ${lobby.players.size} / ${lobby.maxUsers}",
+                                    text = "Jogadores: ${lobby.users.size} / ${lobby.maxUsers}",
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
@@ -127,7 +122,6 @@ fun LobbiesView(
     )
 }
 
-// ---------- Preview ----------
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LobbiesViewPreview() {
@@ -142,7 +136,7 @@ fun LobbiesViewPreview() {
             rounds = 5,
             minCreditToParticipate = 0,
             playersCount = 9,
-            players = emptyList()
+            users = emptyList()
         ),
         Lobby(
             id = 1,
@@ -154,7 +148,7 @@ fun LobbiesViewPreview() {
             rounds = 6,
             minCreditToParticipate = 0,
             playersCount = 4,
-            players = emptyList()
+            users = emptyList()
         ),
         Lobby(
             id = 2,
@@ -166,7 +160,7 @@ fun LobbiesViewPreview() {
             rounds = 7,
             minCreditToParticipate = 0,
             playersCount = 1,
-            players = emptyList()
+            users = emptyList()
         )
     )
 

@@ -8,14 +8,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-// ---------- ESTADOS ----------
 interface PlayerProfileScreenState {
     data object Loading : PlayerProfileScreenState
     data class Success(val data: PlayerProfileData) : PlayerProfileScreenState
     data class Error(val message: String) : PlayerProfileScreenState
 }
 
-// ---------- VIEWMODEL ----------
 class PlayerProfileViewModel(private val service: PlayerProfileService) : ViewModel() {
 
     var state by mutableStateOf<PlayerProfileScreenState>(PlayerProfileScreenState.Loading)
@@ -37,7 +35,6 @@ class PlayerProfileViewModel(private val service: PlayerProfileService) : ViewMo
     }
 }
 
-// ---------- FACTORY ----------
 @Suppress("UNCHECKED_CAST")
 class PlayerProfileViewModelFactory(private val service: PlayerProfileService) :
     ViewModelProvider.Factory {

@@ -2,17 +2,18 @@ package com.example.chelasmultiplayerpokerdice.lobbyCreation
 
 import kotlinx.coroutines.delay
 import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
+import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase.tokens
 
 interface LobbyCreationService {
     suspend fun createLobby(
         name: String,
         description: String,
-        hostId: Int,
+        hostToken: String,
         minUsers: Int,
         maxUsers: Int,
         rounds: Int,
         minCreditToParticipate: Int
-    ): Int // devolve o ID
+    ): Int
 }
 
 class LobbyCreationFakeServiceImpl() : LobbyCreationService {
@@ -22,7 +23,7 @@ class LobbyCreationFakeServiceImpl() : LobbyCreationService {
     override suspend fun createLobby(
         name: String,
         description: String,
-        hostId: Int,
+        hostToken: String,
         minUsers: Int,
         maxUsers: Int,
         rounds: Int,
@@ -30,14 +31,15 @@ class LobbyCreationFakeServiceImpl() : LobbyCreationService {
     ): Int {
         delay(1000)
 
+        val hostId = tokens.find { it.tokenValidation == hostToken }?.userId
+            ?: throw IllegalArgumentException("Token inválido, não foi possível criar o lobby")
+
         val newLobby = db.createLobby(
             name, description, hostId, minUsers, maxUsers, rounds, minCreditToParticipate
         )
 
-        println("FAKE SERVICE: Lobby '$name' criado com sucesso!")
-        println("Descrição: $description | Jogadores min: $minUsers | Rounds: $rounds")
+        println("FAKE SERVICE: Lobby '$name' criado com sucesso pelo host $hostId!")
 
-        // devolve um ID aleatório só para simular criação
         return newLobby.id
     }
 }

@@ -9,12 +9,12 @@ import com.example.chelasmultiplayerpokerdice.lobby.LobbyFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyService
 import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationService
-/*
 import com.example.chelasmultiplayerpokerdice.login.LoginFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.login.LoginService
-*/
 import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileService
+import com.example.chelasmultiplayerpokerdice.signup.SignupFakeServiceImpl
+import com.example.chelasmultiplayerpokerdice.signup.SignupService
 import com.example.chelasmultiplayerpokerdice.title.TitleFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.title.TitleService
 
@@ -26,9 +26,10 @@ interface DependenciesContainer {
     val lobbiesService: LobbiesService
     val lobbyService: LobbyService
     val lobbyCreationService: LobbyCreationService
-    //val loginService: LoginService
+    val loginService: LoginService
     val playerProfileService: PlayerProfileService
     val titleService: TitleService
+    val signupService: SignupService
 }
 
 
@@ -50,11 +51,14 @@ class PokerDiceApplication : Application(), DependenciesContainer {
         LobbyCreationFakeServiceImpl()
     }
 
-    /*
-        val loginService: LoginService by lazy {
-            LoginFakeServiceImpl()
-        }
-    */
+    override val loginService: LoginService by lazy {
+        LoginFakeServiceImpl()
+    }
+
+    override val signupService: SignupService by lazy {
+        SignupFakeServiceImpl()
+    }
+
     override val playerProfileService: PlayerProfileService by lazy {
         PlayerProfileFakeServiceImpl()
     }

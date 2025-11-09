@@ -1,10 +1,12 @@
 package com.example.chelasmultiplayerpokerdice
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileNavigation
 import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileScreen
 import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileViewModel
@@ -18,6 +20,13 @@ class PlayerProfileActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val user = intent.getSerializableExtra(AUTHENTICATED_USER_EXTRA) as? AuthenticatedUser
+        if (user == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
         enableEdgeToEdge()
 
         setContent {
@@ -26,7 +35,8 @@ class PlayerProfileActivity : ComponentActivity() {
 
             PlayerProfileScreen(
                 viewModel = viewModel,
-                navigator = playerProfileNavigation
+                navigator = playerProfileNavigation,
+                user = user
             )
         }
     }

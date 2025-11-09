@@ -1,10 +1,12 @@
 package com.example.chelasmultiplayerpokerdice
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreation
 import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationNavigation
 import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationViewModel
@@ -19,6 +21,15 @@ class LobbyCreationActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val user = intent.getSerializableExtra(AUTHENTICATED_USER_EXTRA) as? AuthenticatedUser
+        if (user == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         enableEdgeToEdge()
 
         setContent {
@@ -27,7 +38,8 @@ class LobbyCreationActivity : ComponentActivity() {
 
             LobbyCreation(
                 viewModel = viewModel,
-                navigator = lobbyCreationNavigation
+                navigator = lobbyCreationNavigation,
+                user = user
             )
         }
     }

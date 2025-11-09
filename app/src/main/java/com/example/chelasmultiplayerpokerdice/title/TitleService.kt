@@ -2,7 +2,6 @@ package com.example.chelasmultiplayerpokerdice.title
 
 interface TitleService {
     fun getCreators(): List<String>
-
 }
 
 class TitleFakeServiceImpl : TitleService {

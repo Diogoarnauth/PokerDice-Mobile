@@ -12,25 +12,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
-import com.example.chelasmultiplayerpokerdice.domain.Player
 
-// ---- Test Tags ----
 const val LOBBYSCREEN_VIEW_TAG = "Lobby View"
 const val LOBBYSCREEN_LOBBY_INFO = "Lobby Information"
 const val LOBBYSCREEN_PLAYERS_LIST = "Lobby Players List"
 const val LOBBYSCREEN_ABANDON_BUTTON = "Abandon Button"
 const val LOBBYSCREEN_STARTGAME_BUTTON = "Start Game Button"
-const val TITLESCREEN_BUTTON = "Button to return to Title Screen"
 
-// ---- Data Models ----
-
-// ---- Composable ----
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LobbyScreenView(
     lobby: Lobby,
     onAbandon: () -> Unit,
-    onStartGame: () -> Unit
+    onStartGame: () -> Unit,
 ) {
     Scaffold(
         modifier = Modifier
@@ -82,14 +76,14 @@ fun LobbyScreenView(
                         .testTag(LOBBYSCREEN_PLAYERS_LIST)
                 ) {
                     Text(
-                        text = "Jogadores (${lobby.players.size}/${lobby.maxUsers}):",
+                        text = "Jogadores (${lobby.users.size}/${lobby.maxUsers}):",
                         style = MaterialTheme.typography.titleMedium
                     )
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        items(lobby.players) { player ->
+                        items(lobby.users) { player ->
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
                                 elevation = CardDefaults.cardElevation(2.dp)
@@ -131,7 +125,7 @@ fun LobbyScreenView(
                         modifier = Modifier
                             .weight(1f)
                             .testTag(LOBBYSCREEN_STARTGAME_BUTTON),
-                        enabled = lobby.players.size >= 2 // só começa se houver jogadores suficientes
+                        enabled = lobby.users.size >= 2
                     ) {
                         Text("Iniciar Jogo")
                     }
@@ -141,11 +135,10 @@ fun LobbyScreenView(
     )
 }
 
-// ---- Preview ----
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun LobbyScreenPreview() {
-    val fakeLobby = Lobby(
+   /* val fakeLobby = Lobby(
         id = 1,
         name = "Poker Masters",
         description = "Lobby para testar a sorte 🎲",
@@ -155,10 +148,10 @@ fun LobbyScreenPreview() {
         rounds = 12,
         minCreditToParticipate = 10,
         playersCount = 3,
-        players = listOf(
-            Player(1, "Renata"),
-            Player(2, "Diogo"),
-            Player(3, "Humberto")
+        users = listOf(
+            User(1, "Renata"),
+            User(2, "Diogo"),
+            User(3, "Humberto")
         )
     )
 
@@ -166,5 +159,5 @@ fun LobbyScreenPreview() {
         lobby = fakeLobby,
         onAbandon = {},
         onStartGame = {}
-    )
+    )*/
 }

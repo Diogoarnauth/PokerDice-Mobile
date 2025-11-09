@@ -13,8 +13,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-const val PLAYERPROFILE_BACK_TITLESCREEN = "Player Profile back to title screen"
-const val PLAYERPROFILE_VIEW_TAG = "Player Profile View"
+const val PLAYERPROFILE_BACK_TITLESCREEN = "User Profile back to title screen"
+const val PLAYERPROFILE_VIEW_TAG = "User Profile View"
 
 class PlayerProfileData(
     val playerUsername: String,

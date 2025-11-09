@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.chelasmultiplayerpokerdice.domain.Player
 import kotlinx.coroutines.launch
 import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
 
@@ -26,20 +25,19 @@ class LobbyCreationViewModel(private val service: LobbyCreationService) : ViewMo
         name: String,
         description: String,
         maxUsers: Int,
-        rounds: Int
+        rounds: Int,
+        hostToken: String
     ) {
         viewModelScope.launch {
             state = LobbyCreationState.Loading
             try {
-                // Preenche os dados em falta
-                val hostId = FakeDatabase.myUser.id // Pega o ID do "host" logado
-                val minUsers = 2 // Requisito do enunciado [cite: 91]
-                val minCredit = 1 // Requisito do enunciado (ante) [cite: 14]
+                val minUsers = 2
+                val minCredit = 1
 
                 val newLobbyId = service.createLobby(
                     name = name,
                     description = description,
-                    hostId = hostId,
+                    hostToken = hostToken,
                     minUsers = minUsers,
                     maxUsers = maxUsers,
                     rounds = rounds,
@@ -50,7 +48,6 @@ class LobbyCreationViewModel(private val service: LobbyCreationService) : ViewMo
                 state = LobbyCreationState.Error("Erro ao criar lobby: ${e.message}")
             }
         }
-
     }
 }
 

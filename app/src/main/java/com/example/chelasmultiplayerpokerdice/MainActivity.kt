@@ -21,26 +21,5 @@ class MainActivity : ComponentActivity() {
 
 
 
-/* Tela sobre
-        composable("about_screen") {
-            AboutScreenView(
-                members = listOf(
-                    Author("Diogo Arnauth", 51634, "dioarnauth@gmail.com"),
-                    Author("Renata Castanheira", 51830, "renataCatanheira@gmail.com"), // catanheira ou caStanheira?
-                    Author("Humberto Carvalho", 50500, "betocp@sapo.pt")
-                ),
-                gameplayUrl = "https://en.wikipedia.org/wiki/Poker_dice",
-                titleScreenFunction = {
-                    navController.navigate("title_screen") {
-                        popUpTo("title_screen") { inclusive = true }
-                    }
-                }
-            )
-        }
-
-    }
-}
-*/
-
 
 

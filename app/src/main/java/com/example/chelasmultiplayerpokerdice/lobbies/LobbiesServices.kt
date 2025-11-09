@@ -4,9 +4,7 @@ import com.example.chelasmultiplayerpokerdice.domain.*
 import kotlinx.coroutines.flow.Flow
 import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
 
-//está apenas por ter, porque nao precisamos de nada implementado aqui, depois se precisarmos metemos
 interface LobbiesService {
-    //meter suspend fun
     fun getLobbies(): Flow<List<Lobby>>
     fun getGamePlayUrl(): String
 }

@@ -107,7 +107,6 @@ fun InitialLobbyCreationView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Players:", modifier = Modifier.weight(1f))
-                    // AQUI: Passas o modifier com o testTag
                     DropdownMenuBox(
                         value = numPlayers,
                         range = 2..6,
@@ -125,7 +124,6 @@ fun InitialLobbyCreationView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Rounds:", modifier = Modifier.weight(1f))
-                    // AQUI: Passas o outro modifier com o outro testTag
                     DropdownMenuBox(
                         value = numRounds,
                         range = (numPlayers..60 step numPlayers).toList(),
@@ -156,7 +154,6 @@ fun InitialLobbyCreationView(
     }
 }
 
-// AQUI: A função agora aceita um modifier
 @Composable
 fun DropdownMenuBox(
     value: Int,

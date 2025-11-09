@@ -77,20 +77,18 @@ fun TitleScreenView(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Parte de cima: mensagem de boas-vindas
             Box(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "welcome",
+                    text = "welcome", // TODO: Mudar para "Bem-vindo, {user.username}!"
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(16.dp)
                 )
             }
 
-            // Parte de baixo: criadores
             Column(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -112,12 +110,6 @@ fun TitleScreenView(
         }
     }
 }
-
-@Composable
-fun GenericTopAppBar(title: String, actions: @Composable () -> Unit) {
-    TODO("Not yet Implemented")
-}
-
 
 
 @Preview(showBackground = true, showSystemUi = true)

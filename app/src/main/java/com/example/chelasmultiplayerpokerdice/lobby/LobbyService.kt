@@ -3,13 +3,14 @@ package com.example.chelasmultiplayerpokerdice.lobby
 import com.example.chelasmultiplayerpokerdice.domain.*
 import kotlinx.coroutines.delay
 import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
+import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase.tokens
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
 interface LobbyService {
     fun getLobby(lobbyId: Int): Flow<Lobby>
-    fun abandonLobby(lobbyId: Int)
+    fun abandonLobby(lobbyId: Int, token: String?)
 
 }
 
@@ -24,6 +25,14 @@ class LobbyFakeServiceImpl : LobbyService {
             .filterNotNull()
     }
 
-    override fun abandonLobby(lobbyId: Int) = db.abandonLobby(lobbyId)
+    override fun abandonLobby(lobbyId: Int, token: String?) {
 
+        val userToken = tokens.find { it.tokenValidation == token }
+        if (userToken != null) {
+            val userId = userToken.userId
+            db.abandonLobby(lobbyId, userId)
+        } else {
+            TODO()
+        }
+    }
 }

@@ -30,10 +30,10 @@ class LobbyScreenTest {
         rounds = 12,
         minCreditToParticipate = 0,
         playersCount = 3,
-        players = listOf(
-            Player(1, "Renata"),
-            Player(2, "Diogo"),
-            Player(3, "Humberto")
+        users = listOf(
+            User(1, "Renata"),
+            User(2, "Diogo"),
+            User(3, "Humberto")
         )
     )
 
@@ -73,7 +73,7 @@ class LobbyScreenTest {
         playersListNode.assertIsDisplayed()
 
         // Verifica cada jogador pelo texto
-        fakeLobby.players.forEach { player ->
+        fakeLobby.users.forEach { player ->
             composeTestRule.onNodeWithText(player.name).assertIsDisplayed()
             composeTestRule.onNodeWithText("ID: ${player.id}").assertIsDisplayed()
         }
@@ -115,7 +115,7 @@ class LobbyScreenTest {
 
     @Test
     fun lobbyScreen_startGameButton_disabledIfNotEnoughPlayers() {
-        val smallLobby = fakeLobby.copy(players = listOf(Player(1, "Renata")))
+        val smallLobby = fakeLobby.copy(users = listOf(User(1, "Renata")))
         composeTestRule.setContent {
             LobbyScreenView(
                 lobby = smallLobby,

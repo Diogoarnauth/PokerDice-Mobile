@@ -1,22 +1,16 @@
 package com.example.chelasmultiplayerpokerdice
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chelasmultiplayerpokerdice.lobby.LobbyFakeServiceImpl
+import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyNavigation
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreen
-import com.example.chelasmultiplayerpokerdice.lobby.LobbyService
-import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreenState
-import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreenView
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreenViewModel
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreenViewModelFactory
-
-
-const val LOBBY_ID_EXTRA = "LOBBY_ID"
 
 class LobbyActivity : ComponentActivity() {
 
@@ -28,19 +22,27 @@ class LobbyActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val user = intent.getSerializableExtra(AUTHENTICATED_USER_EXTRA) as? AuthenticatedUser
+
         val lobbyId = intent.getIntExtra(LOBBY_ID_EXTRA, -1)
-        if (lobbyId == -1) {
-            // ID inválido, não devíamos estar aqui. Volta.
+
+        if (user == null || lobbyId == -1) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
             finish()
             return
         }
+
         enableEdgeToEdge()
         setContent {
             val viewModel: LobbyScreenViewModel =
-                viewModel(factory = LobbyScreenViewModelFactory(app.lobbyService, lobbyId))
+                viewModel(factory = LobbyScreenViewModelFactory(app.lobbyService))
             LobbyScreen(
                 viewModel = viewModel,
-                navigator = lobbyNavigation
+                navigator = lobbyNavigation,
+                user = user,
+                lobbyId = lobbyId
             )
         }
     }
