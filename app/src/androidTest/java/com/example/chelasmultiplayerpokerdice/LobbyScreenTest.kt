@@ -31,9 +31,9 @@ class LobbyScreenTest {
         minCreditToParticipate = 0,
         playersCount = 3,
         users = listOf(
-            User(1, "Renata"),
-            User(2, "Diogo"),
-            User(3, "Humberto")
+            User(1, "RenataDoGrau", "PasswordFraca", "Renata", 18, 100, 0, 1),
+            User(2, "DiogoDoGrau", "PasswordFraca", "Diogo", 18, 100, 0, 1),
+            User(3, "BertoDoGrau", "PasswordFraca", "Humberto", 18, 100, 0, 1),
         )
     )
 
@@ -115,7 +115,7 @@ class LobbyScreenTest {
 
     @Test
     fun lobbyScreen_startGameButton_disabledIfNotEnoughPlayers() {
-        val smallLobby = fakeLobby.copy(users = listOf(User(1, "Renata")))
+        val smallLobby = fakeLobby.copy(users = listOf(User(1, "RenataDoGrau", "PasswordFraca", "Renata", 18, 100, 0, 1)))
         composeTestRule.setContent {
             LobbyScreenView(
                 lobby = smallLobby,
