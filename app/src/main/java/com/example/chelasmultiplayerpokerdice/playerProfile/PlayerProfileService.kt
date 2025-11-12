@@ -6,22 +6,19 @@ import androidx.compose.runtime.LaunchedEffect
 import com.example.chelasmultiplayerpokerdice.domain.User
 import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
 import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase.tokens
+import kotlinx.coroutines.delay
 
 interface PlayerProfileService {
-    fun getPlayerProfileData(token: String?): User
+   suspend fun getPlayerProfileData(token: String): User
 }
 
 class PlayerProfileFakeServiceImpl : PlayerProfileService {
 
     private val db = FakeDatabase
 
-    override fun getPlayerProfileData(token: String?): User {
+    override suspend fun getPlayerProfileData(token: String): User {
 
-
-        if (token == null) {
-            Log.d("PokerDice", "Token nulo recebido!")
-            throw IllegalStateException("Token é nulo. O utilizador não está logado.")
-        }
+        delay(500)
 
         val userToken = tokens.find { it.tokenValidation == token }
             ?: throw IllegalStateException("Token inválido ou sessão expirada")

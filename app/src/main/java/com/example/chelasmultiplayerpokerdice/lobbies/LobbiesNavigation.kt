@@ -6,6 +6,6 @@ interface LobbiesNavigation {
 
     fun goToLobbyDetailsScreen(user: AuthenticatedUser, lobbyId: Int)
     fun goToLobbyCreationScreen(user: AuthenticatedUser)
-    fun goToTitleScreen()
+    fun goToTitleScreen(user: AuthenticatedUser)
 
 }

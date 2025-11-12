@@ -22,7 +22,7 @@ fun LobbiesScreen(
         is LobbiesScreenState.Success -> {
             LobbiesView(
                 lobbies = (currentState as LobbiesScreenState.Success).lobbies,
-                goBackTitleScreenFunction = { navigator.goToTitleScreen() },
+                goBackTitleScreenFunction = { navigator.goToTitleScreen(user) },
                 createLobbyFunction = { navigator.goToLobbyCreationScreen(user) },
                 selectLobbyFunction = { lobby -> navigator.goToLobbyDetailsScreen(user, lobby.id) }
             )

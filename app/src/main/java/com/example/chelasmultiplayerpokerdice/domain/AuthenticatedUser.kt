@@ -4,5 +4,5 @@ import java.io.Serializable
 
 data class AuthenticatedUser(
     val username: String,
-    val token: String?
+    val token: String
 ): Serializable

@@ -28,7 +28,7 @@ class LobbyScreenViewModel(
     val state: StateFlow<LobbyScreenState> = _state.asStateFlow()
 
 
-    fun loadLobby(lobbyId: Int, token: String?) {
+    fun loadLobby(lobbyId: Int, token: String) {
         if (_state.value is LobbyScreenState.Success) return
 
         viewModelScope.launch {
@@ -49,7 +49,7 @@ class LobbyScreenViewModel(
         }
     }
 
-    fun onAbandon(lobbyId: Int, token: String?) {
+    fun onAbandon(lobbyId: Int, token: String) {
         viewModelScope.launch {
             try {
                 service.abandonLobby(lobbyId, token)

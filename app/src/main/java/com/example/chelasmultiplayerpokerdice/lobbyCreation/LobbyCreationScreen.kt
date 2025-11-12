@@ -7,7 +7,6 @@ import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 fun LobbyCreation(viewModel: LobbyCreationViewModel, navigator: LobbyCreationNavigation, user: AuthenticatedUser) {
     when (val currentState = viewModel.state) {
         is LobbyCreationState.Idle -> {
-            if (user.token != null)
 
             InitialLobbyCreationView(
                 goBackFunction = { navigator.goToLobbiesScreen(user) },

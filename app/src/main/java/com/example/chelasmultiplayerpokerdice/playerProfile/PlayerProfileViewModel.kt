@@ -21,7 +21,7 @@ class PlayerProfileViewModel(private val service: PlayerProfileService) : ViewMo
     val state: StateFlow<PlayerProfileScreenState> = _state.asStateFlow()
 
 
-    fun loadProfile(token: String?) {
+    fun loadProfile(token: String) {
         viewModelScope.launch {
             _state.value = PlayerProfileScreenState.Loading
             try {

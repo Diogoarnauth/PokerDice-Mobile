@@ -77,13 +77,6 @@ class NavigationIntentImpl(private val context: Context) :
         TODO("Not yet implemented")
     }
 
-    override fun goToTitleScreen() {
-        val intent = Intent(context, TitleActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
-        context.startActivity(intent)
-    }
-
     override fun goToSignupScreen() {
         val intent = Intent(context, SignupActivity::class.java)
         context.startActivity(intent)
