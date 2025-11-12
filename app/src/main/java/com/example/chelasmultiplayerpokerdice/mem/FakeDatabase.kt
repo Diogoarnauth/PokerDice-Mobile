@@ -1,6 +1,7 @@
 package com.example.chelasmultiplayerpokerdice.mem
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
 import com.example.chelasmultiplayerpokerdice.domain.User
@@ -42,8 +43,9 @@ object FakeDatabase {
             winCounter = 0,
             lobbyId = null
         )
+
     )
-    var nextUserId = 3
+    var nextUserId = users.size
 
     private val initialLobbies = listOf(
         Lobby(
@@ -60,7 +62,7 @@ object FakeDatabase {
             users = users.filter { it.lobbyId == 1 }
         )
     )
-    private var nextLobbyId = 2
+    private var nextLobbyId = 2 //TODO() numeros magicos
 
     private val _lobbies = MutableStateFlow(initialLobbies)
     val lobbies = _lobbies.asStateFlow()
@@ -78,7 +80,7 @@ object FakeDatabase {
         val hostUser = users.find { it.id == hostId }
             ?: throw IllegalArgumentException("Utilizador 'host' não encontrado")
         val newLobby = Lobby(
-            id = nextLobbyId++,
+            id = ++nextLobbyId,
             name = name,
             description = description,
             hostId = hostId,
@@ -97,11 +99,18 @@ object FakeDatabase {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun login(username: String, password: String): Token? {
+        Log.d("login estranho", "Token: $username e $password")
+
         val user = users.find { it.username == username && it.passwordValidation == password }
+        Log.d(" beto apanhei-te??", "Token: $user")
+
         if (user != null) {
             val tokenString = "token-for-${user.username}-${Clock.systemUTC().millis()}"
             val newToken =
-                Token(tokenString, Clock.systemUTC().millis(), Clock.systemUTC().millis(), user.id)
+                Token(tokenString,
+                    Clock.systemUTC().millis(),
+                    Clock.systemUTC().millis(),
+                    user.id)
             tokens.removeAll { it.userId == user.id }
             tokens.add(newToken)
             return newToken
@@ -111,11 +120,13 @@ object FakeDatabase {
 
     @RequiresApi(Build.VERSION_CODES.O) // TODO ?? TIRAR ISTo
     fun signup(username: String, password: String, name: String, age: Int): Token? {
+        println("dentro da fun do sihnUp")
         if (users.any { it.username == username }) {
             return null
         }
+
         val newUser = User(
-            id = nextUserId++,
+            id = ++nextUserId,
             username = username,
             passwordValidation = password,
             name = name,
@@ -124,7 +135,9 @@ object FakeDatabase {
             winCounter = 0,
             lobbyId = null
         )
+        println("criou user $newUser")
         users.add(newUser)
+        println("users $users")
         return login(username, password)
     }
 

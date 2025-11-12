@@ -3,6 +3,7 @@ package com.example.chelasmultiplayerpokerdice.title
 import androidx.compose.runtime.Composable
 import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 
+
 @Composable
 fun TitleScreen(viewModel: TitleViewModel, navigator: TitleNavigation, user: AuthenticatedUser) {
 

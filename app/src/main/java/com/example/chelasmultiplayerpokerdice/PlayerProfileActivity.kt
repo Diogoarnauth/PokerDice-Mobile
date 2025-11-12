@@ -20,7 +20,13 @@ class PlayerProfileActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val user = intent.getSerializableExtra(AUTHENTICATED_USER_EXTRA) as? AuthenticatedUser
+        @Suppress("DEPRECATION")
+        val user = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra(AUTHENTICATED_USER_EXTRA, AuthenticatedUser::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getSerializableExtra(AUTHENTICATED_USER_EXTRA) as? AuthenticatedUser
+        }
         if (user == null) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)

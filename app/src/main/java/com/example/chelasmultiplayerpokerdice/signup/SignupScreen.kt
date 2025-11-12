@@ -21,9 +21,11 @@ fun SignupScreen(viewModel: SignupViewModel, navigator: SignupNavigation) {
                 onGoToLogin = { navigator.goToLoginScreen() }
             )
         }
+
         is SignupScreenState.Loading -> {
             LoadingView(text = "A criar conta...")
         }
+
         is SignupScreenState.Error -> {
             ErrorAlert(
                 title = "Erro no Registo",
@@ -32,7 +34,10 @@ fun SignupScreen(viewModel: SignupViewModel, navigator: SignupNavigation) {
                 onDismiss = { viewModel.resetToIdle() }
             )
         }
+
         is SignupScreenState.Success -> {
-            navigator.goToTitleScreen((currentState as SignupScreenState.Success).user)        }
+            navigator.goToLoginScreen()
+        }
     }
+
 }

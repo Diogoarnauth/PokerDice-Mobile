@@ -111,8 +111,7 @@ fun LobbiesView(
 
                                 Text(
                                     text = "Jogadores: ${lobby.users.size} / ${lobby.maxUsers}",
-                                    style = MaterialTheme.typography.bodySmall
-                                )
+                                    style = MaterialTheme.typography.bodySmall)
                             }
                         }
                     }

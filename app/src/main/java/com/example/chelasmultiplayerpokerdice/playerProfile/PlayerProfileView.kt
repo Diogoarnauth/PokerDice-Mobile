@@ -31,7 +31,7 @@ fun PlayerProfileView(
             TopAppBar(
                 title = {
                     Text(
-                        text = "👤 Perfil do Jogador",
+                        text = "👤 Perfil do Jogador ${playerData.username}",//teste
                         style = MaterialTheme.typography.titleLarge
                     )
                 },

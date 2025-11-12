@@ -35,6 +35,7 @@ const val TITLESCREEN_MADE_BY_TEXT = "made by text on Title screen"
 @Composable
 fun TitleScreenView(
     creators: List<String>,
+
     startMatchFunction: () -> Unit,
     profileFunction: () -> Unit,
     aboutFunction: () -> Unit
