@@ -1,18 +1,31 @@
 package com.example.chelasmultiplayerpokerdice.mem
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
+import com.example.chelasmultiplayerpokerdice.domain.Game
+import com.example.chelasmultiplayerpokerdice.domain.GameStatus
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
+import com.example.chelasmultiplayerpokerdice.domain.Round
+import com.example.chelasmultiplayerpokerdice.domain.Token
+import com.example.chelasmultiplayerpokerdice.domain.Turn
 import com.example.chelasmultiplayerpokerdice.domain.User
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.time.Clock
+
+// --- Modelos de Dados da Base de Dados Fake ---
+
+/**
+ * A nossa "base de dados" fake em memória, estilo 'chimp'.
+ * É um Singleton (object) para ser partilhado por todos os serviços.
+ * Utiliza StateFlow para que as alterações sejam reativas (auto-refresh).
+ */
 object FakeDatabase {
 
     var tokens = mutableListOf<Token>()
-    val users = mutableListOf(
+
+    // --- USERS ---
+    private val initialUsers = mutableListOf(
         User(
             id = 1,
             username = "renata",
@@ -21,7 +34,7 @@ object FakeDatabase {
             age = 19,
             credit = 100,
             winCounter = 0,
-            lobbyId = 1
+            lobbyId = 1 // renata está no lobby 1
         ),
         User(
             id = 2,
@@ -31,7 +44,7 @@ object FakeDatabase {
             age = 20,
             credit = 100,
             winCounter = 0,
-            lobbyId = 1
+            lobbyId = 1 // diogo está no lobby 1
         ),
         User(
             id = 3,
@@ -41,12 +54,14 @@ object FakeDatabase {
             age = 21,
             credit = 100,
             winCounter = 0,
-            lobbyId = null
+            lobbyId = null // beto não está em nenhum lobby
         )
-
     )
-    var nextUserId = users.size
+    private val _users = MutableStateFlow(initialUsers)
+    val usersFlow: StateFlow<List<User>> = _users.asStateFlow() // Flow de Users
+    var nextUserId = 4
 
+    // --- LOBBIES ---
     private val initialLobbies = listOf(
         Lobby(
             id = 1,
@@ -57,17 +72,65 @@ object FakeDatabase {
             maxUsers = 4,
             rounds = 12,
             minCreditToParticipate = 1,
-            isRunning = false,
-            playersCount = 2,
-            users = users.filter { it.lobbyId == 1 }
+            isRunning = false
         )
     )
-    private var nextLobbyId = 2 //TODO() numeros magicos
-
     private val _lobbies = MutableStateFlow(initialLobbies)
-    val lobbies = _lobbies.asStateFlow()
+    val lobbies: StateFlow<List<Lobby>> = _lobbies.asStateFlow() // Flow de Lobbies
+    private var nextLobbyId = 2
 
+    // --- GAME ---
+    val games = mutableListOf<Game>()
+    val rounds = mutableListOf<Round>()
+    val turns = mutableListOf<Turn>()
+    var nextGameId = 1
+    var nextRoundId = 1
+    var nextTurnId = 1
 
+    // ===================================
+    // --- Funções da Base de Dados ---
+    // ===================================
+
+    fun getLobbyById(id: Int): Lobby? {
+        return _lobbies.value.find { it.id == id }
+    }
+
+    /**
+     * Simula o início do jogo.
+     */
+    fun createGame(lobby: Lobby, players: List<User>): Game {
+        val newGame = Game(
+            id = nextGameId++,
+            lobbyId = lobby.id,
+            state = GameStatus.RUNNING,
+            nrUsers = players.size,
+            roundCounter = 1
+        )
+        games.add(newGame)
+
+        val newRound = Round(
+            id = nextRoundId++,
+            gameId = newGame.id,
+            roundNumber = 1,
+            isRoundOver = false
+        )
+        rounds.add(newRound)
+
+        players.forEach { player ->
+            val newTurn = Turn(
+                id = nextTurnId++,
+                roundId = newRound.id,
+                playerId = player.id,
+                isDone = false
+            )
+            turns.add(newTurn)
+        }
+        return newGame
+    }
+
+    /**
+     * Cria um lobby e define o 'lobbyId' do anfitrião.
+     */
     fun createLobby(
         name: String,
         description: String,
@@ -77,8 +140,9 @@ object FakeDatabase {
         rounds: Int,
         minCredit: Int
     ): Lobby {
-        val hostUser = users.find { it.id == hostId }
+        val hostUser = _users.value.find { it.id == hostId }
             ?: throw IllegalArgumentException("Utilizador 'host' não encontrado")
+
         val newLobby = Lobby(
             id = ++nextLobbyId,
             name = name,
@@ -88,29 +152,35 @@ object FakeDatabase {
             maxUsers = maxUsers,
             rounds = rounds,
             minCreditToParticipate = minCredit,
-            isRunning = false,
-            playersCount = 1,
-            users = listOf(hostUser)
+            isRunning = false
         )
 
+        // Adiciona o lobby à lista de lobbies (dispara o Flow _lobbies)
         _lobbies.update { currentList -> currentList + newLobby }
+
+        // Atualiza o 'lobbyId' do user anfitrião (dispara o Flow _users)
+        _users.update { currentUsers ->
+            currentUsers.map {
+                if (it.id == hostId) it.copy(lobbyId = newLobby.id) else it
+            }.toMutableList()
+        }
+
         return newLobby
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    /**
+     * Autentica um user e devolve um token.
+     * Corrigido para usar System.currentTimeMillis().
+     */
     fun login(username: String, password: String): Token? {
-        Log.d("login estranho", "Token: $username e $password")
 
-        val user = users.find { it.username == username && it.passwordValidation == password }
-        Log.d(" beto apanhei-te??", "Token: $user")
+        val user = _users.value.find { it.username == username && it.passwordValidation == password }
 
         if (user != null) {
-            val tokenString = "token-for-${user.username}-${Clock.systemUTC().millis()}"
-            val newToken =
-                Token(tokenString,
-                    Clock.systemUTC().millis(),
-                    Clock.systemUTC().millis(),
-                    user.id)
+            val now = System.currentTimeMillis() // <-- CORRIGIDO
+            val tokenString = "token-for-${user.username}-$now"
+            val newToken = Token(tokenString, now, now, user.id)
+
             tokens.removeAll { it.userId == user.id }
             tokens.add(newToken)
             return newToken
@@ -118,11 +188,14 @@ object FakeDatabase {
         return null
     }
 
-    @RequiresApi(Build.VERSION_CODES.O) // TODO ?? TIRAR ISTo
+    /**
+     * Regista um novo user e faz login automaticamente.
+     * Corrigido para usar System.currentTimeMillis().
+     */
     fun signup(username: String, password: String, name: String, age: Int): Token? {
         println("dentro da fun do sihnUp")
-        if (users.any { it.username == username }) {
-            return null
+        if (_users.value.any { it.username == username }) {
+            return null // Username já existe
         }
 
         val newUser = User(
@@ -136,60 +209,54 @@ object FakeDatabase {
             lobbyId = null
         )
         println("criou user $newUser")
-        users.add(newUser)
-        println("users $users")
+        // Atualiza a lista de users (dispara o Flow _users)
+        _users.update { (it + newUser).toMutableList() }
+        println("users ${_users.value}")
         return login(username, password)
     }
 
+    /**
+     * Altera o 'lobbyId' do user para o fazer "entrar" num lobby.
+     */
     fun joinLobby(lobbyId: Int, userId: Int) {
-        val userToJoin = users.find { it.id == userId } ?: return
+        val lobby = _lobbies.value.find { it.id == lobbyId } ?: return
+        val playersInLobby = _users.value.count { it.lobbyId == lobbyId }
 
-        _lobbies.update { currentList ->
-            currentList.map { lobby ->
-                if (lobby.id == lobbyId) {
+        if (playersInLobby >= lobby.maxUsers) {
+            return // Lobby está cheio
+        }
 
-                    if (lobby.users.size >= lobby.maxUsers) {
-                        lobby
-                    }
-                    else if (lobby.users.any { it.id == userId }) {
-                        lobby
-                    }
-                    else {
-                        val updatedPlayers = lobby.users + userToJoin
-                        lobby.copy(
-                            users = updatedPlayers,
-                            playersCount = updatedPlayers.size
-                        )
-                    }
+        // Atualiza o user (dispara o Flow _users)
+        _users.update { currentList ->
+            currentList.map {
+                if (it.id == userId && it.lobbyId != lobbyId) {
+                    it.copy(lobbyId = lobbyId)
                 } else {
-                    lobby
+                    it
                 }
-            }
+            }.toMutableList()
         }
     }
 
+    /**
+     * Altera o 'lobbyId' do user para 'null'
+     * e apaga o lobby se for o último a sair.
+     */
     fun abandonLobby(lobbyId: Int, userId: Int) {
-        _lobbies.update { currentList ->
+        // 1. Tira o user do lobby (dispara o Flow _users)
+        _users.update { currentList ->
+            currentList.map {
+                if (it.id == userId) it.copy(lobbyId = null) else it
+            }.toMutableList()
+        }
 
-            val lobbyToUpdate = currentList.find { it.id == lobbyId }
-            if (lobbyToUpdate == null) return@update currentList
+        // 2. Vê se o lobby ficou vazio (lendo o estado ATUAL do Flow)
+        val playersLeft = _users.value.count { it.lobbyId == lobbyId }
 
-            val updatedPlayers =
-                lobbyToUpdate.users.filterNot { it.id == userId }
-
-            if (updatedPlayers.isEmpty()) {
+        if (playersLeft == 0) {
+            // 3. Apaga o lobby (dispara o Flow _lobbies)
+            _lobbies.update { currentList ->
                 currentList.filterNot { it.id == lobbyId }
-            } else {
-                currentList.map {
-                    if (it.id == lobbyId) {
-                        it.copy(
-                            users = updatedPlayers,
-                            playersCount = updatedPlayers.size
-                        )
-                    } else {
-                        it
-                    }
-                }
             }
         }
     }

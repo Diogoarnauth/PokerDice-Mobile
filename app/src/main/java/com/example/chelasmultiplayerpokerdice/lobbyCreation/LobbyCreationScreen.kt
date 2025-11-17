@@ -1,11 +1,20 @@
 package com.example.chelasmultiplayerpokerdice.lobbyCreation
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 
 @Composable
-fun LobbyCreation(viewModel: LobbyCreationViewModel, navigator: LobbyCreationNavigation, user: AuthenticatedUser) {
+fun LobbyCreation(
+    viewModel: LobbyCreationViewModel,
+    navigator: LobbyCreationNavigation,
+    user: AuthenticatedUser
+) {
+    val context = LocalContext.current
+
     when (val currentState = viewModel.state) {
+
         is LobbyCreationState.Idle -> {
 
             InitialLobbyCreationView(
@@ -24,7 +33,10 @@ fun LobbyCreation(viewModel: LobbyCreationViewModel, navigator: LobbyCreationNav
 
         is LobbyCreationState.Loading -> LoadingLobbyCreationView()
 
-        is LobbyCreationState.Success -> navigator.goToLobbyDetailsScreen(user, currentState.newLobbyId)
+        is LobbyCreationState.Success -> {
+            navigator.goToLobbyDetailsScreen(user, currentState.newLobbyId)
+            (context as? Activity)?.finish()
+        }
 
         is LobbyCreationState.Error -> androidx.compose.material3.Text(text = currentState.message)
     }

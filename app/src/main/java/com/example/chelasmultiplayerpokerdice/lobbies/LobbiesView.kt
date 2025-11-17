@@ -24,11 +24,10 @@ const val LOBBIES_CREATE_BUTTON = "Create Lobby Button"
 const val LOBBY_CARD_TAG = "Lobby Card"
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LobbiesView(
-    lobbies: List<Lobby>,
+    lobbies: List<LobbyInfo>,
     goBackTitleScreenFunction: () -> Unit,
     createLobbyFunction: () -> Unit,
     selectLobbyFunction: (Lobby) -> Unit
@@ -88,30 +87,31 @@ fun LobbiesView(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                    items(lobbies) { lobby ->
+                    items(lobbies) { lobbyInfo ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag(LOBBY_CARD_TAG),
-                            onClick = { selectLobbyFunction(lobby) }
+                            onClick = { selectLobbyFunction(lobbyInfo.lobby) }
                         ) {
                             Column(
                                 modifier = Modifier.padding(16.dp),
                                 verticalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
                                 Text(
-                                    text = lobby.name,
+                                    text = lobbyInfo.lobby.name,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    text = "👑 Dono: ${lobby.hostId}",
+                                    text = "👑 Dono: ${lobbyInfo.lobby.hostId}",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
 
                                 Text(
-                                    text = "Jogadores: ${lobby.users.size} / ${lobby.maxUsers}",
-                                    style = MaterialTheme.typography.bodySmall)
+                                    text = "Jogadores: ${lobbyInfo.playerCount} / ${lobbyInfo.lobby.maxUsers}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
                             }
                         }
                     }
@@ -124,47 +124,46 @@ fun LobbiesView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LobbiesViewPreview() {
-    val sampleLobbies = listOf(
-        Lobby(
-            id = 0,
-            name = "Poker Stars",
-            description = "jogo para aprender",
-            hostId = 1,
-            minUsers = 2,
-            maxUsers = 10,
-            rounds = 5,
-            minCreditToParticipate = 0,
-            playersCount = 9,
-            users = emptyList()
-        ),
-        Lobby(
-            id = 1,
-            name = "Lucky Dice",
-            description = "jogo para intermedios",
-            hostId = 2,
-            minUsers = 2,
-            maxUsers = 10,
-            rounds = 6,
-            minCreditToParticipate = 0,
-            playersCount = 4,
-            users = emptyList()
-        ),
-        Lobby(
-            id = 2,
-            name = "Chelas Crew",
-            description = "jogo para pros",
-            hostId = 3,
-            minUsers = 2,
-            maxUsers = 10,
-            rounds = 7,
-            minCreditToParticipate = 0,
-            playersCount = 1,
-            users = emptyList()
-        )
+    val lobby1 = Lobby(
+        id = 0,
+        name = "Poker Stars",
+        description = "jogo para aprender",
+        hostId = 1,
+        minUsers = 2,
+        maxUsers = 10,
+        rounds = 5,
+        minCreditToParticipate = 0
+    )
+    val lobby2 =Lobby(
+        id = 1,
+        name = "Lucky Dice",
+        description = "jogo para intermedios",
+        hostId = 2,
+        minUsers = 2,
+        maxUsers = 10,
+        rounds = 6,
+        minCreditToParticipate = 0
+    )
+    val lobby3 =Lobby(
+        id = 2,
+        name = "Chelas Crew",
+        description = "jogo para pros",
+        hostId = 3,
+        minUsers = 2,
+        maxUsers = 10,
+        rounds = 7,
+        minCreditToParticipate = 0
     )
 
+    val sampleLobbyInfos = listOf(
+        LobbyInfo(lobby = lobby1, playerCount = 5),
+        LobbyInfo(lobby = lobby2, playerCount = 2),
+        LobbyInfo(lobby = lobby3, playerCount = 8)
+    )
+
+
     LobbiesView(
-        lobbies = sampleLobbies,
+        lobbies = sampleLobbyInfos,
         goBackTitleScreenFunction = { },
         createLobbyFunction = { },
         selectLobbyFunction = { }

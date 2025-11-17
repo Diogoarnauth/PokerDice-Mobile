@@ -10,7 +10,7 @@ import com.example.chelasmultiplayerpokerdice.ui.theme.common.LoadingView
 
 @Composable
 fun LobbyScreen(
-    viewModel: LobbyScreenViewModel,
+    viewModel: LobbyViewModel,
     navigator: LobbyNavigation,
     user: AuthenticatedUser,
     lobbyId: Int
@@ -31,7 +31,8 @@ fun LobbyScreen(
                 viewModel.onAbandon(lobbyId, user.token)
                 navigator.goToTitleScreen(user)
             },
-            onStartGame = { navigator.goToGameScreen() }
+            players = (currentState as LobbyScreenState.Success).players,
+            onStartGame = { navigator.goToGameScreen(user, lobbyId) }
         )
 
         is LobbyScreenState.Error -> Text("Erro: ${(currentState as LobbyScreenState.Error).message}")

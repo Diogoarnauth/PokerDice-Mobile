@@ -1,4 +1,4 @@
-package com.example.chelasmultiplayerpokerdice.mem
+package com.example.chelasmultiplayerpokerdice.domain
 
 data class AppInvite(
     val id: Int,

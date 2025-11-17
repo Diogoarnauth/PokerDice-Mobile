@@ -12,6 +12,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
+import com.example.chelasmultiplayerpokerdice.domain.LobbyInfo
+import com.example.chelasmultiplayerpokerdice.domain.User
 
 const val LOBBYSCREEN_VIEW_TAG = "Lobby View"
 const val LOBBYSCREEN_LOBBY_INFO = "Lobby Information"
@@ -23,6 +25,7 @@ const val LOBBYSCREEN_STARTGAME_BUTTON = "Start Game Button"
 @Composable
 fun LobbyScreenView(
     lobby: Lobby,
+    players: List<User>,
     onAbandon: () -> Unit,
     onStartGame: () -> Unit,
 ) {
@@ -61,7 +64,7 @@ fun LobbyScreenView(
                         textAlign = TextAlign.Start
                     )
                     Text("👑 Dono: ${lobby.hostId}")
-                    Text("Jogadores: ${lobby.playersCount}/${lobby.maxUsers}")
+                    Text("Jogadores: ${players.size}/${lobby.maxUsers}")
                     Text("Número de rondas: ${lobby.rounds}")
 
                 }
@@ -76,14 +79,14 @@ fun LobbyScreenView(
                         .testTag(LOBBYSCREEN_PLAYERS_LIST)
                 ) {
                     Text(
-                        text = "Jogadores (${lobby.users.size}/${lobby.maxUsers}):",
+                        text = "Jogadores (${players.size}/${lobby.maxUsers}):",
                         style = MaterialTheme.typography.titleMedium
                     )
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        items(lobby.users) { player ->
+                        items(players) { player ->
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
                                 elevation = CardDefaults.cardElevation(2.dp)
@@ -125,7 +128,7 @@ fun LobbyScreenView(
                         modifier = Modifier
                             .weight(1f)
                             .testTag(LOBBYSCREEN_STARTGAME_BUTTON),
-                        enabled = lobby.users.size >= 2
+                        enabled = players.size >= 2
                     ) {
                         Text("Iniciar Jogo")
                     }

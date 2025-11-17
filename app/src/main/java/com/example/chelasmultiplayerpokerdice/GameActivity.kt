@@ -7,18 +7,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
-import com.example.chelasmultiplayerpokerdice.lobby.LobbyNavigation
-import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreen
-import com.example.chelasmultiplayerpokerdice.lobby.LobbyViewModel
-import com.example.chelasmultiplayerpokerdice.lobby.LobbyScreenViewModelFactory
+import com.example.chelasmultiplayerpokerdice.game.GameNavigation
+import com.example.chelasmultiplayerpokerdice.game.GameScreen
+import com.example.chelasmultiplayerpokerdice.game.GameViewModel
+import com.example.chelasmultiplayerpokerdice.game.GameViewModelFactory
 
-class LobbyActivity : ComponentActivity() {
+class GameActivity : ComponentActivity() {
 
     private val app by lazy { application as DependenciesContainer }
-
-    private val lobbyNavigation: LobbyNavigation by lazy {
-        NavigationIntentImpl(this)
-    }
+    private val navigator: GameNavigation by lazy { NavigationIntentImpl(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +33,12 @@ class LobbyActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val viewModel: LobbyViewModel =
-                viewModel(factory = LobbyScreenViewModelFactory(app.lobbyService))
-            LobbyScreen(
+            val viewModel: GameViewModel =
+                viewModel(factory = GameViewModelFactory(app.gameService))
+
+            GameScreen(
                 viewModel = viewModel,
-                navigator = lobbyNavigation,
+                navigator = navigator,
                 user = user,
                 lobbyId = lobbyId
             )

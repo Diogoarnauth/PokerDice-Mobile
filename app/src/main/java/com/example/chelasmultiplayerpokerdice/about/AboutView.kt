@@ -102,7 +102,7 @@ fun AboutScreenView(
                         textDecoration = TextDecoration.Underline
                     )
 
-                    Divider(modifier = Modifier.padding(vertical = 12.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
                     Text(
                         text = "Membros do Grupo",

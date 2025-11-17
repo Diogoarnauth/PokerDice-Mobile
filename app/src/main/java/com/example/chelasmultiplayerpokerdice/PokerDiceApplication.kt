@@ -3,6 +3,8 @@ package com.example.chelasmultiplayerpokerdice
 import android.app.Application
 import com.example.chelasmultiplayerpokerdice.about.AboutFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.about.AboutService
+import com.example.chelasmultiplayerpokerdice.game.GameFakeServiceImpl
+import com.example.chelasmultiplayerpokerdice.game.GameService
 import com.example.chelasmultiplayerpokerdice.lobbies.LobbiesFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.lobbies.LobbiesService
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyFakeServiceImpl
@@ -30,6 +32,8 @@ interface DependenciesContainer {
     val playerProfileService: PlayerProfileService
     val titleService: TitleService
     val signupService: SignupService
+
+    val gameService: GameService
 }
 
 
@@ -37,6 +41,10 @@ class PokerDiceApplication : Application(), DependenciesContainer {
 
     override val aboutService: AboutService by lazy {
         AboutFakeServiceImpl()
+    }
+
+    override val gameService: GameService by lazy {
+        GameFakeServiceImpl()
     }
 
     override val lobbiesService: LobbiesService by lazy {

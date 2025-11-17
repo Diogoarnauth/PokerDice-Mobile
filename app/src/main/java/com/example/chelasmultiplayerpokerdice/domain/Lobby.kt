@@ -9,7 +9,5 @@ data class Lobby(
     val maxUsers: Int,
     val rounds: Int,
     val minCreditToParticipate: Int,
-    var isRunning: Boolean = false,
-    val playersCount: Int,
-    val users: List<User>
+    var isRunning: Boolean = false
 )

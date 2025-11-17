@@ -3,25 +3,23 @@ package com.example.chelasmultiplayerpokerdice.lobby
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
+import com.example.chelasmultiplayerpokerdice.domain.User
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 
 interface LobbyScreenState {
     data object Loading : LobbyScreenState
-    data class Success(val lobby: Lobby) : LobbyScreenState
+    data class Success(val lobby: Lobby,val players: List<User>) : LobbyScreenState
     data class Error(val message: String) : LobbyScreenState
 }
 
-class LobbyScreenViewModel(
+class LobbyViewModel(
     val service: LobbyService,
 ) : ViewModel() {
     private val _state = MutableStateFlow<LobbyScreenState>(LobbyScreenState.Loading)
@@ -35,12 +33,18 @@ class LobbyScreenViewModel(
             try {
                 service.joinLobby(lobbyId, token)
 
-                service.getLobby(lobbyId)
+                val lobbyFlow = service.getLobby(lobbyId)
+
+                val playersFlow = service.getLobbyPlayersFlow(lobbyId)
+
+                lobbyFlow.combine(playersFlow) { lobby, players ->
+                    LobbyScreenState.Success(lobby, players)
+                }
                     .catch { error ->
                         _state.value = LobbyScreenState.Error("Erro: ${error.message}")
                     }
-                    .collect { lobby ->
-                        _state.value = LobbyScreenState.Success(lobby)
+                    .collect { successState ->
+                        _state.value = successState
                     }
 
             } catch (e: Throwable) {
@@ -67,6 +71,6 @@ class LobbyScreenViewModelFactory(
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LobbyScreenViewModel(service) as T
+        return LobbyViewModel(service) as T
     }
 }

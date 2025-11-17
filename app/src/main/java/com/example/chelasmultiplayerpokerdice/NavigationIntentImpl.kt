@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.example.chelasmultiplayerpokerdice.about.AboutNavigation
 import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
+import com.example.chelasmultiplayerpokerdice.game.GameNavigation
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyNavigation
 import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationNavigation
 import com.example.chelasmultiplayerpokerdice.lobbies.LobbiesNavigation
@@ -20,7 +21,7 @@ const val AUTHENTICATED_USER_EXTRA = "AUTHENTICATED_USER"
 class NavigationIntentImpl(private val context: Context) :
     TitleNavigation, AboutNavigation, PlayerProfileNavigation,
     LobbiesNavigation, LobbyNavigation, LobbyCreationNavigation,
-    SignupNavigation, LoginNavigation {
+    SignupNavigation, LoginNavigation, GameNavigation {
 
     private fun createIntent(
         clazz: Class<*>,
@@ -73,8 +74,9 @@ class NavigationIntentImpl(private val context: Context) :
         context.startActivity(intent)
     }
 
-    override fun goToGameScreen() {
-        TODO("Not yet implemented")
+    override fun goToGameScreen(user: AuthenticatedUser, lobbyId: Int) {
+        val intent = createIntent(GameActivity::class.java, user, clearStack = false, lobbyId = lobbyId)
+        context.startActivity(intent)
     }
 
     override fun goToSignupScreen() {

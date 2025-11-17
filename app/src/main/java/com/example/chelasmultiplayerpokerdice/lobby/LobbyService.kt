@@ -10,8 +10,11 @@ import kotlinx.coroutines.flow.map
 
 interface LobbyService {
     fun getLobby(lobbyId: Int): Flow<Lobby>
-    fun abandonLobby(lobbyId: Int, token: String)
-     fun joinLobby(lobbyId: Int, token: String)
+    suspend fun abandonLobby(lobbyId: Int, token: String)
+
+    fun getLobbyPlayersFlow(lobbyId: Int): Flow<List<User>>
+
+    suspend fun joinLobby(lobbyId: Int, token: String)
 
 }
 
@@ -26,7 +29,15 @@ class LobbyFakeServiceImpl : LobbyService {
             .filterNotNull()
     }
 
-    override fun abandonLobby(lobbyId: Int, token: String) {
+    override fun getLobbyPlayersFlow(lobbyId: Int): Flow<List<User>> =
+        db.usersFlow.map { usersList ->
+            usersList.filter { it.lobbyId == lobbyId }
+        }
+
+
+    override suspend fun abandonLobby(lobbyId: Int, token: String) {
+
+        delay(500)
 
         val userToken = tokens.find { it.tokenValidation == token }
         if (userToken != null) {
@@ -37,7 +48,10 @@ class LobbyFakeServiceImpl : LobbyService {
         }
     }
 
-    override fun joinLobby(lobbyId: Int, token: String) {
+    override suspend fun joinLobby(lobbyId: Int, token: String) {
+
+        delay(250)
+
         val userToken = tokens.find { it.tokenValidation == token }
         if (userToken != null) {
             val userId = userToken.userId
