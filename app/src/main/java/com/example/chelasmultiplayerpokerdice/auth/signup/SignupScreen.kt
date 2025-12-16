@@ -1,4 +1,4 @@
-package com.example.chelasmultiplayerpokerdice.signup
+package com.example.chelasmultiplayerpokerdice.auth.signup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState

@@ -13,18 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-// --- Modelos de Dados da Base de Dados Fake ---
-
-/**
- * A nossa "base de dados" fake em memória, estilo 'chimp'.
- * É um Singleton (object) para ser partilhado por todos os serviços.
- * Utiliza StateFlow para que as alterações sejam reativas (auto-refresh).
- */
 object FakeDatabase {
 
     var tokens = mutableListOf<Token>()
 
-    // --- USERS ---
     private val initialUsers = mutableListOf(
         User(
             id = 1,

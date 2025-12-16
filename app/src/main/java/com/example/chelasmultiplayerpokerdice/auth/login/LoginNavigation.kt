@@ -1,4 +1,4 @@
-package com.example.chelasmultiplayerpokerdice.login
+package com.example.chelasmultiplayerpokerdice.auth.login
 
 import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 

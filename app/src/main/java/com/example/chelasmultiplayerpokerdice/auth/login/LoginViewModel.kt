@@ -1,14 +1,14 @@
-package com.example.chelasmultiplayerpokerdice.login
+package com.example.chelasmultiplayerpokerdice.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chelasmultiplayerpokerdice.auth.AuthInfoRepo
 import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
 
 sealed interface LoginScreenState {
     data object Idle : LoginScreenState
@@ -17,7 +17,8 @@ sealed interface LoginScreenState {
     data class Error(val message: String) : LoginScreenState
 }
 
-class LoginScreenViewModel(private val service: LoginService) : ViewModel() {
+class LoginScreenViewModel(private val service: LoginService, private val repo: AuthInfoRepo) :
+    ViewModel() {
 
     private val _state = MutableStateFlow<LoginScreenState>(LoginScreenState.Idle)
 
@@ -30,11 +31,13 @@ class LoginScreenViewModel(private val service: LoginService) : ViewModel() {
             _state.value = LoginScreenState.Loading
 
             try {
-                val token = service.login(username, password)
-                if (token == null)
-                    _state.value = LoginScreenState.Error("Credenciais inválidas")
-                else
-                    _state.value = LoginScreenState.Success(AuthenticatedUser(username, token))
+                val user = service.login(username, password)
+                if (user != null) {
+                    repo.set(user)
+                    _state.value = LoginScreenState.Success(user)
+                } else {
+                    _state.value = LoginScreenState.Error("Username ou password incorretos.")
+                }
             } catch (e: Throwable) {
                 _state.value = LoginScreenState.Error(e.message ?: "Erro desconhecido")
             }
@@ -42,16 +45,17 @@ class LoginScreenViewModel(private val service: LoginService) : ViewModel() {
     }
 
     fun resetToIdle() {
-        if (_state.value is LoginScreenState.Error) {
-            _state.value = LoginScreenState.Idle
-        }
+        _state.value = LoginScreenState.Idle
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-class LoginScreenViewModelFactory(private val service: LoginService, ) :
+class LoginScreenViewModelFactory(
+    private val service: LoginService,
+    private val repo: AuthInfoRepo
+) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LoginScreenViewModel(service, ) as T
+        return LoginScreenViewModel(service, repo) as T
     }
 }

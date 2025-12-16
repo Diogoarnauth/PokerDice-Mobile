@@ -1,4 +1,4 @@
-package com.example.chelasmultiplayerpokerdice.login
+package com.example.chelasmultiplayerpokerdice.auth.login
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box

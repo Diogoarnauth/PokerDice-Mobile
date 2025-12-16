@@ -1,8 +1,9 @@
-package com.example.chelasmultiplayerpokerdice.signup
+package com.example.chelasmultiplayerpokerdice.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chelasmultiplayerpokerdice.auth.AuthInfoRepo
 import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,7 @@ sealed interface SignupScreenState {
     data class Error(val message: String) : SignupScreenState
 }
 
-class SignupViewModel(private val service: SignupService) : ViewModel() {
+class SignupViewModel(private val service: SignupService, private val repo: AuthInfoRepo) : ViewModel() {
 
     private val _state = MutableStateFlow<SignupScreenState>(SignupScreenState.Idle)
     val state: StateFlow<SignupScreenState> = _state.asStateFlow()
@@ -26,15 +27,16 @@ class SignupViewModel(private val service: SignupService) : ViewModel() {
 
         _state.value = SignupScreenState.Loading
         viewModelScope.launch {
-            _state.value = try {
+            try {
                 val user = service.signup(username, password, name, age)
                 if (user != null) {
-                    SignupScreenState.Success(user)
+                    repo.set(user)
+                    _state.value = SignupScreenState.Success(user)
                 } else {
-                    SignupScreenState.Error("Esse username já está a ser utilizado.")
+                    _state.value = SignupScreenState.Error("Esse username já está a ser utilizado.")
                 }
             } catch (e: Throwable) {
-                SignupScreenState.Error(e.message ?: "Erro desconhecido")
+                _state.value = SignupScreenState.Error(e.message ?: "Erro desconhecido")
             }
         }
     }
@@ -47,9 +49,9 @@ class SignupViewModel(private val service: SignupService) : ViewModel() {
 }
 
 @Suppress("UNCHECKED_CAST")
-class SignupScreenViewModelFactory(private val service: SignupService) :
+class SignupScreenViewModelFactory(private val service: SignupService, private val repo: AuthInfoRepo) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return SignupViewModel(service) as T
+        return SignupViewModel(service, repo) as T
     }
 }

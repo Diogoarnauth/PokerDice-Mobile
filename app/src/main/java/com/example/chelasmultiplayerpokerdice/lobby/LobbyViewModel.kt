@@ -9,42 +9,37 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-
 
 interface LobbyScreenState {
     data object Loading : LobbyScreenState
-    data class Success(val lobby: Lobby,val players: List<User>) : LobbyScreenState
+    data class Success(val lobby: Lobby, val players: List<User>) : LobbyScreenState
     data class Error(val message: String) : LobbyScreenState
 }
 
 class LobbyViewModel(
-    val service: LobbyService,
+    private val repository: LobbyRepository
 ) : ViewModel() {
+
     private val _state = MutableStateFlow<LobbyScreenState>(LobbyScreenState.Loading)
     val state: StateFlow<LobbyScreenState> = _state.asStateFlow()
 
-
     fun loadLobby(lobbyId: Int, token: String) {
-        if (_state.value is LobbyScreenState.Success) return
 
         viewModelScope.launch {
             try {
-                service.joinLobby(lobbyId, token)
+                _state.value = LobbyScreenState.Loading
 
-                val lobbyFlow = service.getLobby(lobbyId)
-
-                val playersFlow = service.getLobbyPlayersFlow(lobbyId)
-
-                lobbyFlow.combine(playersFlow) { lobby, players ->
-                    LobbyScreenState.Success(lobby, players)
-                }
+                repository.joinLobby(lobbyId, token)
+                repository.getLobbyLive(lobbyId)
                     .catch { error ->
                         _state.value = LobbyScreenState.Error("Erro: ${error.message}")
                     }
-                    .collect { successState ->
-                        _state.value = successState
+                    .collect { details ->
+                        _state.value = LobbyScreenState.Success(
+                            lobby = details.lobby,
+                            players = details.players
+                        )
                     }
 
             } catch (e: Throwable) {
@@ -56,21 +51,19 @@ class LobbyViewModel(
     fun onAbandon(lobbyId: Int, token: String) {
         viewModelScope.launch {
             try {
-                service.abandonLobby(lobbyId, token)
+                repository.leaveLobby(lobbyId, token)
             } catch (e: Throwable) {
-                _state.value = LobbyScreenState.Error("Erro ao abandonar o lobby: ${e.message}")
+                _state.value = LobbyScreenState.Error("Erro ao sair: ${e.message}")
             }
         }
     }
 }
 
-
 @Suppress("UNCHECKED_CAST")
 class LobbyScreenViewModelFactory(
-    private val service: LobbyService
-) :
-    ViewModelProvider.Factory {
+    private val repository: LobbyRepository
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LobbyViewModel(service) as T
+        return LobbyViewModel(repository) as T
     }
 }

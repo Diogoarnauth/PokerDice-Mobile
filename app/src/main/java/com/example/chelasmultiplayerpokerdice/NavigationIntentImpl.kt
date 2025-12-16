@@ -9,9 +9,9 @@ import com.example.chelasmultiplayerpokerdice.game.GameNavigation
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyNavigation
 import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationNavigation
 import com.example.chelasmultiplayerpokerdice.lobbies.LobbiesNavigation
-import com.example.chelasmultiplayerpokerdice.login.LoginNavigation
+import com.example.chelasmultiplayerpokerdice.auth.login.LoginNavigation
 import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileNavigation
-import com.example.chelasmultiplayerpokerdice.signup.SignupNavigation
+import com.example.chelasmultiplayerpokerdice.auth.signup.SignupNavigation
 import com.example.chelasmultiplayerpokerdice.title.TitleNavigation
 
 const val LOBBY_ID_EXTRA = "LOBBY_ID"

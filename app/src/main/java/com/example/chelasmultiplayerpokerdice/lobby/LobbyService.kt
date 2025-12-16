@@ -1,18 +1,13 @@
 package com.example.chelasmultiplayerpokerdice.lobby
 
-import com.example.chelasmultiplayerpokerdice.domain.*
-import kotlinx.coroutines.delay
+import com.example.chelasmultiplayerpokerdice.domain.LobbyDetails
 import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
 import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase.tokens
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.delay
 
 interface LobbyService {
-    fun getLobby(lobbyId: Int): Flow<Lobby>
+    suspend fun fetchLobbyDetails(lobbyId: Int): LobbyDetails
     suspend fun abandonLobby(lobbyId: Int, token: String)
-
-    fun getLobbyPlayersFlow(lobbyId: Int): Flow<List<User>>
 
     suspend fun joinLobby(lobbyId: Int, token: String)
 
@@ -22,17 +17,16 @@ class LobbyFakeServiceImpl : LobbyService {
 
     private val db = FakeDatabase
 
-    override fun getLobby(lobbyId: Int): Flow<Lobby> {
-        return db.lobbies.map { listaDeLobbies ->
-            listaDeLobbies.find { it.id == lobbyId }
-        }
-            .filterNotNull()
-    }
+    override suspend fun fetchLobbyDetails(lobbyId: Int): LobbyDetails {
+        val currentLobbies = db.lobbies.value
 
-    override fun getLobbyPlayersFlow(lobbyId: Int): Flow<List<User>> =
-        db.usersFlow.map { usersList ->
-            usersList.filter { it.lobbyId == lobbyId }
-        }
+        val lobby = currentLobbies.find { it.id == lobbyId }
+            ?: throw Exception("Lobby not found")
+
+        val players = db.usersFlow.value.filter { it.lobbyId == lobbyId }
+
+        return LobbyDetails(lobby, players)
+    }
 
 
     override suspend fun abandonLobby(lobbyId: Int, token: String) {

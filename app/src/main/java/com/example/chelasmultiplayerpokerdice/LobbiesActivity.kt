@@ -34,7 +34,7 @@ class LobbiesActivity : ComponentActivity() {
 
         setContent {
             val viewModel: LobbiesViewModel =
-                viewModel(factory = LobbiesViewModelFactory(app.lobbiesService))
+                viewModel(factory = LobbiesViewModelFactory(app.lobbiesRepository))
 
             LobbiesScreen(
                 viewModel = viewModel,

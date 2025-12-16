@@ -5,10 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chelasmultiplayerpokerdice.signup.SignupNavigation
-import com.example.chelasmultiplayerpokerdice.signup.SignupScreen
-import com.example.chelasmultiplayerpokerdice.signup.SignupScreenViewModelFactory
-import com.example.chelasmultiplayerpokerdice.signup.SignupViewModel
+import com.example.chelasmultiplayerpokerdice.auth.signup.SignupNavigation
+import com.example.chelasmultiplayerpokerdice.auth.signup.SignupScreen
+import com.example.chelasmultiplayerpokerdice.auth.signup.SignupScreenViewModelFactory
+import com.example.chelasmultiplayerpokerdice.auth.signup.SignupViewModel
 
 class SignupActivity : ComponentActivity() {
 
@@ -23,7 +23,7 @@ class SignupActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val signupViewModel: SignupViewModel =
-                viewModel(factory = SignupScreenViewModelFactory(app.signupService))
+                viewModel(factory = SignupScreenViewModelFactory(app.signupService, app.authRepo))
 
             SignupScreen(
                 viewModel = signupViewModel,

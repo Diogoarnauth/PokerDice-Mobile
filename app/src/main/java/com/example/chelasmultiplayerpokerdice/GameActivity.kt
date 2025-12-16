@@ -34,7 +34,7 @@ class GameActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val viewModel: GameViewModel =
-                viewModel(factory = GameViewModelFactory(app.gameService))
+                viewModel(factory = GameViewModelFactory(app.gameRepository))
 
             GameScreen(
                 viewModel = viewModel,

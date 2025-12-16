@@ -4,11 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.lifecycle.viewmodel.compose.viewModel // Import chave
-import com.example.chelasmultiplayerpokerdice.login.LoginNavigation
-import com.example.chelasmultiplayerpokerdice.login.LoginScreen
-import com.example.chelasmultiplayerpokerdice.login.LoginScreenViewModel
-import com.example.chelasmultiplayerpokerdice.login.LoginScreenViewModelFactory
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chelasmultiplayerpokerdice.auth.login.LoginNavigation
+import com.example.chelasmultiplayerpokerdice.auth.login.LoginScreen
+import com.example.chelasmultiplayerpokerdice.auth.login.LoginScreenViewModel
+import com.example.chelasmultiplayerpokerdice.auth.login.LoginScreenViewModelFactory
 
 class LoginActivity : ComponentActivity() {
 
@@ -25,7 +25,7 @@ class LoginActivity : ComponentActivity() {
             setContent {
 
                 val viewModel: LoginScreenViewModel =
-                    viewModel(factory = LoginScreenViewModelFactory(app.loginService))
+                    viewModel(factory = LoginScreenViewModelFactory(app.loginService, app.authRepo))
 
                 LoginScreen(
                     viewModel = viewModel,
