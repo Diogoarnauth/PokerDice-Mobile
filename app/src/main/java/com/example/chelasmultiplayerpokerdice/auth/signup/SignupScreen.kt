@@ -11,12 +11,14 @@ fun SignupScreen(viewModel: SignupViewModel, navigator: SignupNavigation) {
 
     val currentState by viewModel.state.collectAsState()
 
-    when (currentState) {
+    when (val state = currentState) {
         is SignupScreenState.Idle -> {
             SignupView(
+                isBootstrapMode = state.isBootstrapMode,
+
                 onBack = { navigator.goToLoginScreen() },
-                onFetchSignup = { username, password, name, age ->
-                    viewModel.fetchSignup(username, password, name, age)
+                onFetchSignup = { username, password, name, age, inviteCode ->
+                    viewModel.fetchSignup(username, password, name, age, inviteCode)
                 },
                 onGoToLogin = { navigator.goToLoginScreen() }
             )
@@ -36,7 +38,7 @@ fun SignupScreen(viewModel: SignupViewModel, navigator: SignupNavigation) {
         }
 
         is SignupScreenState.Success -> {
-            navigator.goToTitleScreen((currentState as SignupScreenState.Success).user)        }
+            navigator.goToTitleScreen(state.user)        }
     }
 
 }

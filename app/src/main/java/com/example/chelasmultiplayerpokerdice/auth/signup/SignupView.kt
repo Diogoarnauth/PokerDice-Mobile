@@ -36,7 +36,8 @@ const val SIGNUP_VIEW_TEST_TAG = "SignupView"
 fun SignupView(
     onBack: () -> Unit,
     onGoToLogin: () -> Unit,
-    onFetchSignup: (String, String, String, Int) -> Unit
+    onFetchSignup: (String, String, String, Int, String) -> Unit,
+    isBootstrapMode: Boolean
 ) {
     Scaffold(
         topBar = {
@@ -68,6 +69,7 @@ fun SignupView(
                 var passwordConfirm by rememberSaveable { mutableStateOf("") }
                 var passwordVisible by rememberSaveable { mutableStateOf(false) }
                 var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
+                var inviteCode by rememberSaveable { mutableStateOf("") }
 
                 val ageInt = age.toIntOrNull() ?: 0
 
@@ -111,14 +113,22 @@ fun SignupView(
                     passwordVisible = confirmPasswordVisible,
                     onPasswordVisibilityChange = { confirmPasswordVisible = it }
                 )
-
+                if (!isBootstrapMode) {
+                    GenericOutlinedTextField(
+                        value = inviteCode,
+                        onValueChange = { inviteCode = it },
+                        label =  "Código de Convite" ,
+                        // TODO("falta algum param?")
+                    )
+                }
                 Button(
                     onClick = {
                         onFetchSignup(
                             username,
                             password,
                             name,
-                            age.toInt()
+                            age.toInt(),
+                            inviteCode
                         )
                     },
                     shape = RoundedCornerShape(4.dp),

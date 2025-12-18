@@ -13,7 +13,7 @@ class LobbiesRepository(private val service: LobbiesService) {
                 val data = service.fetchLobbiesList()
                 emit(data)
             } catch (e: Exception) {
-                // TODO("LIDAR COM OS ERROS"
+                // TODO("LIDAR COM OS ERROS")
             }
             delay(2000)
         }
