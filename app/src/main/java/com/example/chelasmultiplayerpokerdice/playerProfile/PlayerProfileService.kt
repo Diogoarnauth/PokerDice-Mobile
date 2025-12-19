@@ -1,29 +1,43 @@
 package com.example.chelasmultiplayerpokerdice.playerProfile
 
+import android.util.Log
+import com.example.chelasmultiplayerpokerdice.BASE_URL
+import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.User
-import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
-import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase.tokens
-import kotlinx.coroutines.delay
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.PlayerProfileResponseDto
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.http.HttpHeaders
 
 interface PlayerProfileService {
    suspend fun getPlayerProfileData(token: String): User
 }
 
-class PlayerProfileFakeServiceImpl : PlayerProfileService {
-
-    private val db = FakeDatabase
+class PlayerProfileServiceImpl(
+    private val client: HttpClient
+) : PlayerProfileService {
 
     override suspend fun getPlayerProfileData(token: String): User {
+        return try {
+            val response: PlayerProfileResponseDto = client.get("$BASE_URL/users/getMe") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }.body()
 
-        delay(500)
-
-        val userToken = tokens.find { it.tokenValidation == token }
-            ?: throw IllegalStateException("Token inválido ou sessão expirada")
-
-        val user = db.usersFlow.value.find { it.id == userToken.userId }
-            ?: throw IllegalStateException("Utilizador não encontrado na DB")
-
-
-        return user
+            // Mapeamento do DTO para o teu objeto de Domínio (User)
+            User(
+                id = response.id,
+                username = response.username,
+                name = response.name,
+                age = response.age,
+                credit = response.credit,
+                winCounter = response.winCounter,
+                lobbyId = response.lobbyId,
+                passwordValidation = ""
+            )
+        } catch (e: Exception) {
+            throw e
+        }
     }
 }

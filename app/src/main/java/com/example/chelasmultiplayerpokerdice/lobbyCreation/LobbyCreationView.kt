@@ -40,11 +40,13 @@ fun LoadingLobbyCreationView() {
 @Composable
 fun InitialLobbyCreationView(
     goBackFunction: () -> Unit,
-    onCreateLobby: (String, String, Int, Int) -> Unit
+    onCreateLobby: (String, String, Int, Int, Int, Int) -> Unit
 ) {
     var lobbyName by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
-    var numPlayers by rememberSaveable { mutableIntStateOf(2) }
+    var maxPlayers by rememberSaveable { mutableIntStateOf(4) }
+    var minPlayers by rememberSaveable { mutableIntStateOf(2) }
+    var minCredits by rememberSaveable { mutableIntStateOf(10) }
     var numRounds by rememberSaveable { mutableIntStateOf(2) }
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -106,13 +108,12 @@ fun InitialLobbyCreationView(
                         .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Players:", modifier = Modifier.weight(1f))
+                    Text("Max Players:", modifier = Modifier.weight(1f))
                     DropdownMenuBox(
-                        value = numPlayers,
-                        range = 2..6,
+                        value = maxPlayers,
+                        range = 3..8,
                         onValueChange = {
-                            numPlayers = it
-                            if (numRounds % it != 0 || numRounds > 60) numRounds = it
+                            maxPlayers = it
                         },
                         modifier = Modifier.testTag("PlayersDropdownButton")
                     )
@@ -123,22 +124,57 @@ fun InitialLobbyCreationView(
                         .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Rounds:", modifier = Modifier.weight(1f))
+                    Text("Min Players:", modifier = Modifier.weight(1f))
                     DropdownMenuBox(
-                        value = numRounds,
-                        range = (numPlayers..60 step numPlayers).toList(),
-                        onValueChange = { numRounds = it },
-                        modifier = Modifier.testTag("RoundsDropdownButton")
+                        value = minPlayers,
+                        range = 2..maxPlayers-1,
+                        onValueChange = {
+                            minPlayers = it
+                        },
+                        modifier = Modifier.testTag("PlayersDropdownButton")
                     )
                 }
-                error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+
+                 Row(                                                                      
+                     modifier = Modifier                                                   
+                         .fillMaxWidth()                                                   
+                         .padding(vertical = 8.dp),                                        
+                     verticalAlignment = Alignment.CenterVertically                        
+                 ) {                                                                       
+                     Text("Min Credits:", modifier = Modifier.weight(1f))
+                     DropdownMenuBox(                                                      
+                         value = minCredits,
+                         range = 10..1000000,
+                         onValueChange = {                                                 
+                             minCredits = it
+                         },
+                         modifier = Modifier.testTag("PlayersDropdownButton")              
+                     )                                                                     
+                 }
+                                                                                                                   
+                 Row(                                                                                              
+                     modifier = Modifier                                                                           
+                         .fillMaxWidth()                                                                           
+                         .padding(vertical = 8.dp),                                                                
+                     verticalAlignment = Alignment.CenterVertically                                                
+                 ) {                                                                                               
+                     Text("Rounds:", modifier = Modifier.weight(1f))                                               
+                     DropdownMenuBox(                                                                              
+                         value = numRounds,                                                                        
+                         range = (minPlayers..10).toList(),
+                         onValueChange = { numRounds = it },                                                       
+                         modifier = Modifier.testTag("RoundsDropdownButton")                                       
+                     )                                                                                             
+                 }                                                                                                 
+                 error?.let { Text(it, color = MaterialTheme.colorScheme.error) }                                  
+
                 Button(
                     onClick = {
                         if (lobbyName.isBlank() || description.isBlank()) {
                             error = "Lobby name and description cannot be empty."
                         } else {
                             error = null
-                            onCreateLobby(lobbyName, description, numPlayers, numRounds)
+                            onCreateLobby(lobbyName, description, minPlayers, maxPlayers, minCredits, numRounds)
                         }
                     },
                     shape = RoundedCornerShape(8.dp),
@@ -187,7 +223,7 @@ fun DropdownMenuBox(
 fun InitialLobbyCreationViewPreview() {
     InitialLobbyCreationView(
         goBackFunction = {},
-        onCreateLobby = { _, _, _, _ -> }
+        onCreateLobby = { _, _, _, _,_ ,_ -> }
     )
 }
 

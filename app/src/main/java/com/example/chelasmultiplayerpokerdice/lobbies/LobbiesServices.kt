@@ -1,6 +1,7 @@
 package com.example.chelasmultiplayerpokerdice.lobbies
 
 import android.util.Log
+import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
 import com.example.chelasmultiplayerpokerdice.domain.LobbyInfo
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.LobbyDto
@@ -20,6 +21,8 @@ class LobbiesServiceImpl(
         return try {
 
             val lobbyDtos: List<LobbyDto> = client.get("lobbies").body()
+            Log.d(TAG, "lobbies obtidos $lobbyDtos")
+
 
             lobbyDtos.map { dto ->
                 val lobby = Lobby(

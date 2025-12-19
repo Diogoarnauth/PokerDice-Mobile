@@ -38,7 +38,9 @@ fun SignupScreen(viewModel: SignupViewModel, navigator: SignupNavigation) {
         }
 
         is SignupScreenState.Success -> {
-            navigator.goToTitleScreen(state.user)        }
+            navigator.goToLoginScreen()
+            //navigator.goToTitleScreen(state.user)
+        }
     }
 
 }

@@ -12,7 +12,7 @@ import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
 interface LobbyCreationState {
     data object Idle : LobbyCreationState
     data object Loading : LobbyCreationState
-    data class Success(val newLobbyId: Int) : LobbyCreationState
+    data object Success : LobbyCreationState
     data class Error(val message: String) : LobbyCreationState
 }
 
@@ -24,15 +24,16 @@ class LobbyCreationViewModel(private val service: LobbyCreationService) : ViewMo
     fun createLobby(
         name: String,
         description: String,
+        minUsers: Int,
         maxUsers: Int,
         rounds: Int,
+        minCreditToParticipate: Int,
         hostToken: String
     ) {
         viewModelScope.launch {
             state = LobbyCreationState.Loading
             try {
-                val minUsers = 2
-                val minCredit = 1
+
 
                 val newLobbyId = service.createLobby(
                     name = name,
@@ -41,9 +42,9 @@ class LobbyCreationViewModel(private val service: LobbyCreationService) : ViewMo
                     minUsers = minUsers,
                     maxUsers = maxUsers,
                     rounds = rounds,
-                    minCreditToParticipate = minCredit
+                    minCreditToParticipate = minCreditToParticipate
                 )
-                state = LobbyCreationState.Success(newLobbyId)
+                state = LobbyCreationState.Success
             } catch (e: Throwable) {
                 state = LobbyCreationState.Error("Erro ao criar lobby: ${e.message}")
             }

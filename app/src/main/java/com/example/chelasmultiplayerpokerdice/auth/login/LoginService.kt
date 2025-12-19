@@ -28,6 +28,7 @@ class LoginServiceImpl(
                 setBody(LoginRequestDto(username, password))
 
             }.body()
+            Log.d(TAG, "Token recebido supostamente ${response.token}")
             AuthenticatedUser(username, response.token)
 
         } catch (e: Exception) {

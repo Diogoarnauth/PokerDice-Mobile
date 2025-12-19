@@ -9,7 +9,6 @@ import com.example.chelasmultiplayerpokerdice.auth.login.LoginService
 import com.example.chelasmultiplayerpokerdice.auth.login.LoginServiceImpl
 import com.example.chelasmultiplayerpokerdice.auth.signup.SignupService
 import com.example.chelasmultiplayerpokerdice.auth.signup.SignupServiceImpl
-import com.example.chelasmultiplayerpokerdice.domain.remote.models.KtorClient
 import com.example.chelasmultiplayerpokerdice.game.GameFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.game.GameRepository
 import com.example.chelasmultiplayerpokerdice.game.GameService
@@ -19,13 +18,13 @@ import com.example.chelasmultiplayerpokerdice.lobbies.LobbiesServiceImpl
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyRepository
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyService
 import com.example.chelasmultiplayerpokerdice.lobby.LobbyServiceImpl
-import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationService
-import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileService
 import com.example.chelasmultiplayerpokerdice.title.TitleFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.title.TitleService
 import android.util.Log
+import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationServiceImpl
+import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileServiceImpl
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -36,7 +35,9 @@ import kotlinx.serialization.json.Json
 import io.ktor.client.plugins.logging.Logger
 const val TAG = "PokerDice"
 
-const val BASE_URL = "http://localhost:8080/api"
+
+//const val BASE_URL = "http://localhost:8080/api"
+const val BASE_URL = "http://10.0.2.2:8080/api"
 
 interface DependenciesContainer {
     val aboutService: AboutService
@@ -120,11 +121,11 @@ class PokerDiceApplication : Application(), DependenciesContainer {
 
 
     override val lobbyCreationService: LobbyCreationService by lazy {
-        LobbyCreationFakeServiceImpl()
+        LobbyCreationServiceImpl(client)
     }
 
     override val playerProfileService: PlayerProfileService by lazy {
-        PlayerProfileFakeServiceImpl()
+        PlayerProfileServiceImpl(client)
     }
 
     override val titleService: TitleService by lazy {

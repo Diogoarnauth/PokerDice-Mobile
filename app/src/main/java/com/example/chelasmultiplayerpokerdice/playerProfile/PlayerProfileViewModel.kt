@@ -1,8 +1,10 @@
 package com.example.chelasmultiplayerpokerdice.playerProfile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,10 +24,13 @@ class PlayerProfileViewModel(private val service: PlayerProfileService) : ViewMo
 
 
     fun loadProfile(token: String) {
+        Log.d(TAG, "🚀 Token que chega ao loadProfile $token")
+
         viewModelScope.launch {
             _state.value = PlayerProfileScreenState.Loading
             try {
                 val data = service.getPlayerProfileData(token)
+                Log.d(TAG, "🚀 Data no loadProfile '$data'")
                 _state.value = PlayerProfileScreenState.Success(data)
             } catch (e: Throwable) {
                 _state.value = PlayerProfileScreenState.Error("Erro ao carregar perfil: ${e.message}")

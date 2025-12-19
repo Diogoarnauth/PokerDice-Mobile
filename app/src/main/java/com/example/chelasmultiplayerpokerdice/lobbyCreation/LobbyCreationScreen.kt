@@ -14,18 +14,18 @@ fun LobbyCreation(
     val context = LocalContext.current
 
     when (val currentState = viewModel.state) {
-
         is LobbyCreationState.Idle -> {
-
             InitialLobbyCreationView(
                 goBackFunction = { navigator.goToLobbiesScreen(user) },
-                onCreateLobby = { name, description, maxPlayers, rounds ->
+                onCreateLobby = { name, description, minPlayers, maxPlayers, minCredits, rounds ->
                     viewModel.createLobby(
                         name = name,
                         description = description,
+                        minUsers = minPlayers,
                         maxUsers = maxPlayers,
                         rounds = rounds,
-                        hostToken = user.token
+                        minCreditToParticipate = minCredits,
+                        hostToken = user.token // Não esquecer o token aqui!
                     )
                 }
             )
@@ -34,7 +34,7 @@ fun LobbyCreation(
         is LobbyCreationState.Loading -> LoadingLobbyCreationView()
 
         is LobbyCreationState.Success -> {
-            navigator.goToLobbyDetailsScreen(user, currentState.newLobbyId)
+            navigator.goToLobbiesScreen(user)
             (context as? Activity)?.finish()
         }
 
