@@ -28,7 +28,6 @@ const val TITLESCREEN_VIEW_TAG = "Title View"
 const val TITLESCREEN_STARTMATCH_BUTTON = "Start match button on title screen"
 const val TITLESCREEN_PROFILE_BUTTON = "Profile button on title screen"
 const val TITLESCREEN_ABOUT_BUTTON = "About button on title screen"
-
 const val TITLESCREEN_MADE_BY_TEXT = "made by text on Title screen"
 
 @OptIn(ExperimentalMaterial3Api::class)

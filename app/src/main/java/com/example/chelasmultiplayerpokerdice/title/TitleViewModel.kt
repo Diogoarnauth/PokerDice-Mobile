@@ -13,7 +13,6 @@ interface TitleScreenState{
 class TitleViewModel(private val service : TitleService) : ViewModel() {
     var state: TitleScreenState by mutableStateOf(TitleScreenState.Success(service.getCreators()))
         private set
-
 }
 
 @Suppress("UNCHECKED_CAST")
