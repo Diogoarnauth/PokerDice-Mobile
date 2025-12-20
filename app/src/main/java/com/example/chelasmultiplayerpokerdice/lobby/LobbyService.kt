@@ -1,6 +1,8 @@
 package com.example.chelasmultiplayerpokerdice.lobby
 
 import android.util.Log
+import com.example.chelasmultiplayerpokerdice.BASE_URL
+import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
 import com.example.chelasmultiplayerpokerdice.domain.LobbyDetails
 import com.example.chelasmultiplayerpokerdice.domain.User
@@ -26,9 +28,14 @@ class LobbyServiceImpl(
 ) : LobbyService {
 
     override suspend fun fetchLobbyDetails(lobbyId: Int): LobbyDetails {
-        val lobbyDto: LobbyDto = client.get("lobbies/$lobbyId").body()
+        val lobbyDto: LobbyDto = client.get("$BASE_URL/lobbies/$lobbyId").body()
 
-        val playersResponse: LobbyPlayersResponseDto = client.get("users/obj/lobby/$lobbyId").body()
+        Log.d(TAG, "lobbyDto $lobbyDto" )
+
+        val playersResponse: LobbyPlayersResponseDto = client.get("$BASE_URL/users/obj/lobby/$lobbyId").body()
+
+        Log.d(TAG, "playersResponse $playersResponse" )
+
 
         val lobby = Lobby(
             id = lobbyDto.id,
@@ -39,10 +46,9 @@ class LobbyServiceImpl(
             maxUsers = lobbyDto.maxUsers,
             rounds = lobbyDto.rounds,
             minCreditToParticipate = lobbyDto.minCreditToParticipate,
-            isRunning = false
         )
 
-        val users = playersResponse.players.map { playerDto ->
+       val users = playersResponse.players.map { playerDto ->
             User(
                 id = playerDto.id,
                 username = playerDto.username,
@@ -61,9 +67,11 @@ class LobbyServiceImpl(
     override suspend fun abandonLobby(lobbyId: Int, token: String) {
         try {
             // TODO ("FALTA CONFIRMAR SE É O ÚLTIMO OU NO)
-            client.delete("lobbies/$lobbyId/leave") {
+           val leaved = client.delete("$BASE_URL/lobbies/$lobbyId/leave") {
                 bearerAuth(token)
             }
+            Log.d(TAG, "leaved $leaved")
+
         } catch (e: Exception) {
             Log.e("LOBBY_SERVICE", "Erro ao sair do lobby: ${e.message}")
         }

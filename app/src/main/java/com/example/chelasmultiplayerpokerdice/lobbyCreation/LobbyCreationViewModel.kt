@@ -1,11 +1,13 @@
 package com.example.chelasmultiplayerpokerdice.lobbyCreation
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chelasmultiplayerpokerdice.TAG
 import kotlinx.coroutines.launch
 import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
 
@@ -21,6 +23,9 @@ class LobbyCreationViewModel(private val service: LobbyCreationService) : ViewMo
     var state by mutableStateOf<LobbyCreationState>(LobbyCreationState.Idle)
         private set
 
+    fun clearError() {
+        state = LobbyCreationState.Idle
+    }
     fun createLobby(
         name: String,
         description: String,
@@ -35,7 +40,7 @@ class LobbyCreationViewModel(private val service: LobbyCreationService) : ViewMo
             try {
 
 
-                val newLobbyId = service.createLobby(
+               service.createLobby(
                     name = name,
                     description = description,
                     hostToken = hostToken,
@@ -44,8 +49,11 @@ class LobbyCreationViewModel(private val service: LobbyCreationService) : ViewMo
                     rounds = rounds,
                     minCreditToParticipate = minCreditToParticipate
                 )
+
                 state = LobbyCreationState.Success
+
             } catch (e: Throwable) {
+                Log.d(TAG, "Erro ao criar lobby: ${e.message}")
                 state = LobbyCreationState.Error("Erro ao criar lobby: ${e.message}")
             }
         }

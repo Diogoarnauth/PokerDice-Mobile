@@ -5,6 +5,7 @@ import com.example.chelasmultiplayerpokerdice.BASE_URL
 import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
 import com.example.chelasmultiplayerpokerdice.domain.LobbyInfo
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.LobbyCountResponse
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.LobbyDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -32,10 +33,11 @@ class LobbiesServiceImpl(
                     maxUsers = dto.maxUsers,
                     rounds = dto.rounds,
                     minCreditToParticipate = dto.minCreditToParticipate,
-                    isRunning = dto.isRunning
-                    //adicionar o turnTime caso necessário
                 )
-                LobbyInfo(lobby, playerCount = 0)
+
+                val countResponse: LobbyCountResponse = client.get("$BASE_URL/users/lobby/${dto.id}").body()
+
+                LobbyInfo(lobby, countResponse.count)
             }
         } catch (e: Exception) {
             Log.e("LOBBIES_SERVICE", "Erro ao buscar lobbies: ${e.message}")

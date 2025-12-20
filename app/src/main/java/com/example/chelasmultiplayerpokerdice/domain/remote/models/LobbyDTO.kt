@@ -26,7 +26,6 @@ data class LobbyDto(
     val maxUsers: Int,
     val rounds: Int,
     val minCreditToParticipate: Int,
-    val isRunning: Boolean,
     val turnTime: String
 )
 
@@ -37,6 +36,9 @@ data class LobbyPlayersResponseDto(
     val count: Int,
     val players: List<PlayerDto>
 )
+
+@Serializable
+data class LobbyCountResponse(val lobbyId: Int, val count: Int)
 @Serializable
 data class PlayerDto(
     val id: Int,

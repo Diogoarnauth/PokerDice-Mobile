@@ -3,16 +3,16 @@ package com.example.chelasmultiplayerpokerdice.lobby
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
-import com.example.chelasmultiplayerpokerdice.domain.LobbyInfo
 import com.example.chelasmultiplayerpokerdice.domain.User
 
 const val LOBBYSCREEN_VIEW_TAG = "Lobby View"
@@ -26,6 +26,7 @@ const val LOBBYSCREEN_STARTGAME_BUTTON = "Start Game Button"
 fun LobbyScreenView(
     lobby: Lobby,
     players: List<User>,
+    goBackTitleScreenFunction: () -> Unit, // 1. Adicionado aqui
     onAbandon: () -> Unit,
     onStartGame: () -> Unit,
 ) {
@@ -40,6 +41,12 @@ fun LobbyScreenView(
                         text = "🏠 Lobby: ${lobby.name}",
                         style = MaterialTheme.typography.titleLarge
                     )
+                },
+                // 2. Adicionamos o botão de voltar no canto superior direito ou esquerdo
+                actions = {
+                    IconButton(onClick = goBackTitleScreenFunction) {
+                        Icon(Icons.Default.Home, contentDescription = "Voltar ao Menu")
+                    }
                 }
             )
         },
@@ -63,9 +70,9 @@ fun LobbyScreenView(
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Start
                     )
-                    Text("👑 Dono: ${lobby.hostId}")
-                    Text("Jogadores: ${players.size}/${lobby.maxUsers}")
-                    Text("Número de rondas: ${lobby.rounds}")
+                    Text("👥 Jogadores: ${players.size}/${lobby.maxUsers}")
+                    Text("🎲 Número de rondas: ${lobby.rounds}")
+                    Text("\uD83E\uDE99  Min. creditos: ${lobby.minCreditToParticipate}")
 
                 }
 
@@ -79,12 +86,13 @@ fun LobbyScreenView(
                         .testTag(LOBBYSCREEN_PLAYERS_LIST)
                 ) {
                     Text(
-                        text = "Jogadores (${players.size}/${lobby.maxUsers}):",
-                        style = MaterialTheme.typography.titleMedium
+                        text = "Lista de Espera:",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(players) { player ->
                             Card(
@@ -93,12 +101,15 @@ fun LobbyScreenView(
                             ) {
                                 Row(
                                     modifier = Modifier
-                                        .padding(12.dp)
+                                        .padding(16.dp)
                                         .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(player.name, style = MaterialTheme.typography.bodyMedium)
-                                    Text("ID: ${player.id}", style = MaterialTheme.typography.bodySmall)
+                                    Text(player.name, style = MaterialTheme.typography.bodyLarge)
+                                    if (player.id == lobby.hostId) {
+                                        Badge { Text("HOST") }
+                                    }
                                 }
                             }
                         }
@@ -113,12 +124,12 @@ fun LobbyScreenView(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(
+                    OutlinedButton(
                         onClick = onAbandon,
                         modifier = Modifier
                             .weight(1f)
                             .testTag(LOBBYSCREEN_ABANDON_BUTTON),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
                     ) {
                         Text("Abandonar")
                     }
@@ -128,7 +139,8 @@ fun LobbyScreenView(
                         modifier = Modifier
                             .weight(1f)
                             .testTag(LOBBYSCREEN_STARTGAME_BUTTON),
-                        enabled = players.size >= 2
+                        // Ativa apenas se houver jogadores suficientes
+                        enabled = players.size >= lobby.minUsers
                     ) {
                         Text("Iniciar Jogo")
                     }
@@ -136,31 +148,4 @@ fun LobbyScreenView(
             }
         }
     )
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun LobbyScreenPreview() {
-   /* val fakeLobby = Lobby(
-        id = 1,
-        name = "Poker Masters",
-        description = "Lobby para testar a sorte 🎲",
-        hostId = 1,
-        minUsers = 2,
-        maxUsers = 4,
-        rounds = 12,
-        minCreditToParticipate = 10,
-        playersCount = 3,
-        users = listOf(
-            User(1, "Renata"),
-            User(2, "Diogo"),
-            User(3, "Humberto")
-        )
-    )
-
-    LobbyScreenView(
-        lobby = fakeLobby,
-        onAbandon = {},
-        onStartGame = {}
-    )*/
 }

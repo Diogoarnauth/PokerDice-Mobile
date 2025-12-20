@@ -64,7 +64,6 @@ object FakeDatabase {
             maxUsers = 4,
             rounds = 12,
             minCreditToParticipate = 1,
-            isRunning = false
         )
     )
     private val _lobbies = MutableStateFlow(initialLobbies)
@@ -144,13 +143,10 @@ object FakeDatabase {
             maxUsers = maxUsers,
             rounds = rounds,
             minCreditToParticipate = minCredit,
-            isRunning = false
         )
 
-        // Adiciona o lobby à lista de lobbies (dispara o Flow _lobbies)
         _lobbies.update { currentList -> currentList + newLobby }
 
-        // Atualiza o 'lobbyId' do user anfitrião (dispara o Flow _users)
         _users.update { currentUsers ->
             currentUsers.map {
                 if (it.id == hostId) it.copy(lobbyId = newLobby.id) else it

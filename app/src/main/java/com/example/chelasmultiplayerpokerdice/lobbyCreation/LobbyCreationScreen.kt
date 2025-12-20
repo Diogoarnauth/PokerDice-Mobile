@@ -13,6 +13,7 @@ fun LobbyCreation(
 ) {
     val context = LocalContext.current
 
+
     when (val currentState = viewModel.state) {
         is LobbyCreationState.Idle -> {
             InitialLobbyCreationView(
@@ -38,6 +39,24 @@ fun LobbyCreation(
             (context as? Activity)?.finish()
         }
 
-        is LobbyCreationState.Error -> androidx.compose.material3.Text(text = currentState.message)
+        is LobbyCreationState.Error -> {
+            InitialLobbyCreationView(
+                goBackFunction = { navigator.goToLobbiesScreen(user) },
+                onCreateLobby = { name, description, minPlayers, maxPlayers, minCredits, rounds ->
+                    viewModel.createLobby(name, description, minPlayers, maxPlayers, minCredits, rounds, user.token)
+                }
+            )
+
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { viewModel.clearError() },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(onClick = { viewModel.clearError() }) {
+                        androidx.compose.material3.Text("OK")
+                    }
+                },
+                title = { androidx.compose.material3.Text("Erro") },
+                text = { androidx.compose.material3.Text(currentState.message) }
+            )
+        }
     }
 }

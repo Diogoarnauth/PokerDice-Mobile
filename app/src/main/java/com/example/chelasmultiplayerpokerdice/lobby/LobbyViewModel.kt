@@ -30,7 +30,7 @@ class LobbyViewModel(
             try {
                 _state.value = LobbyScreenState.Loading
 
-                repository.joinLobby(lobbyId, token)
+                //repository.joinLobby(lobbyId, token)
                 repository.getLobbyLive(lobbyId)
                     .catch { error ->
                         _state.value = LobbyScreenState.Error("Erro: ${error.message}")

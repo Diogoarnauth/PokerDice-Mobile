@@ -27,6 +27,7 @@ fun LobbyScreen(
 
         is LobbyScreenState.Success -> LobbyScreenView(
             lobby = (currentState as LobbyScreenState.Success).lobby,
+            goBackTitleScreenFunction = { navigator.goToTitleScreen(user) },
             onAbandon = {
                 viewModel.onAbandon(lobbyId, user.token)
                 navigator.goToTitleScreen(user)

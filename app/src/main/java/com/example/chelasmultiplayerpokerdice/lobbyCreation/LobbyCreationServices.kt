@@ -10,8 +10,12 @@ import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.LobbyCreateRequestDto
 import io.ktor.client.call.body
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.math.max
 
 interface LobbyCreationService {
@@ -61,7 +65,20 @@ class LobbyCreationServiceImpl(
         if (response.status.value == 201) {
             return
         } else {
-            throw Exception("Erro ao criar lobby: ${response.status.description}")
+            // 1. Extraímos o texto puro do erro (o JSON que mostraste)
+            val errorText = response.bodyAsText()
+            Log.d(TAG, "JSON REAL DO ERRO: $errorText")
+
+            // 2. Tentamos extrair apenas a "message" para não mostrar o JSON feio ao user
+            val messageToShow = try {
+                val json = Json.parseToJsonElement(errorText).jsonObject
+                json["message"]?.jsonPrimitive?.content ?: response.status.description
+
+            } catch (e: Exception) {
+                response.status.description
+            }
+
+            throw Exception(messageToShow)
         }
     }
 }
