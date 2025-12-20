@@ -1,5 +1,6 @@
 package com.example.chelasmultiplayerpokerdice.playerProfile
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,7 +31,7 @@ const val GET_INVITE_BUTTON_TAG = "Get Invite Button"
 fun PlayerProfileView(
     playerData: User,
     onDeposit: (Int) -> Unit,
-    inviteCode: String? = null,
+    inviteCode: String?,
     goBackTitleScreenFunction: () -> Unit,
     onGetInviteCode: () -> Unit
 ) {
@@ -112,6 +113,7 @@ fun PlayerProfileView(
                 }
 
                 Spacer(modifier = Modifier.height(40.dp))
+                Log.d( "PlayerProfileView", "Invite code to copy: $inviteCode")
 
                 // ZONA DO CONVITE
                 if (inviteCode != null) {
@@ -141,8 +143,9 @@ fun PlayerProfileView(
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 letterSpacing = 2.sp
                             )
+                            Log.d( "PlayerProfileView", "Invite code to copy: $inviteCode")
                             TextButton(
-                                onClick = {
+                                                                onClick = {
                                     clipboardManager.setText(AnnotatedString(inviteCode))
                                 }
                             ) {
@@ -202,8 +205,9 @@ fun PlayerProfileViewPreview() {
             lobbyId = null,
             passwordValidation = ""
         ),
+        inviteCode = null,
         goBackTitleScreenFunction = {},
         onDeposit = {},
-        onGetInviteCode = {}
+        onGetInviteCode = { }
     )
 }

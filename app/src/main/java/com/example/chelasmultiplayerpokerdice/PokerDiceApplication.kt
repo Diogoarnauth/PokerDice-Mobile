@@ -28,17 +28,19 @@ import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileService
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import io.ktor.client.plugins.logging.Logger
-const val TAG = "PokerDice"
+import io.ktor.client.request.header
 
+const val TAG = "PokerDice"
 
 //const val BASE_URL = "http://localhost:8080/api"
 //const val BASE_URL = "http://10.0.2.2:8080/api"
-const val BASE_URL = "https://senary-unsetting-clay.ngrok-free.dev"
+const val BASE_URL = "https://senary-unsetting-clay.ngrok-free.dev/api"
 
 interface DependenciesContainer {
     val aboutService: AboutService
@@ -67,6 +69,7 @@ class PokerDiceApplication : Application(), DependenciesContainer {
                     isLenient = true
                 })
             }
+
             install(Logging) {
                 logger = object : Logger {
                     override fun log(message: String) {
@@ -75,62 +78,64 @@ class PokerDiceApplication : Application(), DependenciesContainer {
                 }
                 level = LogLevel.ALL
             }
+            defaultRequest {
+                header("ngrok-skip-browser-warning", "true")
+            }
         }
     }
 
 
+override val authRepo: AuthInfoRepo by lazy {
+    InMemoryAuthRepo()
+}
 
-    override val authRepo: AuthInfoRepo by lazy {
-        InMemoryAuthRepo()
-    }
+override val gameRepository: GameRepository by lazy {
+    GameRepository(gameService)
+}
 
-    override val gameRepository: GameRepository by lazy {
-        GameRepository(gameService)
-    }
+override val lobbyRepository: LobbyRepository by lazy {
+    LobbyRepository(lobbyService)
+}
 
-    override val lobbyRepository: LobbyRepository by lazy {
-        LobbyRepository(lobbyService)
-    }
+override val lobbiesRepository: LobbiesRepository by lazy {
+    LobbiesRepository(lobbiesService)
+}
 
-    override val lobbiesRepository: LobbiesRepository by lazy {
-        LobbiesRepository(lobbiesService)
-    }
+override val loginService: LoginService by lazy {
+    LoginServiceImpl(client)
+}
 
-    override val loginService: LoginService by lazy {
-        LoginServiceImpl(client)
-    }
+override val signupService: SignupService by lazy {
+    SignupServiceImpl(client)
+}
 
-    override val signupService: SignupService by lazy {
-        SignupServiceImpl(client)
-    }
+override val lobbiesService: LobbiesService by lazy {
+    LobbiesServiceImpl(client)
+}
 
-    override val lobbiesService: LobbiesService by lazy {
-        LobbiesServiceImpl(client)
-    }
+override val lobbyService: LobbyService by lazy {
+    LobbyServiceImpl(client)
+}
 
-    override val lobbyService: LobbyService by lazy {
-        LobbyServiceImpl(client)
-    }
+override val aboutService: AboutService by lazy {
+    AboutFakeServiceImpl()
+}
 
-    override val aboutService: AboutService by lazy {
-        AboutFakeServiceImpl()
-    }
-
-    override val gameService: GameService by lazy {
-        GameRemoteServiceImpl(client)
-    }
+override val gameService: GameService by lazy {
+    GameRemoteServiceImpl(client)
+}
 
 
-    override val lobbyCreationService: LobbyCreationService by lazy {
-        LobbyCreationServiceImpl(client)
-    }
+override val lobbyCreationService: LobbyCreationService by lazy {
+    LobbyCreationServiceImpl(client)
+}
 
-    override val playerProfileService: PlayerProfileService by lazy {
-        PlayerProfileServiceImpl(client)
-    }
+override val playerProfileService: PlayerProfileService by lazy {
+    PlayerProfileServiceImpl(client)
+}
 
-    override val titleService: TitleService by lazy {
-        TitleFakeServiceImpl()
-    }
+override val titleService: TitleService by lazy {
+    TitleFakeServiceImpl()
+}
 
 }

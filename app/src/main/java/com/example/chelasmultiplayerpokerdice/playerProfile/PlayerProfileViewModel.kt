@@ -47,6 +47,7 @@ class PlayerProfileViewModel(private val service: PlayerProfileService) : ViewMo
             viewModelScope.launch {
                 try {
                     val code = service.getAppInvite(token)
+                    Log.d(TAG, "Código de convite gerado: $code")
                     // Atualizamos o estado mantendo os dados do user e adicionando o código
                     _state.value = currentState.copy(inviteCode = code)
                 } catch (e: Throwable) {

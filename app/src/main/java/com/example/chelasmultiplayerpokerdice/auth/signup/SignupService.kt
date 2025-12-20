@@ -35,7 +35,9 @@ class SignupServiceImpl(
     override suspend fun needsBootstrap(): Boolean {
         return try {
             val url = "$BASE_URL/checkAdmin"
+            Log.d("TAG", "Verificando necessidade de Bootstrap em: $url")
             val response = client.get(url)
+            Log.d(" TAG", "Resposta do servidor: ${response.status.value} - ${response.bodyAsText()}")
 
             if (response.status.value == 200) {
                 val res: CheckAdminResponseDto = response.body()
