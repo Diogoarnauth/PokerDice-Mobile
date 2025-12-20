@@ -1,6 +1,7 @@
 package com.example.chelasmultiplayerpokerdice.lobbies
 
 import android.util.Log
+import com.example.chelasmultiplayerpokerdice.BASE_URL
 import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
 import com.example.chelasmultiplayerpokerdice.domain.LobbyInfo
@@ -19,10 +20,7 @@ class LobbiesServiceImpl(
 
     override suspend fun fetchLobbiesList(): List<LobbyInfo> {
         return try {
-
-            val lobbyDtos: List<LobbyDto> = client.get("lobbies").body()
-            Log.d(TAG, "lobbies obtidos $lobbyDtos")
-
+            val lobbyDtos: List<LobbyDto> = client.get("$BASE_URL/lobbies").body()
 
             lobbyDtos.map { dto ->
                 val lobby = Lobby(
@@ -34,7 +32,8 @@ class LobbiesServiceImpl(
                     maxUsers = dto.maxUsers,
                     rounds = dto.rounds,
                     minCreditToParticipate = dto.minCreditToParticipate,
-                    isRunning = false
+                    isRunning = dto.isRunning
+                    //adicionar o turnTime caso necessário
                 )
                 LobbyInfo(lobby, playerCount = 0)
             }

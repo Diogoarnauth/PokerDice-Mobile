@@ -26,7 +26,8 @@ data class LobbyDto(
     val maxUsers: Int,
     val rounds: Int,
     val minCreditToParticipate: Int,
-    val turnTime: Int
+    val isRunning: Boolean,
+    val turnTime: String
 )
 
 // Output da lista de jogadores (GET /users/obj/lobby/{id})

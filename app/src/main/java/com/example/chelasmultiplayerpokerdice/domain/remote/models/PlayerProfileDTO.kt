@@ -14,3 +14,9 @@ data class PlayerProfileResponseDto(
     val winCounter: Int = 0,
     val lobbyId: Int? = null
 )
+
+@Serializable
+data class InviteAppOutputModel(
+    @SerialName("inviteCode")
+    val inviteCode: String
+)

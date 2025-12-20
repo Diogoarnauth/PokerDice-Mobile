@@ -13,8 +13,10 @@ import kotlinx.coroutines.launch
 
 interface PlayerProfileScreenState {
     data object Loading : PlayerProfileScreenState
-    data class Success(val data: User) : PlayerProfileScreenState
-    data class Error(val message: String) : PlayerProfileScreenState
+    data class Success(
+        val data: User,
+        val inviteCode: String? = null
+    ) : PlayerProfileScreenState    data class Error(val message: String) : PlayerProfileScreenState
 }
 
 class PlayerProfileViewModel(private val service: PlayerProfileService) : ViewModel() {
@@ -37,7 +39,25 @@ class PlayerProfileViewModel(private val service: PlayerProfileService) : ViewMo
             }
         }
     }
+
+    fun generateInvite(token: String) {
+        val currentState = _state.value
+        // Só tentamos gerar se já tivermos o perfil carregado com sucesso
+        if (currentState is PlayerProfileScreenState.Success) {
+            viewModelScope.launch {
+                try {
+                    val code = service.getAppInvite(token)
+                    // Atualizamos o estado mantendo os dados do user e adicionando o código
+                    _state.value = currentState.copy(inviteCode = code)
+                } catch (e: Throwable) {
+                    Log.e(TAG, "Erro ao gerar convite: ${e.message}")
+                    // Opcional: Podias atualizar o estado para um erro específico
+                }
+            }
+        }
+    }
 }
+
 
 @Suppress("UNCHECKED_CAST")
 class PlayerProfileViewModelFactory(private val service: PlayerProfileService) :

@@ -6,9 +6,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.chelasmultiplayerpokerdice.domain.AuthenticatedUser
-
 @Composable
-fun PlayerProfileScreen(viewModel: PlayerProfileViewModel, navigator: PlayerProfileNavigation, user: AuthenticatedUser) {
+fun PlayerProfileScreen(
+    viewModel: PlayerProfileViewModel,
+    navigator: PlayerProfileNavigation,
+    user: AuthenticatedUser
+) {
 
     LaunchedEffect(user.token) {
         viewModel.loadProfile(user.token)
@@ -16,20 +19,23 @@ fun PlayerProfileScreen(viewModel: PlayerProfileViewModel, navigator: PlayerProf
 
     val currentState by viewModel.state.collectAsState()
 
-    when (currentState) {
+    when (val state = currentState) {
         is PlayerProfileScreenState.Loading -> {
             Text("A carregar perfil...")
         }
         is PlayerProfileScreenState.Success -> {
             PlayerProfileView(
-                playerData = (currentState as PlayerProfileScreenState.Success).data,
-                goBackTitleScreenFunction = { navigator.goToTitleScreen(user) }
+                playerData = state.data,
+                inviteCode = state.inviteCode,
+                goBackTitleScreenFunction = { navigator.goToTitleScreen(user) },
+                onGetInviteCode = {
+                    viewModel.generateInvite(user.token)
+                }
             )
         }
         is PlayerProfileScreenState.Error -> {
-            Text(text = (currentState as PlayerProfileScreenState.Error).message)
+            Text(text = state.message)
         }
     }
 }
-
 
