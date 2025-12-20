@@ -31,4 +31,8 @@ class LobbyRepository(private val service: LobbyService) {
         return service.fetchMe(token)
     }
 
+    suspend fun startGame(lobbyId: Int, token: String) {
+        service.startGame(lobbyId, token)
+    }
+
 }

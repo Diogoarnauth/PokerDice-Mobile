@@ -1,8 +1,10 @@
 package com.example.chelasmultiplayerpokerdice.game
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chelasmultiplayerpokerdice.TAG
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,9 +17,9 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
     val state: StateFlow<GameScreenState> = _state.asStateFlow()
 
     init {
-
         viewModelScope.launch {
             repository.gameState.collectLatest { newGameState ->
+                Log.d(TAG, "newGameState $newGameState")
                 if (newGameState == null) {
                     _state.value = GameScreenState.Loading
                 } else {
@@ -44,6 +46,7 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
     }
 
     fun loadGame(lobbyId: Int, token: String) {
+        Log.d(TAG, "ENTREI NO loadGame")
         viewModelScope.launch {
             try {
                 repository.fetchGame(lobbyId, token)

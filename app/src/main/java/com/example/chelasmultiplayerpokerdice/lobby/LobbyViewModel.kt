@@ -72,7 +72,7 @@ class LobbyViewModel(
         }
     }
 
-    fun onStartGame(lobbyId: Int, token: String, onSuccess: () -> Unit) {
+   fun onStartGame(lobbyId: Int, token: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
                 repository.startGame(lobbyId, token)

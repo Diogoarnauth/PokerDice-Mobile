@@ -1,5 +1,7 @@
 package com.example.chelasmultiplayerpokerdice.game
 
+import android.util.Log
+import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.Game
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +25,7 @@ class GameRepository(private val service: GameService) {
      * Inicia o jogo (Vai ao serviço buscar o estado inicial e emite no Flow)
      */
     suspend fun fetchGame(lobbyId: Int, token: String) {
+        Log.d(TAG, "ENTREI NO fetchGame")
         mutex.withLock {
             try {
                 val initialState = service.getInitialGameState(lobbyId, token)

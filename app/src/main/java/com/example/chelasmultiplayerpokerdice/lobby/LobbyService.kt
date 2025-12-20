@@ -100,6 +100,7 @@ class LobbyServiceImpl(
         return response.id
     }
 
+    //TODO() tratamento de erros
     override suspend fun startGame(lobbyId: Int, token: String) {
         client.post("$BASE_URL/games/$lobbyId/start") {
             bearerAuth(token)
