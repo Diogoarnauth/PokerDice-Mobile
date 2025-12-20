@@ -465,6 +465,7 @@ fun GameViewPreview() {
     )
 
     val previewState = GameState(
+        id= 1,
         dice = diogoDice,
         players = listOf(
             PlayerStatus(id = 1, name = "Renata", dice = renataDice, hand = null ,  isCurrentTurn = false),

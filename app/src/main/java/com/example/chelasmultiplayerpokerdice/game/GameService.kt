@@ -1,11 +1,15 @@
 package com.example.chelasmultiplayerpokerdice.game
 
-import android.util.Log
-import com.example.chelasmultiplayerpokerdice.domain.DiceFace
-import com.example.chelasmultiplayerpokerdice.domain.Die
-import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase
-import com.example.chelasmultiplayerpokerdice.mem.FakeDatabase.tokens
-import kotlinx.coroutines.delay
+import com.example.chelasmultiplayerpokerdice.BASE_URL
+import com.example.chelasmultiplayerpokerdice.domain.Game
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.GameDto
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.toGameState
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.http.HttpHeaders
 interface GameService {
     suspend fun getInitialGameState(lobbyId: Int, token: String): GameState
     suspend fun rollDice(currentState: GameState, token: String): GameState
@@ -13,6 +17,46 @@ interface GameService {
     suspend fun startNextRound(currentState: GameState): GameState
 }
 
+class GameRemoteServiceImpl(
+    private val client: HttpClient
+) : GameService {
+
+    override suspend fun getInitialGameState(lobbyId: Int, token: String): GameState {
+        val dto: GameDto = client.get("$BASE_URL/games/lobby/$lobbyId") {
+            header(HttpHeaders.Authorization, "Bearer $token")
+        }.body()
+
+        return dto.toGameState()
+    }
+
+    override suspend fun rollDice( currentState: GameState, token: String): GameState {
+        val gameId = currentState.id  // se precisares, inclui id no GameState
+        val dto: GameDto = client.post("$BASE_URL/games/$gameId/roll") {
+            header(HttpHeaders.Authorization, "Bearer $token")
+        }.body()
+        return dto.toGameState()
+    }
+
+    override suspend fun endTurnAndSimulate(currentState: GameState, token: String): GameState {
+        val gameId = currentState.id
+        val dto: GameDto = client.post("$BASE_URL/games/$gameId/end-turn") {
+            header(HttpHeaders.Authorization, "Bearer $token")
+        }.body()
+        return dto.toGameState()
+    }
+
+    override suspend fun startNextRound( currentState: GameState): GameState {
+        // se o backend tiver endpoint de próxima ronda, chama-o aqui;
+        // senão, podes fazer só um GET ao estado atual
+        val gameId = currentState.id
+        val dto: GameDto = client.get("$BASE_URL/games/$gameId").body()
+        return dto.toGameState()
+    }
+}
+
+
+
+/*
 class GameFakeServiceImpl : GameService {
 
     private val db = FakeDatabase
@@ -150,3 +194,5 @@ class GameFakeServiceImpl : GameService {
     }
 
 }
+
+ */

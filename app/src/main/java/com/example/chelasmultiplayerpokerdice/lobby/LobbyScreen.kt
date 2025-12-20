@@ -36,7 +36,12 @@ fun LobbyScreen(
             onJoinLobby = {
                 viewModel.onJoin(lobbyId, user.token)
             },
-            onStartGame = { navigator.goToGameScreen(user, lobbyId) }
+            onStartGame = {
+                viewModel.onStartGame(lobbyId, user.token) {
+                    navigator.goToGameScreen(user, lobbyId)
+                }
+            }
+
         )
 
         is LobbyScreenState.Error -> Text("Erro: ${state.message}")

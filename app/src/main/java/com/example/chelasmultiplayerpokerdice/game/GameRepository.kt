@@ -1,5 +1,6 @@
 package com.example.chelasmultiplayerpokerdice.game
 
+import com.example.chelasmultiplayerpokerdice.domain.Game
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

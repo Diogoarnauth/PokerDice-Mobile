@@ -20,6 +20,7 @@ data class PlayerStatus(
 )
 
 data class GameState(
+    val id: Int,
     val dice: List<Die>,
     val players: List<PlayerStatus>,
     val currentPlayerName: String,

@@ -9,7 +9,6 @@ import com.example.chelasmultiplayerpokerdice.auth.login.LoginService
 import com.example.chelasmultiplayerpokerdice.auth.login.LoginServiceImpl
 import com.example.chelasmultiplayerpokerdice.auth.signup.SignupService
 import com.example.chelasmultiplayerpokerdice.auth.signup.SignupServiceImpl
-import com.example.chelasmultiplayerpokerdice.game.GameFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.game.GameRepository
 import com.example.chelasmultiplayerpokerdice.game.GameService
 import com.example.chelasmultiplayerpokerdice.lobbies.LobbiesRepository
@@ -23,6 +22,7 @@ import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileService
 import com.example.chelasmultiplayerpokerdice.title.TitleFakeServiceImpl
 import com.example.chelasmultiplayerpokerdice.title.TitleService
 import android.util.Log
+import com.example.chelasmultiplayerpokerdice.game.GameRemoteServiceImpl
 import com.example.chelasmultiplayerpokerdice.lobbyCreation.LobbyCreationServiceImpl
 import com.example.chelasmultiplayerpokerdice.playerProfile.PlayerProfileServiceImpl
 import io.ktor.client.HttpClient
@@ -116,7 +116,7 @@ class PokerDiceApplication : Application(), DependenciesContainer {
     }
 
     override val gameService: GameService by lazy {
-        GameFakeServiceImpl()
+        GameRemoteServiceImpl(client)
     }
 
 
