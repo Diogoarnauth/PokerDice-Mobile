@@ -16,6 +16,9 @@ data class PlayerProfileResponseDto(
 )
 
 @Serializable
+data class DepositRequest(val value: Int)
+
+@Serializable
 data class InviteAppOutputModel(
     @SerialName("inviteCode")
     val inviteCode: String

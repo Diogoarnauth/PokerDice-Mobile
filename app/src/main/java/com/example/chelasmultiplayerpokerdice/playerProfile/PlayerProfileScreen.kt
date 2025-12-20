@@ -25,9 +25,11 @@ fun PlayerProfileScreen(
         }
         is PlayerProfileScreenState.Success -> {
             PlayerProfileView(
-                playerData = state.data,
-                inviteCode = state.inviteCode,
+                playerData = (currentState as PlayerProfileScreenState.Success).data,
                 goBackTitleScreenFunction = { navigator.goToTitleScreen(user) },
+                onDeposit = { credit ->
+                    viewModel.deposit(user.token, credit)
+                },
                 onGetInviteCode = {
                     viewModel.generateInvite(user.token)
                 }
@@ -38,4 +40,5 @@ fun PlayerProfileScreen(
         }
     }
 }
+
 

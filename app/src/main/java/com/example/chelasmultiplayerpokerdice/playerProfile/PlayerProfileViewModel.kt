@@ -56,6 +56,20 @@ class PlayerProfileViewModel(private val service: PlayerProfileService) : ViewMo
             }
         }
     }
+
+    fun deposit(token: String, value: Int) {
+        viewModelScope.launch {
+            try {
+                val updatedUser = service.depositCredit(token, value)
+                _state.value = PlayerProfileScreenState.Success(updatedUser)
+            } catch (e: Throwable) {
+                _state.value = PlayerProfileScreenState.Error(
+                    "Erro ao depositar crédito: ${e.message}"
+                )
+            }
+        }
+    }
+
 }
 
 

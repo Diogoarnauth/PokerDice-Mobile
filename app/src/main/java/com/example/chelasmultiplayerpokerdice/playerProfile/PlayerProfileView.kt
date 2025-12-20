@@ -7,7 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,11 +29,12 @@ const val GET_INVITE_BUTTON_TAG = "Get Invite Button"
 @Composable
 fun PlayerProfileView(
     playerData: User,
-    inviteCode: String? = null, // Novo: Estado do código recebido
+    onDeposit: (Int) -> Unit,
+    inviteCode: String? = null,
     goBackTitleScreenFunction: () -> Unit,
-    onGetInviteCode: () -> Unit // Novo: Ação de clique
+    onGetInviteCode: () -> Unit
 ) {
-
+    var depositValue by remember { mutableStateOf("") }
     val clipboardManager = LocalClipboardManager.current
 
     Scaffold(
@@ -65,11 +66,12 @@ fun PlayerProfileView(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
                     .padding(horizontal = 24.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.Top, // Mudado para Top para o botão não fugir
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
 
+                // Título
                 Text(
                     text = "Informações do Jogador",
                     style = MaterialTheme.typography.headlineSmall,
@@ -79,29 +81,59 @@ fun PlayerProfileView(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Dados do Jogador
+                // Dados do Jogador (apenas uma vez)
                 ProfileInfoRow("Username", playerData.username)
                 ProfileInfoRow("Nome", playerData.name)
                 ProfileInfoRow("Idade", playerData.age.toString())
                 ProfileInfoRow("Crédito", "${playerData.credit} moedas")
                 ProfileInfoRow("Vitórias", playerData.winCounter.toString())
 
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // BLOCO DE DEPÓSITO (no meio / antes do convite)
+                OutlinedTextField(
+                    value = depositValue,
+                    onValueChange = { depositValue = it.filter { ch -> ch.isDigit() } },
+                    label = { Text("Valor a depositar") },
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = {
+                        val credit = depositValue.toIntOrNull() ?: 0
+                        if (credit > 0) {
+                            onDeposit(credit)
+                            depositValue = ""
+                        }
+                    }
+                ) {
+                    Text("Depositar")
+                }
+
                 Spacer(modifier = Modifier.height(40.dp))
 
-                // Zona do Convite
+                // ZONA DO CONVITE
                 if (inviteCode != null) {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer
                         ),
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text("Teu Código de Convite:", style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                "Teu Código de Convite:",
+                                style = MaterialTheme.typography.labelLarge
+                            )
                             Text(
                                 text = inviteCode,
                                 style = MaterialTheme.typography.headlineMedium,
@@ -114,7 +146,11 @@ fun PlayerProfileView(
                                     clipboardManager.setText(AnnotatedString(inviteCode))
                                 }
                             ) {
-                                Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Icon(
+                                    Icons.Default.Edit,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
                                 Spacer(Modifier.width(8.dp))
                                 Text("Copiar Código")
                             }
@@ -129,7 +165,9 @@ fun PlayerProfileView(
                         .height(56.dp)
                         .testTag(GET_INVITE_BUTTON_TAG),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
                     Text("Get AppInvite", fontSize = 16.sp)
                 }
@@ -137,6 +175,7 @@ fun PlayerProfileView(
         }
     )
 }
+
 
 @Composable
 fun ProfileInfoRow(label: String, value: String) {
@@ -153,9 +192,18 @@ fun ProfileInfoRow(label: String, value: String) {
 @Composable
 fun PlayerProfileViewPreview() {
     PlayerProfileView(
-        playerData = User(1, "renata123", "Renata C", "renata",19, 100, 5, null),
-        inviteCode = "ABC-123",
+        playerData = User(
+            id = 1,
+            username = "renata1234",
+            name = "Renata Castanheira",
+            age = 19,
+            credit = 100,
+            winCounter = 5,
+            lobbyId = null,
+            passwordValidation = ""
+        ),
         goBackTitleScreenFunction = {},
+        onDeposit = {},
         onGetInviteCode = {}
     )
 }

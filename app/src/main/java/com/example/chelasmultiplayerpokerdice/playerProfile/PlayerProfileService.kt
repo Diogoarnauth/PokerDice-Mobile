@@ -4,17 +4,23 @@ import android.util.Log
 import com.example.chelasmultiplayerpokerdice.BASE_URL
 import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.User
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.DepositRequest
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.PlayerProfileResponseDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.*
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 
 interface PlayerProfileService {
    suspend fun getPlayerProfileData(token: String): User
     suspend fun getAppInvite(token: String): String
+
+    suspend fun depositCredit(token: String, credit: Int) : User
 }
 
 class PlayerProfileServiceImpl(
@@ -42,6 +48,39 @@ class PlayerProfileServiceImpl(
             throw e
         }
     }
+
+    override suspend fun depositCredit(token: String, value: Int): User {
+        Log.d(TAG, "🚀 Iniciando depósito de '$value' moedas")
+        return try {
+            val response: PlayerProfileResponseDto = client.post("$BASE_URL/deposit") {
+                header("Content-Type", "application/json")
+                header(HttpHeaders.Authorization, "Bearer $token")
+                setBody(DepositRequest(value))
+            }.body()
+
+            val user = getPlayerProfileData(token)
+
+            Log.d(TAG, "✅ Depósito OK, novo crédito: ${response.credit}")
+
+            User(
+                id = user.id,
+                username = user.username,
+                name = user.name,
+                age = user.age,
+                credit = user.credit,
+                winCounter = user.winCounter,
+                lobbyId = user.lobbyId,
+                passwordValidation = ""
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ ERRO NO DEPÓSITO!")
+            Log.e(TAG, "Mensagem: ${e.message}")
+            Log.e(TAG, "Causa: ${e.cause}")
+            e.printStackTrace()
+            throw e
+        }
+    }
+
 
     override suspend fun getAppInvite(token: String): String {
         Log.d(TAG, "ANTES")
