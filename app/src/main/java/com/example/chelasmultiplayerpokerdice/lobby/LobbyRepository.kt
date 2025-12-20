@@ -27,4 +27,8 @@ class LobbyRepository(private val service: LobbyService) {
         service.joinLobby(lobbyId, token)
     }
 
+    suspend fun getMyId(token: String): Int {
+        return service.fetchMe(token)
+    }
+
 }

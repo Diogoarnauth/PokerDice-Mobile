@@ -15,27 +15,30 @@ fun LobbyScreen(
     user: AuthenticatedUser,
     lobbyId: Int
 ) {
-
     LaunchedEffect(lobbyId, user.token) {
         viewModel.loadLobby(lobbyId, user.token)
     }
 
     val currentState by viewModel.state.collectAsState()
 
-    when (currentState) {
-        is LobbyScreenState.Loading -> LoadingView("A carregar informações do lobby...")
+    when (val state = currentState) {
+        is LobbyScreenState.Loading -> LoadingView("A carregar informações...")
 
         is LobbyScreenState.Success -> LobbyScreenView(
-            lobby = (currentState as LobbyScreenState.Success).lobby,
+            lobby = state.lobby,
+            players = state.players,
+            currentUserId = state.myId, // <--- Aqui está o ID que veio do getMe
             goBackTitleScreenFunction = { navigator.goToTitleScreen(user) },
             onAbandon = {
                 viewModel.onAbandon(lobbyId, user.token)
                 navigator.goToTitleScreen(user)
             },
-            players = (currentState as LobbyScreenState.Success).players,
+            onJoinLobby = {
+                viewModel.onJoin(lobbyId, user.token)
+            },
             onStartGame = { navigator.goToGameScreen(user, lobbyId) }
         )
 
-        is LobbyScreenState.Error -> Text("Erro: ${(currentState as LobbyScreenState.Error).message}")
+        is LobbyScreenState.Error -> Text("Erro: ${state.message}")
     }
 }

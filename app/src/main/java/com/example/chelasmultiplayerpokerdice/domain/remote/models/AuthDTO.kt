@@ -39,3 +39,15 @@ data class SignupResponseDto(
     val id: Int,
     val location: String
 )
+
+
+@Serializable
+data class UserMeResponse(
+    val id: Int,
+    val username: String,
+    val name: String,
+    val age: Int,
+    val credit: Int,
+    val winCounter: Int,
+    val lobbyId: Int? = null
+)

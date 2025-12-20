@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 
 interface LobbyScreenState {
     data object Loading : LobbyScreenState
-    data class Success(val lobby: Lobby, val players: List<User>) : LobbyScreenState
+    // Atualizado para incluir o ID do utilizador atual
+    data class Success(val lobby: Lobby, val players: List<User>, val myId: Int) : LobbyScreenState
     data class Error(val message: String) : LobbyScreenState
 }
 
@@ -25,12 +26,14 @@ class LobbyViewModel(
     val state: StateFlow<LobbyScreenState> = _state.asStateFlow()
 
     fun loadLobby(lobbyId: Int, token: String) {
-
         viewModelScope.launch {
             try {
                 _state.value = LobbyScreenState.Loading
 
-                //repository.joinLobby(lobbyId, token)
+                // 1. Primeiro obtemos o ID do utilizador atual (através do getMe no repository)
+                val myId = repository.getMyId(token)
+
+                // 2. Iniciamos o polling do lobby
                 repository.getLobbyLive(lobbyId)
                     .catch { error ->
                         _state.value = LobbyScreenState.Error("Erro: ${error.message}")
@@ -38,12 +41,13 @@ class LobbyViewModel(
                     .collect { details ->
                         _state.value = LobbyScreenState.Success(
                             lobby = details.lobby,
-                            players = details.players
+                            players = details.players,
+                            myId = myId // Passamos o ID para o estado de sucesso
                         )
                     }
 
             } catch (e: Throwable) {
-                _state.value = LobbyScreenState.Error("Erro ao entrar no lobby: ${e.message}")
+                _state.value = LobbyScreenState.Error("Erro ao carregar dados: ${e.message}")
             }
         }
     }
@@ -54,6 +58,16 @@ class LobbyViewModel(
                 repository.leaveLobby(lobbyId, token)
             } catch (e: Throwable) {
                 _state.value = LobbyScreenState.Error("Erro ao sair: ${e.message}")
+            }
+        }
+    }
+
+    fun onJoin(lobbyId: Int, token: String) {
+        viewModelScope.launch {
+            try {
+                repository.joinLobby(lobbyId, token)
+            } catch (e: Throwable) {
+                _state.value = LobbyScreenState.Error("Não foi possível entrar: ${e.message}")
             }
         }
     }

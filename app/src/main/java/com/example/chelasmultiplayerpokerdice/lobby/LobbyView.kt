@@ -26,10 +26,16 @@ const val LOBBYSCREEN_STARTGAME_BUTTON = "Start Game Button"
 fun LobbyScreenView(
     lobby: Lobby,
     players: List<User>,
-    goBackTitleScreenFunction: () -> Unit, // 1. Adicionado aqui
+    currentUserId: Int,
+    goBackTitleScreenFunction: () -> Unit,
     onAbandon: () -> Unit,
+    onJoinLobby: () -> Unit,
     onStartGame: () -> Unit,
 ) {
+
+    val isHost = lobby.hostId == currentUserId
+    val isAlreadyInLobby = players.any { it.id == currentUserId }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -124,28 +130,37 @@ fun LobbyScreenView(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedButton(
-                        onClick = onAbandon,
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag(LOBBYSCREEN_ABANDON_BUTTON),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                    ) {
-                        Text("Abandonar")
-                    }
+                    if (isAlreadyInLobby) {
+                        // Se já estou lá dentro, posso Abandonar
+                        OutlinedButton(
+                            onClick = onAbandon,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Text("Abandonar")
+                        }
 
-                    Button(
-                        onClick = onStartGame,
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag(LOBBYSCREEN_STARTGAME_BUTTON),
-                        // Ativa apenas se houver jogadores suficientes
-                        enabled = players.size >= lobby.minUsers
-                    ) {
-                        Text("Iniciar Jogo")
+                        // Se sou Host, posso iniciar
+                        if (isHost) {
+                            Button(
+                                onClick = onStartGame,
+                                modifier = Modifier.weight(1f),
+                                enabled = players.size >= lobby.minUsers
+                            ) {
+                                Text("Iniciar Jogo")
+                            }
+                        }
+                    } else {
+                        // Se NÃO estou no lobby, mostro o botão para ENTRAR
+                        Button(
+                            onClick = onJoinLobby,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text("Entrar no Lobby")
+                        }
                     }
                 }
             }
-        }
-    )
+        })
 }

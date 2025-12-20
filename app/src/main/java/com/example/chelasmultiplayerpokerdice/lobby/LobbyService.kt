@@ -8,6 +8,7 @@ import com.example.chelasmultiplayerpokerdice.domain.LobbyDetails
 import com.example.chelasmultiplayerpokerdice.domain.User
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.LobbyDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.LobbyPlayersResponseDto
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.UserMeResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.bearerAuth
@@ -19,8 +20,8 @@ import io.ktor.client.request.post
 interface LobbyService {
     suspend fun fetchLobbyDetails(lobbyId: Int): LobbyDetails
     suspend fun abandonLobby(lobbyId: Int, token: String)
-
     suspend fun joinLobby(lobbyId: Int, token: String)
+    suspend fun fetchMe(token: String): Int
 
 }
 class LobbyServiceImpl(
@@ -80,12 +81,20 @@ class LobbyServiceImpl(
     override suspend fun joinLobby(lobbyId: Int, token: String) {
         try {
 
-            client.post("lobbies/$lobbyId/users") {
+            client.post("$BASE_URL/lobbies/$lobbyId/users") {
                 bearerAuth(token)
             }
         } catch (e: Exception) {
             Log.e("LOBBY_SERVICE", "Erro ao entrar no lobby: ${e.message}")
             throw e
         }
+    }
+
+    override suspend fun fetchMe(token: String): Int {
+        val response: UserMeResponse = client.get("$BASE_URL/users/getMe") {
+            bearerAuth(token)
+        }.body()
+
+        return response.id
     }
 }
