@@ -12,6 +12,6 @@ val Pink40 = Color(0xFF7D5260)
 
 val pokerGreen = Color(0xFF6AE5C0)
 val pokerGreenDark = Color(0xFF061F17)
-val pokerRed = Color(0xFF4D0505)
-val pokerGold = Color(0xFF7A4C27)
+val pokerRed = Color(0xFF2A0303)
+val pokerGold = Color(0xFF4B3C30)
 val pokerText = Color(0xFFFFF8E1)
