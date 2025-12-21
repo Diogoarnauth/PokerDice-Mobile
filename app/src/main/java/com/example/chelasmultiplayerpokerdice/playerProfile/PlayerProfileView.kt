@@ -99,7 +99,7 @@ fun PlayerProfileView(
                 Text(
                     text = "Player Information",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = pokerGold,
+                    color = pokerGreen,
                     textAlign = TextAlign.Center
                 )
 
