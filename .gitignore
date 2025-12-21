@@ -1,0 +1,36 @@
+# --- Android Studio / Gradle ---
+*.iml
+.gradle/
+.idea/
+/local.properties
+/.navEditor/
+.cxx/
+build/
+/build
+*/build
+
+# --- Ficheiros gerados pelo sistema ---
+.DS_Store
+Thumbs.db
+
+# --- Android ---
+# Capturas de ecrã/vídeo e logs
+captures/
+*.hprof
+
+# Ficheiros de chaves e segredos (NUNCA enviar para o git)
+*.jks
+*.keystore
+*.p12
+*.key
+google-services.json
+secrets.properties
+
+# --- Google / Firebase ---
+# Crashlytics, etc.
+com_crashlytics_export_strings.xml
+crashlytics-build.properties
+
+# --- Outros ---
+# Se usares ndk
+.externalNativeBuild
