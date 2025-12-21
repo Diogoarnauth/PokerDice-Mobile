@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
@@ -21,6 +22,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chelasmultiplayerpokerdice.domain.User
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerGold
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerGreen
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerGreenDark
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerRed
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerText
 
 const val PLAYERPROFILE_BACK_TITLESCREEN = "User Profile back to title screen"
 const val PLAYERPROFILE_VIEW_TAG = "User Profile View"
@@ -46,8 +52,9 @@ fun PlayerProfileView(
             TopAppBar(
                 title = {
                     Text(
-                        text = "👤 Perfil de ${playerData.username}",
-                        style = MaterialTheme.typography.titleLarge
+                        text = "Profile: ${playerData.username}",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = pokerText
                     )
                 },
                 actions = {
@@ -55,34 +62,49 @@ fun PlayerProfileView(
                         onClick = goBackTitleScreenFunction,
                         modifier = Modifier.testTag(PLAYERPROFILE_BACK_TITLESCREEN)
                     ) {
-                        Icon(Icons.Default.Home, contentDescription = "Go back to title screen")
+                        Icon(
+                            Icons.Default.Home,
+                            contentDescription = "Go back to title screen",
+                            tint = pokerText
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = pokerRed,
+                    titleContentColor = pokerText
+                )
             )
-        },
-        content = { paddingValues ->
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(listOf(pokerGreen, pokerGreenDark))
+                ),
+            contentAlignment = Alignment.Center
+        ) {
             Column(
                 modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxWidth(0.9f)
+                    .wrapContentHeight()
+                    .background(Color(0xCC061F17), RoundedCornerShape(16.dp))
                     .padding(horizontal = 24.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                // Título
                 Text(
-                    text = "Informações do Jogador",
+                    text = "Player Information",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = pokerGold,
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Dados do Jogador (apenas uma vez)
                 ProfileInfoRow("Username", playerData.username)
                 ProfileInfoRow("Nome", playerData.name)
                 ProfileInfoRow("Idade", playerData.age.toString())
@@ -91,11 +113,23 @@ fun PlayerProfileView(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // BLOCO DE DEPÓSITO (no meio / antes do convite)
+                // Depósito
                 OutlinedTextField(
                     value = depositValue,
                     onValueChange = { depositValue = it.filter { ch -> ch.isDigit() } },
                     label = { Text("Valor a depositar") },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = pokerGreen,
+                        unfocusedBorderColor = pokerGreen.copy(alpha = 0.7f),
+                        focusedTextColor = pokerText,
+                        unfocusedTextColor = pokerText,
+                        focusedLabelColor = pokerGreen,
+                        unfocusedLabelColor = pokerGreen
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -107,19 +141,25 @@ fun PlayerProfileView(
                             onDeposit(credit)
                             depositValue = ""
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = pokerGold,
+                        contentColor = pokerRed
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Depositar")
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
-                Log.d( "PlayerProfileView", "Invite code to copy: $inviteCode")
+                Spacer(modifier = Modifier.height(24.dp))
+                Log.d("PlayerProfileView", "Invite code to copy: $inviteCode")
 
-                // ZONA DO CONVITE
+                // Convite
                 if (inviteCode != null) {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            containerColor = Color(0xFF061F17)
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -134,28 +174,28 @@ fun PlayerProfileView(
                         ) {
                             Text(
                                 "Teu Código de Convite:",
-                                style = MaterialTheme.typography.labelLarge
+                                style = MaterialTheme.typography.labelLarge,
+                                color = pokerText
                             )
                             Text(
                                 text = inviteCode,
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                color = pokerGold,
                                 letterSpacing = 2.sp
                             )
-                            Log.d( "PlayerProfileView", "Invite code to copy: $inviteCode")
+                            Log.d("PlayerProfileView", "Invite code to copy: $inviteCode")
                             TextButton(
-                                                                onClick = {
+                                onClick = {
                                     clipboardManager.setText(AnnotatedString(inviteCode))
                                 }
                             ) {
                                 Icon(
                                     Icons.Default.Edit,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
+                                    contentDescription = null
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text("Copiar Código")
+                                Text("Copiar Código", color = pokerGreen)
                             }
                         }
                     }
@@ -169,25 +209,31 @@ fun PlayerProfileView(
                         .testTag(GET_INVITE_BUTTON_TAG),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = pokerGold,
+                        contentColor = pokerRed
                     )
                 ) {
                     Text("Get AppInvite", fontSize = 16.sp)
                 }
             }
         }
-    )
+    }
 }
-
 
 @Composable
 fun ProfileInfoRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "$label:", fontWeight = FontWeight.SemiBold)
-        Text(text = value)
+        Text(
+            text = "$label:",
+            fontWeight = FontWeight.SemiBold,
+            color = pokerText
+        )
+        Text(text = value, color = pokerText)
     }
 }
 
@@ -205,7 +251,7 @@ fun PlayerProfileViewPreview() {
             lobbyId = null,
             passwordValidation = ""
         ),
-        inviteCode = null,
+        inviteCode = "CHELAS-1234",
         goBackTitleScreenFunction = {},
         onDeposit = {},
         onGetInviteCode = { }

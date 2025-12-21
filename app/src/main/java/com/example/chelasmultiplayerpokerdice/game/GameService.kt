@@ -20,7 +20,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import kotlinx.serialization.json.Json
 
 interface GameService {
     suspend fun getInitialGameState(lobbyId: Int, token: String): GameState
@@ -93,45 +92,6 @@ class GameRemoteServiceImpl(
                 )
             }
         }
-
-
-
-    /*
-        override suspend fun rerollDice(lobbyId: Int, token: String, mask: List<Int>): List<DieDto> {
-            Log.d(TAG, "REROLL mask = $mask")
-            val responseString: String = client.post("$BASE_URL/games/$lobbyId/reroll") {
-                header(HttpHeaders.Authorization, "Bearer $token")
-                contentType(ContentType.Application.Json)
-                setBody(mask)
-            }.body()
-
-            Log.d(TAG, "REROLL response = $responseString")
-
-            return responseString.dice.split
-            //return Json.decodeFromString<List<DieDto>>(responseString)
-        }
-    */
-
-    /*
-    override suspend fun rollDice(
-        lobbyId: Int,
-        token: String
-    ): List<DieDto> {
-        val response: RollResponseDto = client.post("$BASE_URL/games/$lobbyId/roll") {
-            header(HttpHeaders.Authorization, "Bearer $token")
-        }.body()
-
-        Log.d(TAG, "<ROLL> dados: ${response.dice}")
-
-        return response.dice.mapIndexed { index, faceLabel ->
-            DieDto(
-                id = index,
-                face = faceLabel,
-                held = false
-            )
-        }
-    }
-     */
 
     override suspend fun rerollDice(
         lobbyId: Int,

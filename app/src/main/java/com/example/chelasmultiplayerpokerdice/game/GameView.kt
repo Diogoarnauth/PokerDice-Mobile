@@ -1,22 +1,10 @@
 package com.example.chelasmultiplayerpokerdice.game
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,7 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,28 +43,47 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.Die
 import com.example.chelasmultiplayerpokerdice.domain.DiceFace
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerGold
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerGreen
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerGreenDark
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerRed
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerText
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameView(
     state: GameState,
-    myUsername: String, // Adicionado para identificar o utilizador local
+    myUsername: String,
     onDieClicked: (Int) -> Unit,
     onRollClicked: () -> Unit,
     onRerollClicked: (List<Int>) -> Unit,
     onEndTurnClicked: () -> Unit
 ) {
     var dialogPlayer by rememberSaveable(state.players) { mutableStateOf<PlayerStatus?>(null) }
-    Log.d(TAG, "statestatestatestate $state")
+    Log.d(TAG, "GameView state = $state")
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Ronda ${state.roundNumber}") })
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Round ${state.roundNumber}",
+                        color = pokerText
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = pokerRed,
+                    titleContentColor = pokerText
+                )
+            )
         },
         bottomBar = {
             BottomStatusBar(
                 currentPlayerName = state.currentPlayerName,
-                rollsLeft = state.rollsLeft
+                rollsLeft = state.rollsLeft,
+                backgroundColor = pokerRed,
+                textColor = pokerText
             )
         }
     ) { paddingValues ->
@@ -81,6 +91,9 @@ fun GameView(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(listOf(pokerGreen, pokerGreenDark))
+                )
         ) {
             MainGameArea(
                 modifier = Modifier.weight(0.7f),
@@ -121,9 +134,7 @@ fun MainGameArea(
     onRerollClicked: (List<Int>) -> Unit,
     onEndTurnClicked: () -> Unit
 ) {
-    val context = LocalContext.current
     val isMyTurn = state.currentPlayerName == myUsername
-    // Assume-se que 3 é o valor inicial de rolls (máximo)
     val isFirstRoll = state.rollsLeft == 3
 
     Column(
@@ -136,27 +147,28 @@ fun MainGameArea(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
                 imageVector = Icons.Default.Person,
-                contentDescription = "Jogador Atual",
+                contentDescription = "Current player",
                 modifier = Modifier.size(80.dp),
-                tint = if (isMyTurn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                tint = if (isMyTurn) pokerGold else pokerText.copy(alpha = 0.7f)
             )
             Text(
-                text = if (isMyTurn) "É a tua vez, $myUsername!" else "Vez de: ${state.currentPlayerName}",
+                text = if (isMyTurn) "Your turn, $myUsername!" else "Turn: ${state.currentPlayerName}",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = if (isMyTurn) FontWeight.Bold else FontWeight.Normal
+                fontWeight = if (isMyTurn) FontWeight.Bold else FontWeight.Normal,
+                color = pokerText
             )
             Text(
-                text = "(${state.rollsLeft} lançamentos restantes)",
-                style = MaterialTheme.typography.bodySmall
+                text = "Rolls left: ${state.rollsLeft}",
+                style = MaterialTheme.typography.bodySmall,
+                color = pokerText.copy(alpha = 0.8f)
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-        Log.d(TAG, "statestatestatestate $state")
 
         DiceRow(
             dice = state.dice,
-            onDieClicked = if (isMyTurn) onDieClicked else { _ -> } // Desativa clique se não for o turno
+            onDieClicked = if (isMyTurn) onDieClicked else { _ -> }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -175,13 +187,16 @@ fun MainGameArea(
             )
         } else {
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xCC061F17)
+                ),
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Aguarde pela jogada de ${state.currentPlayerName}...",
+                    text = "Waiting for ${state.currentPlayerName}...",
                     modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = pokerText
                 )
             }
         }
@@ -204,11 +219,14 @@ fun DiceRow(dice: List<Die>, onDieClicked: (Int) -> Unit) {
 fun DieView(die: Die, onDieClicked: (Int) -> Unit) {
     Card(
         modifier = Modifier
-            .size(45.dp)
+            .size(52.dp)
             .clickable { onDieClicked(die.id) },
         shape = RoundedCornerShape(8.dp),
-        border = if (die.isHeld) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        border = if (die.isHeld) BorderStroke(2.dp, pokerGold) else null,
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF061F17)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -216,8 +234,9 @@ fun DieView(die: Die, onDieClicked: (Int) -> Unit) {
         ) {
             Text(
                 text = die.face.label,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = pokerText
             )
         }
     }
@@ -232,7 +251,10 @@ fun ButtonsRow(
     onRerollClicked: () -> Unit,
     onEndTurnClicked: () -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -241,16 +263,23 @@ fun ButtonsRow(
                 Button(
                     onClick = onRollClicked,
                     enabled = canRoll,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = pokerGold,
+                        contentColor = pokerRed
+                    )
                 ) {
                     Text("🎲 Roll")
                 }
             } else {
                 Button(
                     onClick = onRerollClicked,
-                    // Equivalente ao React: só permite reroll se houver dados selecionados
                     enabled = canRoll && anyDieHeld,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = pokerGold,
+                        contentColor = pokerRed
+                    )
                 ) {
                     Text("🔁 Reroll")
                 }
@@ -258,17 +287,20 @@ fun ButtonsRow(
 
             OutlinedButton(
                 onClick = onEndTurnClicked,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = pokerText
+                )
             ) {
-                Text("⏭️ Terminar")
+                Text("⏭️ End Turn")
             }
         }
 
         if (!isFirstRoll && !anyDieHeld) {
             Text(
-                "Seleciona os dados que queres manter/mudar",
+                "Select dice you want to change/keep",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.secondary
+                color = pokerText.copy(alpha = 0.8f)
             )
         }
     }
@@ -282,12 +314,13 @@ fun PlayerListArea(
 ) {
     Column(
         modifier = modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            .background(Color(0x33061F17))
             .padding(horizontal = 8.dp, vertical = 8.dp)
     ) {
         Text(
-            text = "Jogadores",
+            text = "Players",
             style = MaterialTheme.typography.titleSmall,
+            color = pokerText,
             modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
         )
         LazyColumn(
@@ -303,7 +336,6 @@ fun PlayerListArea(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerCard(
     player: PlayerStatus,
@@ -317,7 +349,7 @@ fun PlayerCard(
             .clickable { onPlayerClicked(player) },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color(0xFF061F17)
         )
     ) {
         Box(
@@ -329,7 +361,8 @@ fun PlayerCard(
             Text(
                 text = player.name,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = if (player.isCurrentTurn) pokerGold else pokerText
             )
         }
     }
@@ -343,14 +376,14 @@ fun PlayerDiceDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("Mão de ${player.name}")
+            Text("Hand of ${player.name}")
         },
         text = {
             PlayerDiceRow(dice = player.dice)
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Fechar")
+                Text("Close")
             }
         },
         properties = DialogProperties(dismissOnClickOutside = true)
@@ -364,7 +397,7 @@ fun PlayerDiceRow(dice: List<Die>?) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        Log.d(TAG, "LISTA DE DICES $dice")
+        Log.d(TAG, "Player dice list = $dice")
         if (dice == null) {
             repeat(5) {
                 EmptyDieView()
@@ -382,14 +415,14 @@ fun SmallDieView(die: Die) {
     Box(
         modifier = Modifier
             .size(40.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp)),
+            .background(Color(0xFF061F17), RoundedCornerShape(4.dp)),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = die.face.label,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = pokerText
         )
     }
 }
@@ -400,18 +433,23 @@ fun EmptyDieView() {
         modifier = Modifier
             .size(40.dp)
             .background(
-                MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                Color(0x33FFFFFF),
                 RoundedCornerShape(4.dp)
             )
     )
 }
 
 @Composable
-fun BottomStatusBar(currentPlayerName: String, rollsLeft: Int) {
+fun BottomStatusBar(
+    currentPlayerName: String,
+    rollsLeft: Int,
+    backgroundColor: Color,
+    textColor: Color
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(backgroundColor)
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Row(
@@ -420,17 +458,18 @@ fun BottomStatusBar(currentPlayerName: String, rollsLeft: Int) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Turno: $currentPlayerName",
-                color = MaterialTheme.colorScheme.onPrimary,
+                text = "Turn: $currentPlayerName",
+                color = textColor,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Rolagens: $rollsLeft",
-                color = MaterialTheme.colorScheme.onPrimary
+                text = "Rolls: $rollsLeft",
+                color = textColor
             )
         }
     }
 }
+
 @Composable
 fun RoundOverDialog(
     winnerName: String,
@@ -439,14 +478,14 @@ fun RoundOverDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text("Ronda Terminada!")
+            Text("Round Finished!")
         },
         text = {
-            Text("O vencedor da ronda é: $winnerName")
+            Text("Round winner: $winnerName")
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Próxima Ronda")
+                Text("Next Round")
             }
         },
         properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false)
@@ -458,48 +497,45 @@ fun GameOverDialog(
     winnersNames: List<String>,
     onDismiss: () -> Unit
 ) {
-
     if (winnersNames.size == 1) {
         AlertDialog(
             onDismissRequest = onDismiss,
             title = {
-                Text("Jogo Terminado!")
+                Text("Game Over!")
             },
             text = {
-                Text("O vencedor do jogo é: ${winnersNames[0]}")
+                Text("Winner: ${winnersNames[0]}")
             },
             confirmButton = {
                 TextButton(onClick = onDismiss) {
-                    Text("Fechar")
+                    Text("Close")
                 }
             },
             properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false)
         )
-    }
-    else {
+    } else {
         AlertDialog(
             onDismissRequest = onDismiss,
             title = {
-                Text("Jogo Terminada!")
+                Text("Game Over!")
             },
             text = {
-                Text("Os vencedores do jogo são: ${winnersNames.joinToString(", ")}")
+                Text("Winners: ${winnersNames.joinToString(", ")}")
             },
             confirmButton = {
                 TextButton(onClick = onDismiss) {
-                    Text("Fechar")
+                    Text("Close")
                 }
             },
             properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false)
         )
     }
 }
-/*
 
+/*
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GameViewPreview() {
-
     val diogoDice = listOf(
         Die(id = 1, face = DiceFace.Ace, isHeld = false),
         Die(id = 2, face = DiceFace.Ten, isHeld = true),
@@ -517,11 +553,11 @@ fun GameViewPreview() {
     )
 
     val previewState = GameState(
-        id= 1,
+        id = 1,
         dice = diogoDice,
         players = listOf(
-            PlayerStatus(id = 1, name = "Renata", dice = renataDice, hand = null ,  isCurrentTurn = false),
-            PlayerStatus(id = 2, name = "Diogo", dice = null, hand = null , isCurrentTurn = true),
+            PlayerStatus(id = 1, name = "Renata", dice = renataDice, hand = null, isCurrentTurn = false),
+            PlayerStatus(id = 2, name = "Diogo", dice = null, hand = null, isCurrentTurn = true),
             PlayerStatus(id = 3, name = "Humberto", dice = null, hand = null, isCurrentTurn = false)
         ),
         currentPlayerName = "Diogo",
@@ -532,8 +568,10 @@ fun GameViewPreview() {
 
     GameView(
         state = previewState,
+        myUsername = "Diogo",
         onDieClicked = {},
         onRollClicked = {},
+        onRerollClicked = {},
         onEndTurnClicked = {}
     )
 }

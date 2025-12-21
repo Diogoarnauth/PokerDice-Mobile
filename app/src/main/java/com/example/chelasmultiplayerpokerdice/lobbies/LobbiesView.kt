@@ -21,20 +21,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chelasmultiplayerpokerdice.domain.Lobby
 import com.example.chelasmultiplayerpokerdice.domain.LobbyInfo
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerGreen
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerGreenDark
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerRed
+import com.example.chelasmultiplayerpokerdice.ui.theme.pokerText
 
 const val LOBBIES_VIEW_TAG = "Lobbies View"
 const val LOBBIES_BACK_TITLESCREEN = "Back to Title Screen"
 const val LOBBIES_CREATE_BUTTON = "Create Lobby Button"
 const val LOBBY_CARD_TAG = "Lobby Card"
+
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +54,7 @@ fun LobbiesView(
     createLobbyFunction: () -> Unit,
     selectLobbyFunction: (Lobby) -> Unit
 ) {
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -53,8 +63,9 @@ fun LobbiesView(
             TopAppBar(
                 title = {
                     Text(
-                        text = "🎲 Lobbies Disponíveis",
-                        style = MaterialTheme.typography.titleLarge
+                        text = "Available Lobbies",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = pokerText
                     )
                 },
                 navigationIcon = {
@@ -62,7 +73,11 @@ fun LobbiesView(
                         onClick = goBackTitleScreenFunction,
                         modifier = Modifier.testTag(LOBBIES_BACK_TITLESCREEN)
                     ) {
-                        Icon(Icons.Default.Home, contentDescription = "Voltar ao Title Screen")
+                        Icon(
+                            Icons.Default.Home,
+                            contentDescription = "Back to Title Screen",
+                            tint = pokerText
+                        )
                     }
                 },
                 actions = {
@@ -70,69 +85,94 @@ fun LobbiesView(
                         onClick = createLobbyFunction,
                         modifier = Modifier.testTag(LOBBIES_CREATE_BUTTON)
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "Criar Lobby")
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = "Create Lobby",
+                            tint = pokerText
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = pokerRed,
+                    titleContentColor = pokerText
+                )
             )
-        },
-        content = { padding ->
-            if (lobbies.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .padding(padding)
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Nenhum lobby disponível 👀",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(padding)
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                    items(lobbies) { lobbyInfo ->
-                        Card(
+        }
+    ) { padding ->
+        if (lobbies.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(pokerGreen, pokerGreenDark)
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No lobbies available 👀\nCreate one to start playing!",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = pokerText,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(24.dp)
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(pokerGreen, pokerGreenDark)
+                        )
+                    ),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(lobbies) { lobbyInfo ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag(LOBBY_CARD_TAG),
+                        onClick = { selectLobbyFunction(lobbyInfo.lobby) }
+                    ) {
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag(LOBBY_CARD_TAG),
-                            onClick = { selectLobbyFunction(lobbyInfo.lobby) }
+                                .background(Color(0xCC061F17))
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Text(
-                                    text = lobbyInfo.lobby.name,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Text(
-                                    text = "👑 Dono: ${lobbyInfo.lobby.hostId}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-
-                                Text(
-                                    text = "Jogadores: ${lobbyInfo.playerCount} / ${lobbyInfo.lobby.maxUsers}",
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
+                            Text(
+                                text = lobbyInfo.lobby.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = pokerText
+                            )
+                            Text(
+                                text = "Host: ${lobbyInfo.lobby.hostId}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = pokerText
+                            )
+                            Text(
+                                text = "Players: ${lobbyInfo.playerCount} / ${lobbyInfo.lobby.maxUsers}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = pokerText.copy(alpha = 0.8f)
+                            )
+                            Text(
+                                text = lobbyInfo.lobby.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = pokerText.copy(alpha = 0.7f)
+                            )
                         }
                     }
                 }
             }
         }
-    )
+    }
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
