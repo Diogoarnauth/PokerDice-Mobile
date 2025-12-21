@@ -6,6 +6,7 @@ import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.DieDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.GameDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.LobbyPlayersResponseDto
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.ReRollResponseDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.RollResponseDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.TurnDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.toGameState
@@ -55,9 +56,10 @@ class GameRemoteServiceImpl(
             header(HttpHeaders.Authorization, "Bearer $token")
         }.body()
 
-        val playersResponse: LobbyPlayersResponseDto = client.get("$BASE_URL/users/obj/lobby/$lobbyId") {
-            header(HttpHeaders.Authorization, "Bearer $token")
-        }.body()
+        val playersResponse: LobbyPlayersResponseDto =
+            client.get("$BASE_URL/users/obj/lobby/$lobbyId") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }.body()
 
         val turnDto: TurnDto? = try {
             val response = client.get("$BASE_URL/games/${gameDto.id}/getCurrentTurn") {
@@ -73,17 +75,80 @@ class GameRemoteServiceImpl(
     }
 
 
-    override suspend fun rollDice(lobbyId: Int, token: String): List<DieDto> {
-        // 1. Recebe o objeto {"dice": "J,J,9,K,J"}
+        override suspend fun rollDice(lobbyId: Int, token: String): List<DieDto> {
+            // 1. Recebe o objeto {"dice": "J,J,9,K,J"}
+            val response: RollResponseDto = client.post("$BASE_URL/games/$lobbyId/roll") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }.body()
+
+            Log.d(TAG, "<ROLL> String de dados: ${response.dice}")
+
+            // 2. Transforma "J,J,9,K,J" numa List<DieDto>
+            // Usamos o index como ID temporário (0 a 4)
+            return response.dice.split(",").mapIndexed { index, faceLabel ->
+                DieDto(
+                    id = index,
+                    face = faceLabel,
+                    held = false
+                )
+            }
+        }
+
+
+
+    /*
+        override suspend fun rerollDice(lobbyId: Int, token: String, mask: List<Int>): List<DieDto> {
+            Log.d(TAG, "REROLL mask = $mask")
+            val responseString: String = client.post("$BASE_URL/games/$lobbyId/reroll") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+                contentType(ContentType.Application.Json)
+                setBody(mask)
+            }.body()
+
+            Log.d(TAG, "REROLL response = $responseString")
+
+            return responseString.dice.split
+            //return Json.decodeFromString<List<DieDto>>(responseString)
+        }
+    */
+
+    /*
+    override suspend fun rollDice(
+        lobbyId: Int,
+        token: String
+    ): List<DieDto> {
         val response: RollResponseDto = client.post("$BASE_URL/games/$lobbyId/roll") {
             header(HttpHeaders.Authorization, "Bearer $token")
         }.body()
 
-        Log.d(TAG, "<ROLL> String de dados: ${response.dice}")
+        Log.d(TAG, "<ROLL> dados: ${response.dice}")
 
-        // 2. Transforma "J,J,9,K,J" numa List<DieDto>
-        // Usamos o index como ID temporário (0 a 4)
-        return response.dice.split(",").mapIndexed { index, faceLabel ->
+        return response.dice.mapIndexed { index, faceLabel ->
+            DieDto(
+                id = index,
+                face = faceLabel,
+                held = false
+            )
+        }
+    }
+     */
+
+    override suspend fun rerollDice(
+        lobbyId: Int,
+        token: String,
+        mask: List<Int>
+    ): List<DieDto> {
+        Log.d(TAG, "REROLL mask = $mask")
+
+        val response: ReRollResponseDto = client.post("$BASE_URL/games/$lobbyId/reroll") {
+            header(HttpHeaders.Authorization, "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(mask)
+        }.body()
+
+        Log.d(TAG, "REROLL dados: ${response.dice}")
+
+        return response.dice.mapIndexed { index, faceLabel ->
             DieDto(
                 id = index,
                 face = faceLabel,
@@ -92,16 +157,6 @@ class GameRemoteServiceImpl(
         }
     }
 
-
-    override suspend fun rerollDice(lobbyId: Int, token: String, mask: List<Int>): List<DieDto> {
-        val responseString: String = client.post("$BASE_URL/games/$lobbyId/reroll") {
-            header(HttpHeaders.Authorization, "Bearer $token")
-            contentType(ContentType.Application.Json)
-            setBody(mask)
-        }.body()
-
-        return Json.decodeFromString<List<DieDto>>(responseString)
-    }
 
     //TODO() validar se funciona
     override suspend fun endTurn(gameId: Int, token: String): String {
@@ -113,10 +168,10 @@ class GameRemoteServiceImpl(
 
     //TODO() validar se funciona
     override suspend fun startNextRound(lobbyId: Int, token: String): GameState {
-            // Se o teu backend muda de ronda automaticamente ou via endpoint específico
-            // Aqui apenas refrescamos o estado para obter a nova roundNumber
-            return getInitialGameState(lobbyId, token)
-        }
+        // Se o teu backend muda de ronda automaticamente ou via endpoint específico
+        // Aqui apenas refrescamos o estado para obter a nova roundNumber
+        return getInitialGameState(lobbyId, token)
+    }
 
 
 }

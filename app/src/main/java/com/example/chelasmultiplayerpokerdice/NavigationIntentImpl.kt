@@ -74,8 +74,18 @@ class NavigationIntentImpl(private val context: Context) :
         context.startActivity(intent)
     }
 
+    /*
     override fun goToGameScreen(user: AuthenticatedUser, lobbyId: Int) {
         val intent = createIntent(GameActivity::class.java, user, clearStack = false, lobbyId = lobbyId)
+        context.startActivity(intent)
+    }
+     */
+
+    override fun goToGameScreen(user: AuthenticatedUser, lobbyId: Int) {
+        val intent = Intent(context, GameActivity::class.java).apply {
+            putExtra(AUTHENTICATED_USER_EXTRA, user)
+            putExtra(LOBBY_ID_EXTRA, lobbyId)
+        }
         context.startActivity(intent)
     }
 

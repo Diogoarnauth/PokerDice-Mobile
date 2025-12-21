@@ -1,5 +1,6 @@
 package com.example.chelasmultiplayerpokerdice.game
 
+import android.R.id.mask
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 class GameViewModel(private val repository: GameRepository) : ViewModel() {
 
@@ -69,16 +71,19 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
         }
     }
 
-    fun onRerollClicked( token: String, selectedDieIds: List<Int>) {
+    fun onRerollClicked(token: String, selectedDieIds: List<Int>) {
         viewModelScope.launch {
             try {
-                // Enviamos para o repositório apenas os IDs dos dados que o user marcou (held)
-                repository.rerollDice( token, selectedDieIds)
-            } catch (e: Throwable) {
+                Log.d(TAG, "onRerollClicked, ids = $selectedDieIds")
+                repository.rerollDice(token, selectedDieIds)
+                Log.d(TAG, "onRerollClicked, reroll concluído")
+            } catch (e: Exception) {
+                Log.e(TAG, "Erro ao repetir lançamento", e)
                 _state.value = GameScreenState.Error("Erro ao repetir lançamento")
             }
         }
     }
+
 
     fun onEndTurnClicked( token: String) {
         viewModelScope.launch {

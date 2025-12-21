@@ -81,18 +81,41 @@ class GameRepository(private val service: GameService) {
     }
 
     suspend fun rerollDice( token: String, dicePositionsMask: List<Int>) {
+        Log.d(TAG, "rerollDice: antes do withLock, mask = $dicePositionsMask")
         mutex.withLock {
-            val current = _gameState.value ?: return
+            Log.d(TAG, "rerollDice: entrou no withLock")
 
+            val current = _gameState.value
+            if (current == null) {
+                Log.w(TAG, "rerollDice: current gameState é null, a sair")
+                return
+            }
+
+            Log.d(TAG, "rerollDice: antes do service.rerollDice, lobbyId=${current.lobbyId}")
             val newDiceDtos = service.rerollDice(current.lobbyId, token, dicePositionsMask)
-            val newDice = newDiceDtos.map { it.toDie() }
+            Log.d(TAG, "rerollDice: depois do service.rerollDice, recebeu ${newDiceDtos.size} dados")
+
+            val newDice = newDiceDtos.map {
+                Log.v(TAG, "rerollDice: a mapear die dto=$it")
+                it.toDie()
+            }
+
+            val newRollsLeft = current.rollsLeft - 1
+            Log.d(
+                TAG,
+                "rerollDice: antes de atualizar gameState, newRollsLeft=$newRollsLeft"
+            )
 
             _gameState.value = current.copy(
                 dice = newDice,
                 rollsLeft = current.rollsLeft - 1,
                 canRoll = (current.rollsLeft - 1) > 0
             )
+
+            Log.d(TAG, "rerollDice: gameState atualizado, canRoll=${newRollsLeft > 0}")
         }
+        Log.d(TAG, "rerollDice: depois do withLock (fim da função)")
+
     }
 
     /**

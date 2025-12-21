@@ -98,6 +98,11 @@ data class RollResponseDto(
 )
 
 @Serializable
+data class ReRollResponseDto(
+    val dice: List<String>
+)
+
+@Serializable
 data class DieDto(
     val id: Int,
     val face: String, // O backend deve mandar "ACE", "KING", etc.
