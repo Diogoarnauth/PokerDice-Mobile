@@ -22,7 +22,7 @@ interface LobbyService {
     suspend fun abandonLobby(lobbyId: Int, token: String)
     suspend fun joinLobby(lobbyId: Int, token: String)
     suspend fun fetchMe(token: String): Int
-    suspend fun startGame(lobbyId: Int, token: String): Unit
+    suspend fun startGame(lobbyId: Int, token: String)
 
 
 }
@@ -102,6 +102,7 @@ class LobbyServiceImpl(
 
     //TODO() tratamento de erros
     override suspend fun startGame(lobbyId: Int, token: String) {
+        Log.d("startGame", "Iniciando startGame no LobbyService para lobbyId: $lobbyId")
         client.post("$BASE_URL/games/$lobbyId/start") {
             bearerAuth(token)
         }

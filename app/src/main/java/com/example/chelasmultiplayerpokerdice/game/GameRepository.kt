@@ -8,11 +8,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-/**
- * GameRepository
- * Responsabilidade: Guardar o estado atual do jogo (StateFlow) e sincronizar o acesso (Mutex).
- * Atualmente usa o GameService (Fake), mas no futuro usará a API.
- */
 
 class GameRepository(private val service: GameService) {
 
@@ -26,14 +21,15 @@ class GameRepository(private val service: GameService) {
      */
     suspend fun fetchGame(lobbyId: Int, token: String) {
         Log.d(TAG, "ENTREI NO fetchGame")
-        mutex.withLock {
+        //mutex.withLock {
             try {
                 val initialState = service.getInitialGameState(lobbyId, token)
                 _gameState.value = initialState
+                Log.d(TAG, "fetchGame SUCESSO! Estado atualizado.")
             } catch (e: Exception) {
                 throw e
             }
-        }
+        //}
     }
 
     /**

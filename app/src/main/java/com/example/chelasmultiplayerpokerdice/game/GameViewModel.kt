@@ -46,7 +46,7 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
     }
 
     fun loadGame(lobbyId: Int, token: String) {
-        Log.d(TAG, "ENTREI NO loadGame")
+        Log.d("loadGameViewModel", "ENTREI NO loadGame")
         viewModelScope.launch {
             try {
                 repository.fetchGame(lobbyId, token)

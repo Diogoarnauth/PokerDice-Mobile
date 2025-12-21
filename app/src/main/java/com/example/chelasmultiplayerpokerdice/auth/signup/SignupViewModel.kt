@@ -25,6 +25,7 @@ class SignupViewModel(private val service: SignupService, private val repo: Auth
     val state: StateFlow<SignupScreenState> = _state.asStateFlow()
 
     init {
+        Log.d("SignupViewModel", "Verificando estado do sistema...")
         checkSystemState()
     }
 

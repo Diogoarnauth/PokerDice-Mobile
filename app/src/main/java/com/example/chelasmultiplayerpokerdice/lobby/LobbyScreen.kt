@@ -27,7 +27,7 @@ fun LobbyScreen(
         is LobbyScreenState.Success -> LobbyScreenView(
             lobby = state.lobby,
             players = state.players,
-            currentUserId = state.myId, // <--- Aqui está o ID que veio do getMe
+            currentUserId = state.myId,
             goBackTitleScreenFunction = { navigator.goToTitleScreen(user) },
             onAbandon = {
                 viewModel.onAbandon(lobbyId, user.token)
@@ -37,11 +37,10 @@ fun LobbyScreen(
                 viewModel.onJoin(lobbyId, user.token)
             },
             onStartGame = {
-                viewModel.onStartGame(lobbyId, user.token) {
+                viewModel.onStartGame(lobbyId, user.token, onSuccess = {
                     navigator.goToGameScreen(user, lobbyId)
-                }
+                })
             }
-
         )
 
         is LobbyScreenState.Error -> Text("Erro: ${state.message}")

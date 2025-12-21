@@ -1,5 +1,6 @@
 package com.example.chelasmultiplayerpokerdice.lobby
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -72,10 +73,11 @@ class LobbyViewModel(
         }
     }
 
-   fun onStartGame(lobbyId: Int, token: String, onSuccess: () -> Unit) {
+   fun onStartGame(lobbyId: Int, token: String, onSuccess: () -> Unit = {}) {
         viewModelScope.launch {
             try {
                 repository.startGame(lobbyId, token)
+
                 onSuccess()
             } catch (e: Throwable) {
                 _state.value = LobbyScreenState.Error("Erro ao iniciar jogo: ${e.message}")
