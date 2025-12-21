@@ -66,29 +66,35 @@ fun PlayerStatusDto.toPlayerStatus() = PlayerStatus(
     isCurrentTurn = isCurrentTurn
 )
 */
-@file:OptIn(kotlinx.serialization.InternalSerializationApi::class, kotlinx.serialization.ExperimentalSerializationApi::class)
+@file:OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
 
 package com.example.chelasmultiplayerpokerdice.domain.remote.models
 
+import android.util.Log
+import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.DiceFace
 import com.example.chelasmultiplayerpokerdice.domain.Die
 import com.example.chelasmultiplayerpokerdice.game.GameState
 import com.example.chelasmultiplayerpokerdice.game.PlayerHand
 import com.example.chelasmultiplayerpokerdice.game.PlayerStatus
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class GameDto(
     val id: Int,
     val lobbyId: Int,
-    val state: String,       // Ex: "ONGOING", "FINISHED"
-    val roundCounter: Int,   // ✅ CORRIGIDO: Era 'roundsCounter'
+    val state: String,
+    val roundCounter: Int,
     val nrUsers: Int,
-    // ✅ NOVO: Temos de receber os jogadores, senão o jogo não funciona!
-    // Se o backend não enviar isto, temos de falar, mas geralmente envia.
     val players: List<PlayerStatusDto> = emptyList(),
-    // Opcional: Se o backend enviar de quem é a vez pelo ID
     val currentPlayerId: Int? = null
+)
+
+@Serializable
+data class RollResponseDto(
+    val dice: String
 )
 
 @Serializable
@@ -107,6 +113,16 @@ data class PlayerStatusDto(
     val isCurrentTurn: Boolean
 )
 
+@Serializable
+data class TurnDto(
+    val turnId: Int,
+    val roundId: Int,
+    val playerId: Int,
+    val rollCount: Int,
+    val diceFaces: String?, // "ACE,KING,TEN"
+    val isDone: Boolean
+)
+
 // --- MAPPERS (A Conversão Mágica) ---
 
 fun GameDto.toGameState(lobbyPlayers: List<PlayerDto>): GameState {
@@ -115,10 +131,10 @@ fun GameDto.toGameState(lobbyPlayers: List<PlayerDto>): GameState {
     val domainPlayers = lobbyPlayers.map { user ->
         PlayerStatus(
             id = user.id,
-            name = user.username, // ou user.name
-            dice = null, // Inicialmente sem dados
-            hand = null, // Inicialmente sem pontuação
-            isCurrentTurn = false // Vamos calcular isto abaixo
+            name = user.username,
+            dice = null,
+            hand = null,
+            isCurrentTurn = false
         )
     }
 
@@ -136,17 +152,18 @@ fun GameDto.toGameState(lobbyPlayers: List<PlayerDto>): GameState {
 
     // Se o jogador atual não tiver dados, tem 3 rolagens. Se tiver, tem 2 (lógica simples)
     val rollsLeft = 3
-
+    Log.d(TAG, "PASSEI POR AQUIIIIIII")
     return GameState(
         id = id,
-        dice = emptyList(), // O jogo começa sem dados na mesa
-        players = playersWithTurn, // ✅ AGORA JÁ TEMOS JOGADORES!
+        dice = emptyList(),
+        players = playersWithTurn,
         currentPlayerName = currentPlayerName,
         rollsLeft = rollsLeft,
         roundNumber = roundCounter,
         canRoll = true,
         roundWinners = emptyList(),
-        finalWinners = emptyList()
+        finalWinners = emptyList(),
+        lobbyId = lobbyId
     )
 }
 

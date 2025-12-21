@@ -56,7 +56,7 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
         }
     }
 
-    fun onRollClicked(token: String) {
+    fun onRollClicked( token: String) {
         val currentState = _state.value
         if (currentState is GameScreenState.Playing && currentState.gameState.canRoll) {
             viewModelScope.launch {
@@ -69,21 +69,32 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
         }
     }
 
-    fun onEndTurnClicked(token: String) {
+    fun onRerollClicked( token: String, selectedDieIds: List<Int>) {
+        viewModelScope.launch {
+            try {
+                // Enviamos para o repositório apenas os IDs dos dados que o user marcou (held)
+                repository.rerollDice( token, selectedDieIds)
+            } catch (e: Throwable) {
+                _state.value = GameScreenState.Error("Erro ao repetir lançamento")
+            }
+        }
+    }
+
+    fun onEndTurnClicked( token: String) {
         viewModelScope.launch {
             try {
                 _state.value = GameScreenState.Loading
-                repository.endTurn(token)
+                repository.endTurn( token)
             } catch (e: Throwable) {
                 _state.value = GameScreenState.Error("Erro ao terminar turno")
             }
         }
     }
 
-    fun onStartNextRound() {
+    fun onStartNextRound(token: String) {
         viewModelScope.launch {
             try {
-                repository.startNextRound()
+                repository.startNextRound(token)
             } catch (e: Throwable) {
                 _state.value = GameScreenState.Error("Erro ao iniciar ronda")
             }

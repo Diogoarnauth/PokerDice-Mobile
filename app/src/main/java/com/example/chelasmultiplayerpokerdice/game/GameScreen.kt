@@ -32,8 +32,12 @@ fun GameScreen(
             Log.d(TAG, "ENTREI NO PLAYING")
             GameView(
                 state = state.gameState,
+                myUsername = user.username, // Passamos o username do utilizador logado
                 onDieClicked = { dieId -> viewModel.onDieClicked(dieId) },
                 onRollClicked = { viewModel.onRollClicked(user.token) },
+                onRerollClicked = { selectedIds ->
+                    viewModel.onRerollClicked(user.token, selectedIds)
+                },
                 onEndTurnClicked = { viewModel.onEndTurnClicked(user.token) }
             )
         }
@@ -41,25 +45,28 @@ fun GameScreen(
         is GameScreenState.RoundOver -> {
             GameView(
                 state = state.gameState,
+                myUsername = user.username,
                 onDieClicked = { },
                 onRollClicked = { },
+                onRerollClicked = { },
                 onEndTurnClicked = { }
             )
 
             RoundOverDialog(
                 winnerName = state.winner.name,
                 onDismiss = {
-                    viewModel.onStartNextRound()
+                    viewModel.onStartNextRound(user.token)
                 }
             )
         }
 
         is GameScreenState.GameOver -> {
-
             GameView(
                 state = state.gameState,
+                myUsername = user.username,
                 onDieClicked = { },
                 onRollClicked = { },
+                onRerollClicked = { },
                 onEndTurnClicked = { }
             )
 

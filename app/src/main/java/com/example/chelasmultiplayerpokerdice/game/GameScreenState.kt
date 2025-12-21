@@ -21,12 +21,13 @@ data class PlayerStatus(
 
 data class GameState(
     val id: Int,
+    val lobbyId: Int,
     val dice: List<Die>,
     val players: List<PlayerStatus>,
     val currentPlayerName: String,
     val rollsLeft: Int,
-    val roundWinners: List<PlayerStatus> = emptyList(),
-    val finalWinners: List<PlayerStatus> = emptyList(),
+    val roundWinners: List<PlayerStatus> = emptyList(),//TODO() n precisamos
+    val finalWinners: List<PlayerStatus> = emptyList(),//TODO() n precisamos
     val roundNumber: Int,
     val canRoll: Boolean
 )

@@ -49,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.Die
 import com.example.chelasmultiplayerpokerdice.domain.DiceFace
 
@@ -56,11 +57,14 @@ import com.example.chelasmultiplayerpokerdice.domain.DiceFace
 @Composable
 fun GameView(
     state: GameState,
+    myUsername: String, // Adicionado para identificar o utilizador local
     onDieClicked: (Int) -> Unit,
     onRollClicked: () -> Unit,
+    onRerollClicked: (List<Int>) -> Unit,
     onEndTurnClicked: () -> Unit
 ) {
     var dialogPlayer by rememberSaveable(state.players) { mutableStateOf<PlayerStatus?>(null) }
+    Log.d(TAG, "statestatestatestate $state")
 
     Scaffold(
         topBar = {
@@ -80,12 +84,11 @@ fun GameView(
         ) {
             MainGameArea(
                 modifier = Modifier.weight(0.7f),
-                dice = state.dice,
-                currentPlayerName = state.currentPlayerName,
-                rollsLeft = state.rollsLeft,
-                canRoll = state.canRoll,
+                state = state,
+                myUsername = myUsername,
                 onDieClicked = onDieClicked,
                 onRollClicked = onRollClicked,
+                onRerollClicked = onRerollClicked,
                 onEndTurnClicked = onEndTurnClicked
             )
             PlayerListArea(
@@ -110,16 +113,18 @@ fun GameView(
 
 @Composable
 fun MainGameArea(
+    state: GameState,
+    myUsername: String,
     modifier: Modifier = Modifier,
-    dice: List<Die>,
-    currentPlayerName: String,
-    rollsLeft: Int,
-    canRoll: Boolean,
     onDieClicked: (Int) -> Unit,
     onRollClicked: () -> Unit,
+    onRerollClicked: (List<Int>) -> Unit,
     onEndTurnClicked: () -> Unit
 ) {
-    val context = LocalContext.current // TODO: PODE ISTO ESTAR AQUI ?
+    val context = LocalContext.current
+    val isMyTurn = state.currentPlayerName == myUsername
+    // Assume-se que 3 é o valor inicial de rolls (máximo)
+    val isFirstRoll = state.rollsLeft == 3
 
     Column(
         modifier = modifier
@@ -133,30 +138,53 @@ fun MainGameArea(
                 imageVector = Icons.Default.Person,
                 contentDescription = "Jogador Atual",
                 modifier = Modifier.size(80.dp),
-                tint = MaterialTheme.colorScheme.primary
+                tint = if (isMyTurn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
             )
             Text(
-                text = "É a tua vez, $currentPlayerName ($rollsLeft lançamentos)",
-                style = MaterialTheme.typography.titleMedium
+                text = if (isMyTurn) "É a tua vez, $myUsername!" else "Vez de: ${state.currentPlayerName}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = if (isMyTurn) FontWeight.Bold else FontWeight.Normal
+            )
+            Text(
+                text = "(${state.rollsLeft} lançamentos restantes)",
+                style = MaterialTheme.typography.bodySmall
             )
         }
+
         Spacer(modifier = Modifier.height(24.dp))
+        Log.d(TAG, "statestatestatestate $state")
+
         DiceRow(
-            dice = dice,
-            onDieClicked = onDieClicked
+            dice = state.dice,
+            onDieClicked = if (isMyTurn) onDieClicked else { _ -> } // Desativa clique se não for o turno
         )
+
         Spacer(modifier = Modifier.height(24.dp))
-        ButtonsRow(
-            onRollClicked = {
-                if (dice.all { it.isHeld }) {
-                    Toast.makeText(context, "Não pode rolar, todos os dados estão selecionados!", Toast.LENGTH_SHORT).show()
-                } else {
-                    onRollClicked()
-                }
-            },
-            onEndTurnClicked = onEndTurnClicked,
-            canRoll = canRoll
-        )
+
+        if (isMyTurn) {
+            ButtonsRow(
+                isFirstRoll = isFirstRoll,
+                canRoll = state.canRoll,
+                anyDieHeld = state.dice.any { it.isHeld },
+                onRollClicked = onRollClicked,
+                onRerollClicked = {
+                    val selectedIds = state.dice.filter { it.isHeld }.map { it.id }
+                    onRerollClicked(selectedIds)
+                },
+                onEndTurnClicked = onEndTurnClicked
+            )
+        } else {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Aguarde pela jogada de ${state.currentPlayerName}...",
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
     }
 }
 
@@ -195,30 +223,53 @@ fun DieView(die: Die, onDieClicked: (Int) -> Unit) {
     }
 }
 
-
 @Composable
 fun ButtonsRow(
+    isFirstRoll: Boolean,
+    canRoll: Boolean,
+    anyDieHeld: Boolean,
     onRollClicked: () -> Unit,
-    onEndTurnClicked: () -> Unit,
-    canRoll: Boolean
+    onRerollClicked: () -> Unit,
+    onEndTurnClicked: () -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        Button(
-            onClick = onRollClicked,
-            enabled = canRoll,
-            modifier = Modifier.weight(1f)
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Reroll")
+            if (isFirstRoll) {
+                Button(
+                    onClick = onRollClicked,
+                    enabled = canRoll,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("🎲 Roll")
+                }
+            } else {
+                Button(
+                    onClick = onRerollClicked,
+                    // Equivalente ao React: só permite reroll se houver dados selecionados
+                    enabled = canRoll && anyDieHeld,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("🔁 Reroll")
+                }
+            }
+
+            OutlinedButton(
+                onClick = onEndTurnClicked,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("⏭️ Terminar")
+            }
         }
-        Spacer(modifier = Modifier.width(16.dp))
-        OutlinedButton(
-            onClick = onEndTurnClicked,
-            modifier = Modifier.weight(1f)
-        ) {
-            Text("End Turn")
+
+        if (!isFirstRoll && !anyDieHeld) {
+            Text(
+                "Seleciona os dados que queres manter/mudar",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
         }
     }
 }
@@ -313,6 +364,7 @@ fun PlayerDiceRow(dice: List<Die>?) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
+        Log.d(TAG, "LISTA DE DICES $dice")
         if (dice == null) {
             repeat(5) {
                 EmptyDieView()
@@ -442,7 +494,7 @@ fun GameOverDialog(
         )
     }
 }
-
+/*
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -485,3 +537,5 @@ fun GameViewPreview() {
         onEndTurnClicked = {}
     )
 }
+
+ */

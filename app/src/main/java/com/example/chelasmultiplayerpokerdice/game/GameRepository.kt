@@ -3,9 +3,13 @@ package com.example.chelasmultiplayerpokerdice.game
 import android.util.Log
 import com.example.chelasmultiplayerpokerdice.TAG
 import com.example.chelasmultiplayerpokerdice.domain.Game
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.toDie
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -19,6 +23,25 @@ class GameRepository(private val service: GameService) {
     /**
      * Inicia o jogo (Vai ao serviço buscar o estado inicial e emite no Flow)
      */
+
+     fun getGameLive(lobbyId: Int, token: String): Flow<GameState> = flow {
+        Log.d(TAG, "Iniciando Polling do Jogo para Lobby $lobbyId")
+        while (true) {
+            try {
+                // Vai ao serviço buscar o estado completo (Game + Users + Turn)
+                val gameState = service.fetchFullGameState(lobbyId, token)
+                emit(gameState)
+                Log.d(TAG, "Polling: GameState atualizado (Round ${gameState.roundNumber})")
+            } catch (e: Exception) {
+                // Log de erro, mas não matamos o fluxo (tenta novamente na proxima iteração)
+                Log.e(TAG, "Erro no Polling: ${e.message}")
+                // Opcional: emitir um estado de erro se for crítico,
+                // ou simplesmente ignorar para manter o ultimo estado valido no ecrã.
+            }
+            delay(1000)
+        }
+    }
+
     suspend fun fetchGame(lobbyId: Int, token: String) {
         Log.d(TAG, "ENTREI NO fetchGame")
         //mutex.withLock {
@@ -37,33 +60,95 @@ class GameRepository(private val service: GameService) {
      */
     suspend fun rollDice(token: String) {
         mutex.withLock {
+            Log.d(TAG, "<ROLL> _gameState.value ${_gameState.value}")
             val current = _gameState.value ?: return
-            // Chama o serviço (lógica)
-            val newState = service.rollDice(current, token)
-            // Atualiza o estado
-            _gameState.value = newState
+
+            // O service agora retorna List<DieDto> (convertido da String do backend)
+            val newDiceDtos = service.rollDice(current.lobbyId, token)
+            Log.d(TAG, "<ROLL> newDiceDtos ${newDiceDtos}")
+
+            val newDice = newDiceDtos.map { it.toDie() }
+            Log.d(TAG, "<ROLL> newDice ${newDice}")
+
+
+            // Atualizamos o objeto mantendo o resto igual
+            _gameState.value = current.copy(
+                dice = newDice,
+                rollsLeft = current.rollsLeft - 1,
+                canRoll = (current.rollsLeft - 1) > 0
+            )
+        }
+    }
+
+    suspend fun rerollDice( token: String, dicePositionsMask: List<Int>) {
+        mutex.withLock {
+            val current = _gameState.value ?: return
+
+            val newDiceDtos = service.rerollDice(current.lobbyId, token, dicePositionsMask)
+            val newDice = newDiceDtos.map { it.toDie() }
+
+            _gameState.value = current.copy(
+                dice = newDice,
+                rollsLeft = current.rollsLeft - 1,
+                canRoll = (current.rollsLeft - 1) > 0
+            )
         }
     }
 
     /**
      * Terminar Turno
      */
-    suspend fun endTurn(token: String) {
+    suspend fun endTurn( token: String) {
         mutex.withLock {
             val current = _gameState.value ?: return
-            val newState = service.endTurnAndSimulate(current, token)
-            _gameState.value = newState
+            Log.d(TAG, "<ENDTURN> current ${current}")
+
+            service.endTurn(current.id, token)
+            Log.d(TAG, "<ENDTURN> PASSOU O SERVICES")
+
+            val players = current.players
+            val currentIndex = players.indexOfFirst { it.isCurrentTurn }
+            val nextIndex = (currentIndex + 1) % players.size
+
+            val updatedPlayers = players.mapIndexed { index, player ->
+                when (index) {
+                    currentIndex -> player.copy(
+                        isCurrentTurn = false,
+                        dice = current.dice
+                    )
+                    nextIndex -> player.copy(
+                        isCurrentTurn = true
+                    )
+                    else -> player
+                }
+            }
+
+            _gameState.value = current.copy(
+                players = updatedPlayers,
+                currentPlayerName = updatedPlayers[nextIndex].name,
+                dice = emptyList(), // Limpa os dados da mesa visualmente
+                rollsLeft = 3,      // Reset para o próximo
+                canRoll = true
+            )
         }
     }
 
     /**
      * Começar Próxima Ronda
      */
-    suspend fun startNextRound() {
+    suspend fun startNextRound(token: String) {
         mutex.withLock {
             val current = _gameState.value ?: return
-            val newState = service.startNextRound(current)
-            _gameState.value = newState
+
+            // Se o service retornar o DTO da nova ronda, podes extrair o roundCounter
+            service.startNextRound(current.lobbyId, token)
+
+            _gameState.value = current.copy(
+                roundNumber = current.roundNumber + 1,
+                rollsLeft = 3,
+                dice = emptyList(),
+                canRoll = true
+            )
         }
     }
 }
