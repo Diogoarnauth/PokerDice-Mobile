@@ -18,6 +18,15 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
     private val _state = MutableStateFlow<GameScreenState>(GameScreenState.Loading)
     val state: StateFlow<GameScreenState> = _state.asStateFlow()
 
+    // Controla se o popup deve estar visível
+    private val _showRoundOverDialog = MutableStateFlow(false)
+    val showRoundOverDialog: StateFlow<Boolean> = _showRoundOverDialog.asStateFlow()
+
+    private var pollingJob: kotlinx.coroutines.Job? = null
+    private var myCachedUsername: String? = null
+    private var cachedLobbyId: Int = -1
+    private var cachedToken: String = ""
+
     init {
         viewModelScope.launch {
             repository.gameState.collectLatest { newGameState ->
@@ -25,40 +34,99 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
                 if (newGameState == null) {
                     _state.value = GameScreenState.Loading
                 } else {
-                    val isRoundOver = newGameState.players.all { it.dice != null }
-                    val isGameOver = newGameState.finalWinners.isNotEmpty()
+                    updateScreenState(newGameState)
 
-                    _state.value = when {
-                        isGameOver -> GameScreenState.GameOver(
-                            newGameState,
-                            newGameState.finalWinners
-                        )
+                    val isMyTurn = newGameState.currentPlayerName == myCachedUsername
 
-                        isRoundOver -> {
-                            val winner = newGameState.players.maxByOrNull { it.hand?.score ?: 0.0 }
-                                ?: newGameState.players.first()
-                            GameScreenState.RoundOver(newGameState, winner)
+                    if (isMyTurn) {
+                        if (pollingJob?.isActive == true) {
+                            Log.d(TAG, "Minha vez: Parando Polling.")
+                            pollingJob?.cancel()
+                            pollingJob = null
                         }
-
-                        else -> GameScreenState.Playing(newGameState)
+                    } else {
+                        if (pollingJob == null || !pollingJob!!.isActive) {
+                            Log.d(TAG, "Vez do adversário: Iniciando Polling.")
+                            startPolling(cachedLobbyId, cachedToken)
+                        }
                     }
                 }
             }
         }
     }
 
-    fun loadGame(lobbyId: Int, token: String) {
-        Log.d("loadGameViewModel", "ENTREI NO loadGame")
+    private fun updateScreenState(newGameState: GameState) {
+        // Obtemos o estado anterior para comparar o RoundNumber
+        val previousGameState = when (val s = _state.value) {
+            is GameScreenState.Playing -> s.gameState
+            is GameScreenState.RoundOver -> s.gameState
+            else -> null
+        }
+
+        val isGameOver = newGameState.finalWinners.isNotEmpty()
+
+        // A ronda acabou se o número da ronda no servidor aumentou
+        val isRoundOver = previousGameState != null &&
+                newGameState.roundNumber > previousGameState.roundNumber
+
+        if (isRoundOver) {
+            _showRoundOverDialog.value = true
+        }
+
+        _state.value = when {
+            isGameOver -> GameScreenState.GameOver(newGameState, newGameState.finalWinners)
+            isRoundOver -> {
+                // Lógica de vencedor (podes ajustar conforme os teus dados de Hand)
+                val winner = newGameState.players.maxByOrNull { it.hand?.score ?: 0.0 }
+                    ?: newGameState.players.first()
+                GameScreenState.RoundOver(newGameState, winner)
+            }
+            else -> GameScreenState.Playing(newGameState)
+        }
+    }
+
+    // Função para fechar o diálogo sem interagir com o Repository
+    fun dismissRoundOverDialog() {
+        _showRoundOverDialog.value = false
+
+        // Se estávamos em modo RoundOver, voltamos para Playing para libertar a UI
+        val currentState = _state.value
+        if (currentState is GameScreenState.RoundOver) {
+            _state.value = GameScreenState.Playing(currentState.gameState)
+        }
+    }
+
+    fun loadGame(lobbyId: Int, token: String, username: String) {
+        this.myCachedUsername = username
+        this.cachedLobbyId = lobbyId
+        this.cachedToken = token
+
         viewModelScope.launch {
             try {
                 repository.fetchGame(lobbyId, token)
             } catch (e: Throwable) {
-                _state.value = GameScreenState.Error(e.message ?: "Erro ao carregar jogo")
+                _state.value = GameScreenState.Error(e.message ?: "Erro ao carregar")
             }
         }
     }
 
-    fun onRollClicked( token: String) {
+    private fun startPolling(lobbyId: Int, token: String) {
+        pollingJob?.cancel()
+        pollingJob = viewModelScope.launch {
+            repository.getGameLive(lobbyId, token).collect {
+                Log.d(TAG, "Polling ativo...")
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        pollingJob?.cancel()
+    }
+
+    // --- Ações de Jogo ---
+
+    fun onRollClicked(token: String) {
         val currentState = _state.value
         if (currentState is GameScreenState.Playing && currentState.gameState.canRoll) {
             viewModelScope.launch {
@@ -74,22 +142,18 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
     fun onRerollClicked(token: String, selectedDieIds: List<Int>) {
         viewModelScope.launch {
             try {
-                Log.d(TAG, "onRerollClicked, ids = $selectedDieIds")
                 repository.rerollDice(token, selectedDieIds)
-                Log.d(TAG, "onRerollClicked, reroll concluído")
-            } catch (e: Exception) {
-                Log.e(TAG, "Erro ao repetir lançamento", e)
+            } catch (e: Throwable) {
                 _state.value = GameScreenState.Error("Erro ao repetir lançamento")
             }
         }
     }
 
-
-    fun onEndTurnClicked( token: String) {
+    fun onEndTurnClicked(token: String) {
         viewModelScope.launch {
             try {
-                _state.value = GameScreenState.Loading
-                repository.endTurn( token)
+                // Opcional: _state.value = GameScreenState.Loading
+                repository.endTurn(token)
             } catch (e: Throwable) {
                 _state.value = GameScreenState.Error("Erro ao terminar turno")
             }

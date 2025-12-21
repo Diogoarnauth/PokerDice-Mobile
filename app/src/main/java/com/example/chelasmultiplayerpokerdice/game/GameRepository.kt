@@ -24,21 +24,17 @@ class GameRepository(private val service: GameService) {
      * Inicia o jogo (Vai ao serviço buscar o estado inicial e emite no Flow)
      */
 
-     fun getGameLive(lobbyId: Int, token: String): Flow<GameState> = flow {
-        Log.d(TAG, "Iniciando Polling do Jogo para Lobby $lobbyId")
+
+    fun getGameLive(lobbyId: Int, token: String): Flow<GameState> = flow {
         while (true) {
             try {
-                // Vai ao serviço buscar o estado completo (Game + Users + Turn)
-                val gameState = service.fetchFullGameState(lobbyId, token)
+                val gameState = service.fetchFullGameState(_gameState.value!!, lobbyId, token)
+                Log.d(TAG, "<CICLO> GAMESTATE $gameState")
+                _gameState.value = gameState
                 emit(gameState)
-                Log.d(TAG, "Polling: GameState atualizado (Round ${gameState.roundNumber})")
-            } catch (e: Exception) {
-                // Log de erro, mas não matamos o fluxo (tenta novamente na proxima iteração)
-                Log.e(TAG, "Erro no Polling: ${e.message}")
-                // Opcional: emitir um estado de erro se for crítico,
-                // ou simplesmente ignorar para manter o ultimo estado valido no ecrã.
-            }
-            delay(1000)
+                Log.d(TAG, "CICLOOOOOOO")
+            } catch (e: Exception) { Log.e(TAG, "Erro no Polling: ${e.message}") }
+            delay(2000)
         }
     }
 
@@ -63,24 +59,34 @@ class GameRepository(private val service: GameService) {
             Log.d(TAG, "<ROLL> _gameState.value ${_gameState.value}")
             val current = _gameState.value ?: return
 
-            // O service agora retorna List<DieDto> (convertido da String do backend)
+            // 1. Obtém os novos dados do serviço
             val newDiceDtos = service.rollDice(current.lobbyId, token)
-            Log.d(TAG, "<ROLL> newDiceDtos ${newDiceDtos}")
-
             val newDice = newDiceDtos.map { it.toDie() }
-            Log.d(TAG, "<ROLL> newDice ${newDice}")
 
+            // 2. Atualiza a lista de players para que o player atual também tenha os dados
+            val updatedPlayers = current.players.map { player ->
+                if (player.name == current.currentPlayerName) {
+                    // Se for o jogador atual, atualizamos o campo 'dice' dele
+                    player.copy(dice = newDice)
+                } else {
+                    // Se não for, mantemos como estava
+                    player
+                }
+            }
 
-            // Atualizamos o objeto mantendo o resto igual
+            // 3. Atualiza o StateFlow com o novo estado completo
             _gameState.value = current.copy(
                 dice = newDice,
+                players = updatedPlayers, // Injetamos a lista de jogadores atualizada
                 rollsLeft = current.rollsLeft - 1,
                 canRoll = (current.rollsLeft - 1) > 0
             )
+
+            Log.d(TAG, "<ROLL> Sucesso: Dados e Jogador atualizados na UI.")
         }
     }
 
-    suspend fun rerollDice( token: String, dicePositionsMask: List<Int>) {
+    suspend fun rerollDice(token: String, dicePositionsMask: List<Int>) {
         Log.d(TAG, "rerollDice: antes do withLock, mask = $dicePositionsMask")
         mutex.withLock {
             Log.d(TAG, "rerollDice: entrou no withLock")
@@ -106,8 +112,17 @@ class GameRepository(private val service: GameService) {
                 "rerollDice: antes de atualizar gameState, newRollsLeft=$newRollsLeft"
             )
 
+            val updatedPlayers = current.players.map { player ->
+                if (player.name == current.currentPlayerName) {
+                    player.copy(dice = newDice)
+                } else {
+                    player
+                }
+            }
+
             _gameState.value = current.copy(
                 dice = newDice,
+                players = updatedPlayers,
                 rollsLeft = current.rollsLeft - 1,
                 canRoll = (current.rollsLeft - 1) > 0
             )
@@ -153,6 +168,8 @@ class GameRepository(private val service: GameService) {
                 rollsLeft = 3,      // Reset para o próximo
                 canRoll = true
             )
+
+            Log.d(TAG, "<REROLL> UI e Lista de Jogadores atualizada.")
         }
     }
 

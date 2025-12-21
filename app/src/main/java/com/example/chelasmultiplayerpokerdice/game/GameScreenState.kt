@@ -29,7 +29,8 @@ data class GameState(
     val roundWinners: List<PlayerStatus> = emptyList(),//TODO() n precisamos
     val finalWinners: List<PlayerStatus> = emptyList(),//TODO() n precisamos
     val roundNumber: Int,
-    val canRoll: Boolean
+    val canRoll: Boolean,
+    //val isRoundFinished: Boolean = false // Novo campo
 )
 
 interface GameScreenState {

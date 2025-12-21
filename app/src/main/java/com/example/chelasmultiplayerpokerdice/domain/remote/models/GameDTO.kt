@@ -120,11 +120,12 @@ data class PlayerStatusDto(
 
 @Serializable
 data class TurnDto(
-    val turnId: Int,
+    val turnId: Int? = null,    // Tem de ser opcional (?) porque vem null
     val roundId: Int,
     val playerId: Int,
     val rollCount: Int,
-    val diceFaces: String?, // "ACE,KING,TEN"
+    val diceFaces: String? = null, // Também pode ser null no início do turno
+    val valueOfCombination: Int,
     val isDone: Boolean
 )
 

@@ -3,9 +3,12 @@ package com.example.chelasmultiplayerpokerdice.game
 import android.util.Log
 import com.example.chelasmultiplayerpokerdice.BASE_URL
 import com.example.chelasmultiplayerpokerdice.TAG
+import com.example.chelasmultiplayerpokerdice.domain.DiceFace
+import com.example.chelasmultiplayerpokerdice.domain.Die
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.DieDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.GameDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.LobbyPlayersResponseDto
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.PlayerDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.ReRollResponseDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.RollResponseDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.TurnDto
@@ -28,7 +31,7 @@ interface GameService {
 
     suspend fun endTurn(lobbyId: Int, token: String): String
     suspend fun startNextRound(lobbyId: Int, token: String): GameState
-    suspend fun fetchFullGameState(lobbyId: Int, token: String): GameState
+    suspend fun fetchFullGameState(gameState: GameState, lobbyId: Int, token: String): GameState
 }
 
 class GameRemoteServiceImpl(
@@ -50,15 +53,15 @@ class GameRemoteServiceImpl(
         return gameDto.toGameState(playersResponse.players)
     }
 
-    override suspend fun fetchFullGameState(lobbyId: Int, token: String): GameState {
+    override suspend fun fetchFullGameState(gameState: GameState, lobbyId: Int, token: String): GameState {
+
         val gameDto: GameDto = client.get("$BASE_URL/games/lobby/$lobbyId") {
             header(HttpHeaders.Authorization, "Bearer $token")
         }.body()
 
-        val playersResponse: LobbyPlayersResponseDto =
-            client.get("$BASE_URL/users/obj/lobby/$lobbyId") {
-                header(HttpHeaders.Authorization, "Bearer $token")
-            }.body()
+        val playersResponse: LobbyPlayersResponseDto = client.get("$BASE_URL/users/obj/lobby/$lobbyId") {
+            header(HttpHeaders.Authorization, "Bearer $token")
+        }.body()
 
         val turnDto: TurnDto? = try {
             val response = client.get("$BASE_URL/games/${gameDto.id}/getCurrentTurn") {
@@ -66,32 +69,84 @@ class GameRemoteServiceImpl(
             }
             if (response.status == HttpStatusCode.OK) response.body() else null
         } catch (e: Exception) {
-            Log.w(TAG, "Turno não encontrado (inicio de jogo ou fim de ronda): ${e.message}")
             null
         }
 
-        return gameDto.toGameState(playersResponse.players)
+        // Chamamos a função que monta o estado final
+        return buildGameStateFromParts(gameState,gameDto, playersResponse.players, turnDto)
     }
 
 
-        override suspend fun rollDice(lobbyId: Int, token: String): List<DieDto> {
-            // 1. Recebe o objeto {"dice": "J,J,9,K,J"}
-            val response: RollResponseDto = client.post("$BASE_URL/games/$lobbyId/roll") {
-                header(HttpHeaders.Authorization, "Bearer $token")
-            }.body()
+    private fun buildGameStateFromParts(
+        gameState: GameState,
+        game: GameDto,
+        lobbyPlayers: List<PlayerDto>,
+        turn: TurnDto?
+    ): GameState {
+        Log.d(TAG, "<TURN> turn $turn")
+        Log.d(TAG, "<BANANOCAS> game $game")
+        Log.d(TAG, "<BANANOCAS> lobbyPlayers $lobbyPlayers")
 
-            Log.d(TAG, "<ROLL> String de dados: ${response.dice}")
+        val diceFromTurn = if (!turn?.diceFaces.isNullOrBlank()) {
+            Log.d(TAG, "<TURN> ENTREI ")
 
-            // 2. Transforma "J,J,9,K,J" numa List<DieDto>
-            // Usamos o index como ID temporário (0 a 4)
-            return response.dice.split(",").mapIndexed { index, faceLabel ->
-                DieDto(
-                    id = index,
-                    face = faceLabel,
-                    held = false
-                )
+            turn!!.diceFaces!!.split(",").mapIndexed { index, face ->
+                Die(id = index, face = DiceFace.fromLabel(face), isHeld = false)
             }
+        } else {
+            emptyList()
         }
+        Log.d(TAG, "<TURN> diceFromTurn $diceFromTurn")
+        val isNewRound = game.roundCounter > gameState.roundNumber
+
+        val playerStatusList = lobbyPlayers.map { player ->
+            val isHisTurn = turn?.playerId == player.id
+            PlayerStatus(
+                id = player.id,
+                name = player.username,
+                dice = if (isHisTurn) diceFromTurn
+                else if (isNewRound) null
+                else gameState.players.find { it.id == player.id }?.dice,
+                isCurrentTurn = isHisTurn,
+                hand = null
+            )
+        }
+
+        // Procuramos o nome do jogador atual para a UI
+        val currentPlayer = playerStatusList.find { it.isCurrentTurn }
+
+        return GameState(
+            id = game.id,
+            lobbyId = game.lobbyId,
+            dice = diceFromTurn, // Os dados que aparecem no centro do ecrã
+            players = playerStatusList,
+            currentPlayerName = currentPlayer?.name ?: "A aguardar...",
+            rollsLeft = if (turn != null) 3 - turn.rollCount else 3,
+            roundNumber = game.roundCounter,
+            canRoll = true,
+            roundWinners = emptyList(),
+            finalWinners = if (game.state == "FINISHED") playerStatusList else emptyList()
+        )
+    }
+
+    override suspend fun rollDice(lobbyId: Int, token: String): List<DieDto> {
+        // 1. Recebe o objeto {"dice": "J,J,9,K,J"}
+        val response: RollResponseDto = client.post("$BASE_URL/games/$lobbyId/roll") {
+            header(HttpHeaders.Authorization, "Bearer $token")
+        }.body()
+
+        Log.d(TAG, "<ROLL> String de dados: ${response.dice}")
+
+        // 2. Transforma "J,J,9,K,J" numa List<DieDto>
+        // Usamos o index como ID temporário (0 a 4)
+        return response.dice.split(",").mapIndexed { index, faceLabel ->
+            DieDto(
+                id = index,
+                face = faceLabel,
+                held = false
+            )
+        }
+    }
 
     override suspend fun rerollDice(
         lobbyId: Int,
@@ -128,10 +183,10 @@ class GameRemoteServiceImpl(
 
     //TODO() validar se funciona
     override suspend fun startNextRound(lobbyId: Int, token: String): GameState {
-        // Se o teu backend muda de ronda automaticamente ou via endpoint específico
-        // Aqui apenas refrescamos o estado para obter a nova roundNumber
-        return getInitialGameState(lobbyId, token)
-    }
+            // Se o teu backend muda de ronda automaticamente ou via endpoint específico
+            // Aqui apenas refrescamos o estado para obter a nova roundNumber
+            return getInitialGameState(lobbyId, token)
+        }
 
 
 }

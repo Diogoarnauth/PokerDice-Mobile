@@ -336,6 +336,7 @@ fun PlayerListArea(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerCard(
     player: PlayerStatus,
@@ -488,7 +489,10 @@ fun RoundOverDialog(
                 Text("Next Round")
             }
         },
-        properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false)
+        properties = DialogProperties(
+            dismissOnClickOutside = false,
+            dismissOnBackPress = false
+        )
     )
 }
 
@@ -531,11 +535,12 @@ fun GameOverDialog(
         )
     }
 }
-
 /*
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GameViewPreview() {
+
     val diogoDice = listOf(
         Die(id = 1, face = DiceFace.Ace, isHeld = false),
         Die(id = 2, face = DiceFace.Ten, isHeld = true),
@@ -553,11 +558,11 @@ fun GameViewPreview() {
     )
 
     val previewState = GameState(
-        id = 1,
+        id= 1,
         dice = diogoDice,
         players = listOf(
-            PlayerStatus(id = 1, name = "Renata", dice = renataDice, hand = null, isCurrentTurn = false),
-            PlayerStatus(id = 2, name = "Diogo", dice = null, hand = null, isCurrentTurn = true),
+            PlayerStatus(id = 1, name = "Renata", dice = renataDice, hand = null ,  isCurrentTurn = false),
+            PlayerStatus(id = 2, name = "Diogo", dice = null, hand = null , isCurrentTurn = true),
             PlayerStatus(id = 3, name = "Humberto", dice = null, hand = null, isCurrentTurn = false)
         ),
         currentPlayerName = "Diogo",
@@ -568,10 +573,8 @@ fun GameViewPreview() {
 
     GameView(
         state = previewState,
-        myUsername = "Diogo",
         onDieClicked = {},
         onRollClicked = {},
-        onRerollClicked = {},
         onEndTurnClicked = {}
     )
 }

@@ -18,7 +18,10 @@ fun GameScreen(
     lobbyId: Int
 ) {
     LaunchedEffect(lobbyId, user.token) {
-        viewModel.loadGame(lobbyId, user.token)
+        viewModel.loadGame(
+            lobbyId, user.token,
+            username = user.username
+        )
     }
 
     val currentState by viewModel.state.collectAsState()
@@ -43,6 +46,8 @@ fun GameScreen(
         }
 
         is GameScreenState.RoundOver -> {
+            val showDialog by viewModel.showRoundOverDialog.collectAsState()
+
             GameView(
                 state = state.gameState,
                 myUsername = user.username,
@@ -52,12 +57,14 @@ fun GameScreen(
                 onEndTurnClicked = { }
             )
 
-            RoundOverDialog(
-                winnerName = state.winner.name,
-                onDismiss = {
-                    viewModel.onStartNextRound(user.token)
-                }
-            )
+            if (showDialog) {
+                RoundOverDialog(
+                    winnerName = state.winner.name,
+                    onDismiss = {
+                        viewModel.dismissRoundOverDialog()
+                    }
+                )
+            }
         }
 
         is GameScreenState.GameOver -> {
