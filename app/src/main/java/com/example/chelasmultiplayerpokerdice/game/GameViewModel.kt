@@ -46,6 +46,12 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
     }
 
 
+    // TODO ("
+    //  erro ao dar reroll quando se é o host e se está a jogar com um guest
+    //  handling de erros mais elaborado
+
+    //  ")
+
 
     private fun updateScreenState(newGameState: GameState) {
         // Obtemos o estado anterior para comparar o RoundNumber
