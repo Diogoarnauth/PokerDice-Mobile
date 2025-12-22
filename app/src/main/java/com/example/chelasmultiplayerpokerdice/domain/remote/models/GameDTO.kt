@@ -79,6 +79,7 @@ import com.example.chelasmultiplayerpokerdice.game.PlayerHand
 import com.example.chelasmultiplayerpokerdice.game.PlayerStatus
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -100,6 +101,13 @@ data class RollResponseDto(
 @Serializable
 data class ReRollResponseDto(
     val dice: List<String>
+)
+
+@Serializable
+data class WinnersResponseDto(
+    // A API envia "value", nós mapeamos para a variável "winners"
+    @SerialName("value")
+    val winners: List<String>
 )
 
 @Serializable

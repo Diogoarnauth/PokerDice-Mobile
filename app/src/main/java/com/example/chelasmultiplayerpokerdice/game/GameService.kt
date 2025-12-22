@@ -12,6 +12,7 @@ import com.example.chelasmultiplayerpokerdice.domain.remote.models.PlayerDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.ReRollResponseDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.RollResponseDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.TurnDto
+import com.example.chelasmultiplayerpokerdice.domain.remote.models.WinnersResponseDto
 import com.example.chelasmultiplayerpokerdice.domain.remote.models.toGameState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -32,6 +33,9 @@ interface GameService {
     suspend fun endTurn(lobbyId: Int, token: String): String
     suspend fun startNextRound(lobbyId: Int, token: String): GameState
     suspend fun fetchFullGameState(gameState: GameState, lobbyId: Int, token: String): GameState
+
+    suspend fun checkWinner(lobbyId: Int, token: String): List<String>
+
 }
 
 class GameRemoteServiceImpl(
@@ -53,29 +57,72 @@ class GameRemoteServiceImpl(
         return gameDto.toGameState(playersResponse.players)
     }
 
-    override suspend fun fetchFullGameState(gameState: GameState, lobbyId: Int, token: String): GameState {
-
-        val gameDto: GameDto = client.get("$BASE_URL/games/lobby/$lobbyId") {
+    override suspend fun checkWinner(gameId: Int, token: String): List<String> {
+        val resp = client.get("$BASE_URL/games/$gameId/winners") {
             header(HttpHeaders.Authorization, "Bearer $token")
-        }.body()
-
-        val playersResponse: LobbyPlayersResponseDto = client.get("$BASE_URL/users/obj/lobby/$lobbyId") {
-            header(HttpHeaders.Authorization, "Bearer $token")
-        }.body()
-
-        val turnDto: TurnDto? = try {
-            val response = client.get("$BASE_URL/games/${gameDto.id}/getCurrentTurn") {
-                header(HttpHeaders.Authorization, "Bearer $token")
-            }
-            if (response.status == HttpStatusCode.OK) response.body() else null
-        } catch (e: Exception) {
-            null
         }
+        val dto: WinnersResponseDto = resp.body()
 
-        // Chamamos a função que monta o estado final
-        return buildGameStateFromParts(gameState,gameDto, playersResponse.players, turnDto)
+        return dto.winners
     }
 
+    override suspend fun fetchFullGameState(
+        gameState: GameState,
+        lobbyId: Int,
+        token: String
+    ): GameState {
+        return try {
+            val response = client.get("$BASE_URL/games/lobby/$lobbyId") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            if (response.status == HttpStatusCode.NotFound) {
+                Log.d(TAG, "Jogo não encontrado. A verificar vencedores finais...")
+
+                return try {
+                    val winnersUsernames = checkWinner(gameState.id, token)
+
+                    Log.d(" winnersUsers", "Vencedores finais: $winnersUsernames")
+                    val finalWinners = gameState.players.filter { player ->
+                        winnersUsernames.contains(player.name)
+                    }
+
+                    Log.d("finalWinners", "Vencedores finais encontrados: $finalWinners")
+
+                    gameState.copy(
+                        finalWinners = finalWinners,
+                        canRoll = false
+                    )
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "Erro crítico: Jogo e Vencedores não encontrados.")
+                    throw Exception("Erro de integridade: Jogo inexistente sem registo de vencedores.")
+                }
+            }
+
+            val gameDto: GameDto = response.body()
+            val playersResponse: LobbyPlayersResponseDto =
+                client.get("$BASE_URL/users/obj/lobby/$lobbyId") {
+                    header(HttpHeaders.Authorization, "Bearer $token")
+                }.body()
+
+            val turnDto: TurnDto? = try {
+                val tResponse = client.get("$BASE_URL/games/${gameDto.id}/getCurrentTurn") {
+                    header(HttpHeaders.Authorization, "Bearer $token")
+                }
+                if (tResponse.status == HttpStatusCode.OK) tResponse.body() else null
+            } catch (e: Exception) {
+                null
+            }
+
+            buildGameStateFromParts(gameState, gameDto, playersResponse.players, turnDto)
+
+        } catch (e: Exception) {
+            if (e.message?.contains("Erro de integridade") == true) throw e
+            Log.e(TAG, "Erro de rede no polling: ${e.message}")
+            throw e
+        }
+    }
 
     private fun buildGameStateFromParts(
         gameState: GameState,
@@ -183,10 +230,10 @@ class GameRemoteServiceImpl(
 
     //TODO() validar se funciona
     override suspend fun startNextRound(lobbyId: Int, token: String): GameState {
-            // Se o teu backend muda de ronda automaticamente ou via endpoint específico
-            // Aqui apenas refrescamos o estado para obter a nova roundNumber
-            return getInitialGameState(lobbyId, token)
-        }
+        // Se o teu backend muda de ronda automaticamente ou via endpoint específico
+        // Aqui apenas refrescamos o estado para obter a nova roundNumber
+        return getInitialGameState(lobbyId, token)
+    }
 
 
 }
