@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,9 +45,6 @@ const val LOBBIES_BACK_TITLESCREEN = "Back to Title Screen"
 const val LOBBIES_CREATE_BUTTON = "Create Lobby Button"
 const val LOBBY_CARD_TAG = "Lobby Card"
 
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LobbiesView(
@@ -54,7 +53,6 @@ fun LobbiesView(
     createLobbyFunction: () -> Unit,
     selectLobbyFunction: (Lobby) -> Unit
 ) {
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -133,38 +131,60 @@ fun LobbiesView(
                 contentPadding = PaddingValues(16.dp)
             ) {
                 items(lobbies) { lobbyInfo ->
+                    val ratio =
+                        if (lobbyInfo.lobby.maxUsers > 0)
+                            lobbyInfo.playerCount.toFloat() / lobbyInfo.lobby.maxUsers.toFloat()
+                        else 0f
+                    val clampedRatio = ratio.coerceIn(0f, 1f)
+                    val fillWidth = clampedRatio.coerceAtLeast(0.05f) // mínimo 5%
+
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag(LOBBY_CARD_TAG),
                         onClick = { selectLobbyFunction(lobbyInfo.lobby) }
                     ) {
-                        Column(
+                        Box(
                             modifier = Modifier
-                                .background(Color(0xCC061F17))
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                                .fillMaxWidth()
+                                .height(80.dp)
                         ) {
-                            Text(
-                                text = lobbyInfo.lobby.name,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = pokerText
+                            // Barra de ocupação
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(fillWidth)
+                                    .background(Color(0xFF061F17))
                             )
-                            Text(
-                                text = "Host: ${lobbyInfo.lobby.hostId}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = pokerText
-                            )
-                            Text(
-                                text = "Players: ${lobbyInfo.playerCount} / ${lobbyInfo.lobby.maxUsers}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = pokerText.copy(alpha = 0.8f)
-                            )
-                            Text(
-                                text = lobbyInfo.lobby.description,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = pokerText.copy(alpha = 0.7f)
-                            )
+
+                            // Conteúdo
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(10.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = lobbyInfo.lobby.name,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = pokerText
+                                )
+                                Text(
+                                    text = "Host: ${lobbyInfo.lobby.hostId}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = pokerText
+                                )
+                                Text(
+                                    text = "Players: ${lobbyInfo.playerCount} / ${lobbyInfo.lobby.maxUsers}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = pokerText.copy(alpha = 0.8f)
+                                )
+                                Text(
+                                    text = lobbyInfo.lobby.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = pokerText.copy(alpha = 0.7f)
+                                )
+                            }
                         }
                     }
                 }
@@ -172,7 +192,6 @@ fun LobbiesView(
         }
     }
 }
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -213,7 +232,6 @@ fun LobbiesViewPreview() {
         LobbyInfo(lobby = lobby2, playerCount = 2),
         LobbyInfo(lobby = lobby3, playerCount = 8)
     )
-
 
     LobbiesView(
         lobbies = sampleLobbyInfos,
