@@ -62,7 +62,6 @@ class GameRemoteServiceImpl(
             header(HttpHeaders.Authorization, "Bearer $token")
         }
         val dto: WinnersResponseDto = resp.body()
-
         return dto.winners
     }
 
