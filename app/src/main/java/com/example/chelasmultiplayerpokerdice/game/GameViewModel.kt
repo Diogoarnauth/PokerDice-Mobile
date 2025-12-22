@@ -28,8 +28,6 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
     private var cachedToken: String = ""
 
 
-
-
     init {
         viewModelScope.launch {
             repository.gameState.collectLatest { newGameState ->
