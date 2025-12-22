@@ -19,6 +19,14 @@ fun LobbyScreen(
         viewModel.loadLobby(lobbyId, user.token)
     }
 
+    val gameIdToNavigate by viewModel.navigateToGame.collectAsState()
+
+    LaunchedEffect(gameIdToNavigate) {
+        if (gameIdToNavigate != null) {
+            // Se detetámos um jogo, vamos para lá!
+            navigator.goToGameScreen(user, lobbyId)
+        }
+    }
     val currentState by viewModel.state.collectAsState()
 
     when (val state = currentState) {
@@ -37,9 +45,7 @@ fun LobbyScreen(
                 viewModel.onJoin(lobbyId, user.token)
             },
             onStartGame = {
-                viewModel.onStartGame(lobbyId, user.token, onSuccess = {
-                    navigator.goToGameScreen(user, lobbyId)
-                })
+                viewModel.onStartGame(lobbyId, user.token)
             }
         )
 

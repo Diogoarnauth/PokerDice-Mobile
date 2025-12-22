@@ -27,33 +27,27 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
     private var cachedLobbyId: Int = -1
     private var cachedToken: String = ""
 
+
+
+
     init {
         viewModelScope.launch {
             repository.gameState.collectLatest { newGameState ->
-                Log.d(TAG, "newGameState $newGameState")
-                if (newGameState == null) {
-                    _state.value = GameScreenState.Loading
-                } else {
+                if (newGameState != null) {
                     updateScreenState(newGameState)
 
-                    val isMyTurn = newGameState.currentPlayerName == myCachedUsername
-
-                    if (isMyTurn) {
-                        if (pollingJob?.isActive == true) {
-                            Log.d(TAG, "Minha vez: Parando Polling.")
-                            pollingJob?.cancel()
-                            pollingJob = null
-                        }
-                    } else {
-                        if (pollingJob == null || !pollingJob!!.isActive) {
-                            Log.d(TAG, "Vez do adversário: Iniciando Polling.")
-                            startPolling(cachedLobbyId, cachedToken)
-                        }
+                    // REMOVE A LÓGICA DE PARAR O POLLING
+                    // Se queres que o Host veja as atualizações do Guest, mantém o polling ligado.
+                    if (pollingJob == null || !pollingJob!!.isActive) {
+                        Log.d(TAG, "Garantindo que o Polling está ativo para sincronização.")
+                        startPolling(cachedLobbyId, cachedToken)
                     }
                 }
             }
         }
     }
+
+
 
     private fun updateScreenState(newGameState: GameState) {
         // Obtemos o estado anterior para comparar o RoundNumber
@@ -84,7 +78,15 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
             else -> GameScreenState.Playing(newGameState)
         }
     }
-
+    private fun startPolling(lobbyId: Int, token: String) {
+        if (pollingJob?.isActive == true) return
+        pollingJob = viewModelScope.launch {
+            repository.getGameLive(lobbyId, token).collect {
+                // O repository já atualiza o _gameState.value,
+                // o collect aqui serve apenas para manter o flow vivo.
+            }
+        }
+    }
     // Função para fechar o diálogo sem interagir com o Repository
     fun dismissRoundOverDialog() {
         _showRoundOverDialog.value = false
@@ -110,14 +112,7 @@ class GameViewModel(private val repository: GameRepository) : ViewModel() {
         }
     }
 
-    private fun startPolling(lobbyId: Int, token: String) {
-        pollingJob?.cancel()
-        pollingJob = viewModelScope.launch {
-            repository.getGameLive(lobbyId, token).collect {
-                Log.d(TAG, "Polling ativo...")
-            }
-        }
-    }
+
 
     override fun onCleared() {
         super.onCleared()

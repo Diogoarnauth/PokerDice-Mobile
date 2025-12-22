@@ -34,6 +34,8 @@ interface GameService {
     suspend fun startNextRound(lobbyId: Int, token: String): GameState
     suspend fun fetchFullGameState(gameState: GameState, lobbyId: Int, token: String): GameState
 
+    suspend fun getGameByLobby(lobbyId: Int, token: String): GameDto?
+
     suspend fun checkWinner(lobbyId: Int, token: String): List<String>
 
 }
@@ -55,6 +57,21 @@ class GameRemoteServiceImpl(
             }.body()
 
         return gameDto.toGameState(playersResponse.players)
+    }
+
+    override suspend fun getGameByLobby(lobbyId: Int, token: String): GameDto? {
+        return try {
+            val response = client.get("$BASE_URL/games/lobby/$lobbyId") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+            if (response.status == HttpStatusCode.OK) {
+                response.body<GameDto>()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
     }
 
     override suspend fun checkWinner(gameId: Int, token: String): List<String> {

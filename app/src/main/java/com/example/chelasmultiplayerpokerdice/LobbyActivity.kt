@@ -37,7 +37,7 @@ class LobbyActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val viewModel: LobbyViewModel =
-                viewModel(factory = LobbyScreenViewModelFactory(app.lobbyRepository))
+                viewModel(factory = LobbyScreenViewModelFactory(app.lobbyRepository, app.gameRepository))
             LobbyScreen(
                 viewModel = viewModel,
                 navigator = lobbyNavigation,

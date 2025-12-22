@@ -38,6 +38,12 @@ class GameRepository(private val service: GameService) {
         }
     }
 
+    suspend fun checkGameStarted(lobbyId: Int, token: String): Int? {
+        val gameDto = service.getGameByLobby(lobbyId, token)
+        return gameDto?.id
+    }
+
+
     suspend fun fetchGame(lobbyId: Int, token: String) {
         Log.d(TAG, "ENTREI NO fetchGame")
         //mutex.withLock {
