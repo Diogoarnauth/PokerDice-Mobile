@@ -12,7 +12,7 @@ fun TitleView(
 ) {
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize() 
             .testTag(TITLE_VIEW_TAG),
         topBar = {
             GenericTopAppBar(
