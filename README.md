@@ -1,8 +1,12 @@
-🎲 Chelas Multi-Player Poker Dice
+# 🎲 Poker Dice
+
+**Aplicação Android Multiplayer do jogo Poker Dice**
 
 Chelas Multi-Player Poker Dice é uma aplicação de Poker Dice Multiplayer desenvolvida para Android, onde jogadores competem em uma partida de dados de poker em tempo real. Cada jogador utiliza seu próprio dispositivo para interagir no jogo. O jogo permite a criação de lobbies, onde os jogadores podem entrar e sair, e as partidas são jogadas ao longo de várias rodadas, com regras de Poker adaptadas para dados.
 
-📱 Funcionalidades principais
+---
+
+# 📱 Funcionalidades principais
 
 Login: Autenticação de usuários para garantir acesso seguro à aplicação.
 
@@ -20,7 +24,9 @@ Player Profile: Exibe informações e estatísticas pessoais do jogador.
 
 About: Informações sobre o jogo e os desenvolvedores.
 
-🧱 Arquitetura do Projeto
+---
+
+# 🧱 Arquitetura do Projeto
 
 A arquitetura do aplicativo segue o padrão MVVM (Model-View-ViewModel), onde a lógica do jogo, a interface de usuário e a gestão de dados estão bem separadas.
 
@@ -46,7 +52,9 @@ Lobbies Screen → Lobby Creation Screen / Lobby Screen
 
 Lobby Screen → Game Screen
 
-🧑‍🤝‍🧑 Funcionalidades de Jogo
+---
+
+# 🧑‍🤝‍🧑 Funcionalidades de Jogo
 
 Lobby:
 
@@ -70,7 +78,9 @@ O jogador com a maior pontuação no final do jogo vence a partida.
 
 <img width="586" height="319" alt="image" src="https://github.com/user-attachments/assets/5dda584f-68bf-4d37-86c1-f39bf863d090" />
 
-🖥️ Tecnologias e Bibliotecas Utilizadas
+---
+
+# 🖥️ Tecnologias e Bibliotecas Utilizadas
 
 Kotlin: Linguagem principal do projeto.
 
@@ -92,15 +102,22 @@ androidx-compose-material3
 
 androidx-core-ktx
 
-🌐 Integração com o Backend
+---
+
+# 🌐 Integração com o Backend
 
 A comunicação entre o cliente e o servidor é feita através de HTTP requests utilizando Ktor. O cliente interage com o servidor para buscar o estado atual do jogo, incluindo os dados dos jogadores, o estado dos dados, e as ações realizadas durante a partida.
 
-🧪 Testes
+---
+
+# 🧪 Testes
 
 O aplicativo inclui testes para validar as funcionalidades principais, como o login, navegação entre telas e interações durante o jogo. JUnit é utilizado para testes unitários e de integração. A Compose Test é utilizada para validar a interface de usuário.
 
-video de demostração: https://youtu.be/n7DIhjbBE6U
+---
+
+# video de demostração:
+https://youtu.be/n7DIhjbBE6U
 =======
 
 
