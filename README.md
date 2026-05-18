@@ -1,48 +1,39 @@
-# 🎲 Poker Dice
+🎲 Poker Dice
+Android Multiplayer Application of the Poker Dice game
 
-**Aplicação Android Multiplayer do jogo Poker Dice**
+Chelas Multi-Player Poker Dice is a Multiplayer Poker Dice application developed for Android, where players compete in a real-time poker dice match. Each player uses their own device to interact with the game. The game allows the creation of lobbies, where players can enter and leave, and matches are played over several rounds, featuring Poker rules adapted for dice.
 
-Chelas Multi-Player Poker Dice é uma aplicação de Poker Dice Multiplayer desenvolvida para Android, onde jogadores competem em uma partida de dados de poker em tempo real. Cada jogador utiliza seu próprio dispositivo para interagir no jogo. O jogo permite a criação de lobbies, onde os jogadores podem entrar e sair, e as partidas são jogadas ao longo de várias rodadas, com regras de Poker adaptadas para dados.
+📱 Main Features
+Login: User authentication to ensure secure access to the application.
 
----
+Main Screen (Title Screen): The main menu of the application with navigation options.
 
-# 📱 Funcionalidades principais
+Lobbies: Display of available lobbies, allowing the player to join an existing lobby or create a new one.
 
-Login: Autenticação de usuários para garantir acesso seguro à aplicação.
+Lobby Creation: Creation of new lobbies with parameters such as name, description, number of players, and rounds.
 
-Tela Principal (Title Screen): Menu principal da aplicação com opções de navegação.
+Lobby: The waiting room for the game, where players wait for the match to start.
 
-Lobbies: Exibição de lobbies disponíveis, permitindo que o jogador entre em um lobby ou crie um novo.
+Game: The game screen where players interact by rolling dice, performing rerolls, and ending turns.
 
-Lobby Creation: Criação de novos lobbies com parâmetros como nome, descrição, número de jogadores e rodadas.
+Player Profile: Displays the player's personal information and statistics.
 
-Lobby: Sala de espera para o jogo, onde os jogadores aguardam o início da partida.
+About: Information about the game and the developers.
 
-Game: A tela do jogo onde os jogadores interagem, rolando dados, realizando rerolls e terminando turnos.
+🧱 Project Architecture
+The application's architecture follows the MVVM (Model-View-ViewModel) pattern, where the game logic, user interface, and data management are cleanly separated.
 
-Player Profile: Exibe informações e estatísticas pessoais do jogador.
+Main Components:
+Authentication: Managed through an authentication repository (AuthInfoRepo), ensuring each player logs in with valid credentials.
 
-About: Informações sobre o jogo e os desenvolvedores.
+Game State: Game interactions are maintained and updated using StateFlow for reactivity.
 
----
+Backend: Communication with the backend via Ktor to synchronize data between players' devices.
 
-# 🧱 Arquitetura do Projeto
+UI: The graphical interface is built using Jetpack Compose, providing fluid navigation between screens.
 
-A arquitetura do aplicativo segue o padrão MVVM (Model-View-ViewModel), onde a lógica do jogo, a interface de usuário e a gestão de dados estão bem separadas.
-
-Principais componentes:
-
-Autenticação: Gerenciada através de um repositório de autenticação (AuthInfoRepo), garantindo que cada jogador se logue com credenciais válidas.
-
-Game State: A interação do jogo é mantida e atualizada utilizando StateFlow para reatividade.
-
-Backend: Comunicação com o backend via Ktor para sincronizar os dados entre os dispositivos dos jogadores.
-
-UI: A interface gráfica é criada utilizando Jetpack Compose, proporcionando uma navegação fluída entre as telas.
-
-Fluxo de navegação da aplicação:
-
-A navegação entre as telas segue o fluxo descrito na imagem, garantindo uma experiência de usuário intuitiva.
+Application Navigation Flow:
+Navigation between screens follows the flow described below, ensuring an intuitive user experience:
 
 Login Screen → Title Screen
 
@@ -52,70 +43,49 @@ Lobbies Screen → Lobby Creation Screen / Lobby Screen
 
 Lobby Screen → Game Screen
 
----
-
-# 🧑‍🤝‍🧑 Funcionalidades de Jogo
-
+🧑‍🤝‍🧑 Gameplay Features
 Lobby:
+Players can create a lobby or join an existing one.
 
-Jogadores podem criar um lobby ou entrar em um já existente.
+The host defines the game parameters, such as the number of rounds and players.
 
-O host define os parâmetros do jogo, como número de rodadas e jogadores.
+Once the required number of players joins, the game begins.
 
-Quando o número necessário de jogadores se junta, o jogo começa.
+Turns and Dice Rolling:
+Each player has up to 3 rolls per turn.
 
-Turnos e Rolagem de Dados:
+Players can hold dice and reroll the remaining ones.
 
-Cada jogador tem até 3 rolamentos por turno.
+Scoring:
+The winner of each round is determined by the strongest dice combination, according to the traditional poker hierarchy adapted for dice (e.g., "Five of a Kind", "Four of a Kind", etc.).
 
-Jogadores podem segurar dados e repetir a rolagem de outros dados.
+The player with the highest score at the end of the game wins the match.
 
-Pontuação:
+🖥️ Technologies and Libraries Used
+Kotlin: The primary language of the project.
 
-O vencedor de cada rodada é determinado pela combinação de dados mais forte, de acordo com a hierarquia tradicional de poker, adaptada para dados (Ex: "Five of a Kind", "Four of a Kind", etc.).
+Jetpack Compose: Declarative UI for building the screens.
 
-O jogador com a maior pontuação no final do jogo vence a partida.
+Ktor: HTTP communication with the backend.
 
-<img width="586" height="319" alt="image" src="https://github.com/user-attachments/assets/5dda584f-68bf-4d37-86c1-f39bf863d090" />
+Kotlin Coroutines: Asynchronous management of API calls and UI updates.
 
----
+StateFlow: For reactive updates of the game state.
 
-# 🖥️ Tecnologias e Bibliotecas Utilizadas
+JUnit: Unit and UI testing.
 
-Kotlin: Linguagem principal do projeto.
-
-Jetpack Compose: UI declarativa para a construção das telas.
-
-Ktor: Comunicação HTTP com o backend.
-
-Kotlin Coroutines: Gerenciamento assíncrono de chamadas à API e atualização da UI.
-
-StateFlow: Para atualização reativa do estado do jogo.
-
-JUnit: Testes unitários e de UI.
-
-Dependências principais:
-
+Main Dependencies:
 ktor-client-core
 
 androidx-compose-material3
 
 androidx-core-ktx
 
----
+🌐 Backend Integration
+Communication between the client and the server is handled via HTTP requests using Ktor. The client interacts with the server to fetch the current state of the game, including player data, dice states, and actions performed during the match.
 
-# 🌐 Integração com o Backend
+🧪 Testing
+The application includes tests to validate core functionalities such as login, screen navigation, and in-game interactions. JUnit is used for unit and integration testing. Compose Test is utilized to validate the user interface.
 
-A comunicação entre o cliente e o servidor é feita através de HTTP requests utilizando Ktor. O cliente interage com o servidor para buscar o estado atual do jogo, incluindo os dados dos jogadores, o estado dos dados, e as ações realizadas durante a partida.
-
----
-
-# 🧪 Testes
-
-O aplicativo inclui testes para validar as funcionalidades principais, como o login, navegação entre telas e interações durante o jogo. JUnit é utilizado para testes unitários e de integração. A Compose Test é utilizada para validar a interface de usuário.
-
----
-
-# video de demostração:
+Demonstration Video:
 https://youtu.be/n7DIhjbBE6U
-
